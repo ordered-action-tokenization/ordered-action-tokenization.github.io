@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Ordered Action Tokenization">
+  <meta name="keywords" content="Action Tokenization, Vision-Language-Action, Robotic Manipulation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OAT</title>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/misc.css">
+
+  <style>
+    .oat-section {
+      background-color: #fafafa;
+    }
+
+    .oat-heading {
+      font-size: 2.1rem;
+    }
+
+    .oat-panel article.panel {
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .oat-panel .panel-block:first-child {
+      flex: 1;
+    }
+
+    .oat-name {
+      color: maroon;
+      font-weight: 700;
+    }
+
+    .demo-video-section {
+      padding: 3rem 1rem;
+    }
+
+    .demo-video-box {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+
+    .demo-video-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .demo-video-controls .field {
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      min-width: 180px;
+    }
+
+    .demo-video-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .demo-video-matrix.all-methods {
+      grid-template-columns: 1fr;
+    }
+
+    .demo-method-card {
+      border-radius: 0.75rem;
+      border: 1px solid #dbdbdb;
+      background-color: #fff;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 220px;
+    }
+
+    .demo-method-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.25rem;
+    }
+
+    .demo-method-card .method-videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .demo-method-card figure {
+      margin: 0;
+    }
+
+    .demo-method-card video {
+      width: 100%;
+      border-radius: 0.35rem;
+      background-color: #000;
+    }
+
+    .demo-video-placeholder {
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .demo-method-card figcaption {
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-video-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .demo-video-controls .field {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .demo-video-box {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+
+
+
+
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-fullhd">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <div class="title publication-title title-inline">
+            <span class="texttt oat-name title-inline-main">OAT:</span>
+            <span class="title-inline-main">Ordered Action Tokenization</span>
+          </div>
+
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://chaoqi-liu.github.io">Chaoqi Liu</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://xshenhan.github.io/">Xiaoshen Han</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://gao-jiawei.com/">Jiawei Gao</a><sup>3</sup>,
+            </span>
+            <br>
+            <span class="author-block">
+              <a href="https://zhaoyue-zephyrus.github.io/">Yue Zhao</a><sup>4</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://haonan16.github.io/">Haonan Chen</a><sup>5</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://yilundu.github.io/">Yilun Du</a><sup>5</sup>,
+            </span>
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>1</sup>University of Illinois Urbana-Champaign</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>2</sup>Shanghai Jiao Tong University</span>&nbsp;&nbsp;
+            <br>
+            <span class="author-block"><sup>3</sup>Tsinghua University</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>3</sup>Stanford University</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>4</sup>Harvard University</span>
+          </div>
+
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+
+              <span class="link-block">
+                <a target="_blank" href="https://arxiv.org/"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv (soon)</span>
+                </a>
+              </span>
+
+              <span class="link-block">
+                <a href="https://github.com"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (soon)</span>
+                  </a>
+              </span>
+
+            </div>
+          </div>
+         
+
+
+
+          <div class="container is-max-desktop">
+            <img src="./media/fig/teaser.png" alt="OAT teaser" style="width:100%; height:auto;" />
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Autoregressive policies offer a compelling foundation for scalable robot learning by enabling discrete
+              abstraction, token-level reasoning, and flexible inference. However, applying autoregressive modeling to
+              continuous robot actions requires an effective action tokenization scheme. Existing approaches either rely
+              on analytical discretization methods that produce prohibitively long token sequences, or learned latent
+              tokenizers that lack structure, limiting their compatibility with next-token prediction. In this work, we
+              identify three desiderata for action tokenization — reasonable compression, universal decodability, and a
+              left-to-right causally ordered token space — and introduce <span style="color:maroon;">Ordered Action Tokenization</span> (<span class="texttt oat-name">OAT</span>), a learned
+              action tokenizer that satisfies all three. <span class="texttt oat-name">OAT</span> discretizes action
+              chunks into an ordered sequence of
+              tokens using transformer with register tokens, finite scalar quantization, and ordering-inducing training
+              mechanisms. The resulting token space aligns naturally with autoregressive generation and enables
+              prefix-based detokenization, yielding an anytime trade-off between inference cost and action fidelity.
+              Across more than 20 tasks spanning four simulation benchmarks and real-world settings, autoregressive
+              policies equipped with <span class="texttt oat-name">OAT</span> consistently outperform prior
+              tokenization schemes and diffusion-based
+              baselines, while offering significantly greater flexibility at inference time.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3 publication-title oat-heading has-text-centered">Method</h2>
+          <img src="./media/fig/method.png" alt="OAT method overview"
+            style="width:100%; height:auto;" />
+          <div class="content has-text-justified" style="margin-top:1.5rem;">
+            <p>
+              Our objective is to learn an action tokenizer that satisfies the three desiderata: reasonable
+              compression, universal decodability, and a structured left-to-right causal ordering over tokens. Prior
+              learned tokenizers produce
+              compact, decodable latents but lack an explicit ordering, which limits compatibility with autoregressive
+              policies. <span class="texttt oat-name">OAT</span> remedies that by discretizing action chunks through
+              transformer-based
+              register tokens, FSQ quantization, and a conditional decoder. Causal attention across registers together
+              with
+              nested dropout during training induces a coarse-to-fine ordering where earlier tokens capture global
+              structure
+              and later tokens refine details. This ordered latent space makes any prefix decode-worthy, enabling
+              variable-length
+              and anytime reconstruction as shown in the figure above.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-fullhd">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-3 publication-title oat-heading">Interactive MeshCat Rollouts</h1>
+          <p class="has-text-justified" style="max-width: 760px; margin: 0.5rem auto 1.5rem;">
+            Visualization of reconstructed action chunks using increasing numbers of decoded tokens. Earlier tokens
+            capture the coarse, global structure of the motion, and additional tokens progressively refine fine-grained
+            details, producing trajectories that increasingly match the ground truth. All rollouts are generated by the
+            same model.
+          </p>
+
+          <div class="meshcat-global-controls">
+            <div class="meshcat-control-buttons">
+              <button id="meshcat-play-all" class="button is-link is-light">Play</button>
+              <button id="meshcat-pause-all" class="button is-warning is-light">Pause</button>
+              <button id="meshcat-reset-all" class="button is-light">Reset</button>
+              <button id="meshcat-reload-all" class="button is-danger is-light">Reload</button>
+            </div>
+            <div class="meshcat-control-slider">
+              <input id="meshcat-global-slider" type="range" min="0" max="100" step="1" value="0">
+            </div>
+          </div>
+
+          <div class="embed-row" data-episode="idx254425">
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 1 token</h2>
+              <iframe src="./media/html/idx254425/reconst_k1.html" title="Reconstruction K=1 (idx254425)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.592</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 2 tokens</h2>
+              <iframe src="./media/html/idx254425/reconst_k2.html" title="Reconstruction K=2 (idx254425)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.446</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 4 tokens</h2>
+              <iframe src="./media/html/idx254425/reconst_k4.html" title="Reconstruction K=4 (idx254425)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.038</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 8 tokens</h2>
+              <iframe src="./media/html/idx254425/reconst_k8.html" title="Reconstruction K=8 (idx254425)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.009</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Ground Truth</h2>
+              <iframe src="./media/html/idx254425/ground_truth.html" title="Ground Truth Trajectory (idx254425)"
+                loading="lazy"></iframe>
+            </div>
+
+          </div>
+
+          <div class="embed-row" data-episode="idx5788">
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 1 token</h2>
+              <iframe src="./media/html/idx5788/reconst_k1.html" title="Reconstruction K=1 (idx5788)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.365</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 2 tokens</h2>
+              <iframe src="./media/html/idx5788/reconst_k2.html" title="Reconstruction K=2 (idx5788)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.082</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 4 tokens</h2>
+              <iframe src="./media/html/idx5788/reconst_k4.html" title="Reconstruction K=4 (idx5788)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.056</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Reconst. with 8 tokens</h2>
+              <iframe src="./media/html/idx5788/reconst_k8.html" title="Reconstruction K=8 (idx5788)"
+                loading="lazy"></iframe>
+              <h2 class="title is-6">MSE = 0.027</h2>
+            </div>
+
+            <div class="embed-card">
+              <h2 class="title is-6">Ground Truth</h2>
+              <iframe src="./media/html/idx5788/ground_truth.html" title="Ground Truth Trajectory (idx5788)"
+                loading="lazy"></iframe>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 oat-heading has-text-centered">Rate-Distortion-<span
+          style="color:maroon;">Modelability</span> Trade-Off</h2>
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <p>
+            Tokenizers juggle rate (compression) and distortion (fidelity). <span class="texttt oat-name">OAT</span>
+            adds modelability as a third axis.
+            By inducing ordering, we give autoregressive models structured prefixes to learn from, which keeps the
+            model's job focused on the distribution instead of discovering structure from scratch. Enforcing ordering
+            keeps rate-distortion curves smooth and ensures policies can decode at any prefix
+            length, making deployment more reliable in real-world robot settings.
+          </p>
+        </div>
+        <div class="column">
+          <div class="box has-background-white-bis">
+            <h3 class="title is-6">Why ordering drives modelability</h3>
+            <ul>
+              <li>Structured prefixes reduce entropy for the generative model. Anytime decoding remains meaningful
+                because every prefix obeys the coarse-to-fine hierarchy. By staying aligned with the rate-distortion
+                trade-off, we keep both efficiency and expressiveness.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 oat-heading has-text-centered">Information-Theoretic Interpretation of Token Ordering</h2>
+      <div class="content has-text-justified">
+        <p>
+          The ordering induced by <span class="texttt oat-name">OAT</span> mirrors an information-theoretic
+          principle: the number of bits required to represent information is inversely proportional to its frequency. So the tokenizer learns to prioritize
+          coarse structure before fine-grained details. Since action chunks \(a_{1:H_a}\) follow a highly skewed
+          distribution, the early tokens capture dominant motions shared across trajectories, while later tokens
+          progressively refine the residuals.
+        </p>
+        <p>
+          This progressive coding behavior comes directly from nested dropout. Because every prefix needs to decode
+          into a meaningful action, the tokenizer allocates capacity in decreasing order of frequency and importance.
+          The result is a natural explanation for why reconstruction quality improves monotonically with prefix length
+          and why token order aligns strongly with autoregressive prediction—ordering emerges from optimizing under
+          variable information budgets, not from a heuristic.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 oat-heading has-text-centered">Experiments</h2>
+
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <figure>
+            <img src="./media/fig/table1.png" alt="Simulation benchmarking table 1" />
+          </figure>
+        </div>
+        <div class="column">
+          <div class="box has-background-white-bis">
+            <h3 class="title is-6"><span class="texttt oat-name title is-5">OAT</span> Is Superior</h3>
+            <p>
+              <span class="texttt oat-name">OAT</span> consistently outperforms prior action tokenization schemes and
+              matches or exceeds the strongest baselines, while additionally enabling prefix-based decoding that is
+              unavailable to existing methods. <span class="texttt oat-name">OAT</span> exhibits a clear and
+              consistent monotonic performance trend as the number of autoregressive steps increases. As additional
+              tokens are generated, performance improves steadily: <span
+                class="texttt oat-name">OAT</span><sub>4</sub> closes much of the
+              gap to QueST and DP, while
+              <span class="texttt oat-name">OAT</span><sub>8</sub> achieves the best performance across all
+              benchmarks.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <figure>
+            <img src="./media/fig/table2.png" alt="Simulation benchmarking table 2" />
+          </figure>
+        </div>
+        <div class="column">
+          <div class="box has-background-white-bis">
+            <h3 class="title is-6">Compression Rate And Inference Latency</h3>
+            <p>
+              <span class="texttt oat-name">OAT</span> enables a smooth and controllable trade-off between compression
+              rate, inference latency, and policy performance. With full decoding, <span
+                class="texttt oat-name">OAT</span> and QueST have the same amount of compute due per inference.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <figure>
+            <img src="./media/fig/table3.png" alt="Simulation benchmarking table 3" />
+          </figure>
+        </div>
+        <div class="column">
+          <div class="box has-background-white-bis">
+            <h3 class="title is-6">Token Ordering Is The Key To Success</h3>
+            <p>
+              Across all benchmarks, removing token ordering leads to a consistent performance degradation.
+              <span class="texttt oat-name">OAT</span><sub>X</sub>'s performance is significantly worse than <span
+                class="texttt oat-name">OAT</span><sub>4</sub> and <span
+                class="texttt oat-name">OAT</span><sub>8</sub>, and in some
+              cases falls below QueST. This indicates that the structure of the token space plays a critical role in
+              effective autoregressive policy learning: by aligning the token space with next-token prediction, ordering
+              introduces a favorable inductive bias that facilitates both learning and inference.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-fullhd">
+      <div class="columns is-centered">
+        <div class="column is-full">
+          <div class="demo-video-box">
+            <h1 class="title is-3 publication-title oat-heading has-text-centered">Real-World Execution</h1>
+            <p class="has-text-justified" style="max-width: 760px; margin: 0.5rem auto 1.5rem;">
+              We provide over 90+ real-world robot execution videos, with both successful and failed attempts. Reloading
+              the page randomizes the initial configurations. Use the controls below to filter videos by task and
+              method. Halting during FAST execution is primarily caused by undecodable action tokens. In such cases, the
+              policy is instructed not to produce any action and to remain stationary for safety reasons.
+            </p>
+            <div class="demo-video-controls">
+              <div class="field">
+                <!-- <label class="label is-size-7 has-text-weight-semibold">Task</label> -->
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select id="demo-task-select" aria-label="Choose real-world task">
+                      <option value="pnp_ball">Pick & Place Ball</option>
+                      <option value="stack_cups">Stack Cups</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <!-- <label class="label is-size-7 has-text-weight-semibold">Method</label> -->
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select id="demo-method-select" aria-label="Choose evaluation method" data-initial-method="all">
+                      <option value="all">All Methods</option>
+                      <option value="dp">DP</option>
+                      <option value="bin">Bin</option>
+                      <option value="fast">FAST</option>
+                      <option value="quest">QueST</option>
+                      <option value="oat1">OAT1</option>
+                      <option value="oat2">OAT2</option>
+                      <option value="oat4">OAT4</option>
+                      <option value="oat8">OAT8</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <div class="control">
+                  <button id="demo-video-reload" class="button is-danger is-light is-fullwidth">Reload</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-video-matrix" id="demo-video-matrix">
+
+              <div class="demo-method-card box" data-method-card="dp">
+                <h3>DP</h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline preload="metadata" data-method="dp" data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline preload="metadata" data-method="dp" data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="bin">
+                <h3>Bin</h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="bin"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="bin"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="fast">
+                <h3>FAST</h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="fast"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="fast"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="quest">
+                <h3>QueST</h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="quest"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="quest"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="oat1">
+                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>1</sub></h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat1"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat1"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="oat2">
+                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>2</sub></h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat2"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat2"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="oat4">
+                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>4</sub></h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat4"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat4"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+              <div class="demo-method-card box" data-method-card="oat8">
+                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>8</sub></h3>
+                <div class="method-videos">
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat8"
+                      data-status="success">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Success execution</figcaption>
+                  </figure>
+                  <figure>
+                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat8"
+                      data-status="failure">
+                      <p>Your browser does not support this video.</p>
+                    </video>
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    </p>
+                    <figcaption>Failure execution</figcaption>
+                  </figure>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content has-text-centered">
+          <p>
+            Website template borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const iframeSelectors = Array.from(document.querySelectorAll('.embed-card iframe'));
+    iframeSelectors.forEach((iframe) => {
+      iframe.dataset.originalSrc = iframe.src;
+    });
+
+    function broadcast(type, payload = {}) {
+      iframeSelectors.forEach((iframe) => {
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage({ type, ...payload }, '*');
+        }
+      });
+    }
+
+    const playButton = document.getElementById('meshcat-play-all');
+    const pauseButton = document.getElementById('meshcat-pause-all');
+    const resetButton = document.getElementById('meshcat-reset-all');
+    const reloadButton = document.getElementById('meshcat-reload-all');
+    const slider = document.getElementById('meshcat-global-slider');
+    let sliderIsDragging = false;
+
+    playButton?.addEventListener('click', () => broadcast('meshcat-play'));
+    pauseButton?.addEventListener('click', () => broadcast('meshcat-pause'));
+    resetButton?.addEventListener('click', () => {
+      if (slider) {
+        slider.value = 0;
+      }
+      broadcast('meshcat-seek', { value: 0 });
+      broadcast('meshcat-pause');
+    });
+    reloadButton?.addEventListener('click', () => {
+      broadcast('meshcat-reset');
+      iframeSelectors.forEach((iframe) => {
+        if (iframe.dataset.originalSrc) {
+          iframe.src = iframe.dataset.originalSrc;
+        } else {
+          iframe.contentWindow?.postMessage({ type: 'meshcat-reset-view' }, '*');
+        }
+      });
+      if (slider) {
+        slider.value = 0;
+      }
+    });
+
+    slider?.addEventListener('input', () => {
+      const value = Number(slider.value) / 100;
+      broadcast('meshcat-seek', { value });
+    });
+
+    slider?.addEventListener('pointerdown', () => {
+      sliderIsDragging = true;
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((evt) => {
+      slider?.addEventListener(evt, () => {
+        sliderIsDragging = false;
+      });
+    });
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+    window.addEventListener('message', (event) => {
+      if (event.data?.type !== 'meshcat-time' || !slider || sliderIsDragging) {
+        return;
+      }
+      const normalized = clamp(Number(event.data.value) || 0, 0, 1);
+      slider.value = Math.round(normalized * 100);
+    });
+
+    const demoTaskSelect = document.getElementById('demo-task-select');
+    const demoMethodSelect = document.getElementById('demo-method-select');
+    const demoVideoReloadButton = document.getElementById('demo-video-reload');
+    const demoMethodInitial = demoMethodSelect?.dataset.initialMethod;
+    if (
+      demoMethodSelect &&
+      demoMethodInitial &&
+      demoMethodSelect.querySelector(`option[value="${demoMethodInitial}"]`)
+    ) {
+      demoMethodSelect.value = demoMethodInitial;
+    }
+    const demoMethodCards = Array.from(document.querySelectorAll('.demo-method-card'));
+    const demoVideoMatrix = document.getElementById('demo-video-matrix');
+    const demoVideoBase = './media/video/real_iphone';
+    const demoVideoInventory = {
+      pnp_ball: {
+        dp: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        bin: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        fast: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4'],
+        },
+        quest: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat1: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat2: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat4: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat8: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+      },
+      stack_cups: {
+        dp: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4',],
+        },
+        bin: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4'],
+        },
+        fast: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4'],
+        },
+        quest: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat1: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat2: {
+          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat4: {
+          failure: ['failure_1.mp4', 'failure_2.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+        oat8: {
+          failure: ['failure_1.mp4', 'failure_2.mp4'],
+          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
+        },
+      },
+    };
+
+    const pickSampleVariant = (variants) => {
+      if (!variants?.length) {
+        return null;
+      }
+      const index = Math.floor(Math.random() * variants.length);
+      return variants[index];
+    };
+
+    const resetDemoVideoCache = () => {
+      demoMethodCards.forEach((card) => {
+        card.querySelectorAll('video[data-status]').forEach((video) => {
+          delete video.dataset.currentSrc;
+        });
+      });
+    };
+
+    const refreshDemoGrid = () => {
+      if (!demoTaskSelect || !demoMethodSelect) {
+        return;
+      }
+      const task = demoTaskSelect.value;
+      const methodFilter = demoMethodSelect.value;
+      demoVideoMatrix?.classList.toggle('all-methods', methodFilter === 'all');
+      demoMethodCards.forEach((card) => {
+        const method = card.dataset.methodCard;
+        const matchesMethod = methodFilter === 'all' || methodFilter === method;
+        card.style.display = matchesMethod ? 'flex' : 'none';
+        const methodInventory = demoVideoInventory[task]?.[method] ?? {};
+        card.querySelectorAll('figure').forEach((figure) => {
+          const video = figure.querySelector('video[data-status]');
+          const placeholder = figure.querySelector('.demo-video-placeholder');
+          if (!video) {
+            return;
+          }
+          if (!matchesMethod) {
+            if (video.dataset.currentSrc) {
+              video.removeAttribute('src');
+              delete video.dataset.currentSrc;
+            }
+            video.style.display = 'none';
+            if (placeholder) {
+              placeholder.classList.remove('is-hidden');
+            }
+            return;
+          }
+          const status = video.dataset.status;
+          const variants = methodInventory[status] ?? [];
+          const selectedFile = pickSampleVariant(variants);
+          const hasVideo = Boolean(selectedFile);
+          video.style.display = hasVideo ? '' : 'none';
+          if (placeholder) {
+            placeholder.classList.toggle('is-hidden', hasVideo);
+          }
+          if (!hasVideo) {
+            video.removeAttribute('src');
+            delete video.dataset.currentSrc;
+            video.load();
+            return;
+          }
+          const src = `${demoVideoBase}/${task}/${method}/${selectedFile}`;
+          if (video.dataset.currentSrc !== src) {
+            video.dataset.currentSrc = src;
+            video.src = src;
+            video.load();
+          }
+        });
+      });
+    };
+
+    demoTaskSelect?.addEventListener('change', refreshDemoGrid);
+    demoMethodSelect?.addEventListener('change', refreshDemoGrid);
+    demoVideoReloadButton?.addEventListener('click', () => {
+      resetDemoVideoCache();
+      refreshDemoGrid();
+    });
+    refreshDemoGrid();
+  });
+</script>
+</body>
+
+</html>
