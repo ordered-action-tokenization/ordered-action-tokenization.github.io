@@ -1,596 +1,648 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="Ordered Action Tokenization">
-  <meta name="keywords" content="Action Tokenization, Vision-Language-Action, Robotic Manipulation">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OAT</title>
+  <meta name="description"
+    content="Ordered Action Tokenization is an ordered, prefix-decodable action representation for autoregressive robot policies, accepted to RSS 2026.">
+  <meta property="og:title" content="Ordered Action Tokenization">
+  <meta property="og:description"
+    content="OAT introduces ordered, prefix-decodable action tokens for autoregressive robot policies, with interactive explainers, MeshCat reconstructions, and policy results.">
+  <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser-white.png">
+  <meta property="og:url" content="https://ordered-action-tokenization.github.io/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://ordered-action-tokenization.github.io/">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <title>Ordered Action Tokenization</title>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+
   <link rel="stylesheet" href="./static/css/misc.css">
 
-  <style>
-    .oat-section {
-      background-color: #fafafa;
-    }
-
-    .oat-heading {
-      font-size: 2.1rem;
-    }
-
-    .oat-panel article.panel {
-      min-height: 230px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .oat-panel .panel-block:first-child {
-      flex: 1;
-    }
-
-    .oat-name {
-      color: maroon;
-      font-weight: 700;
-    }
-
-    .demo-video-section {
-      padding: 3rem 1rem;
-    }
-
-    .demo-video-box {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2.5rem 2rem;
-    }
-
-    .demo-video-controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .demo-video-controls .field {
-      margin-bottom: 0;
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      min-width: 180px;
-    }
-
-    .demo-video-matrix {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1rem;
-    }
-
-    .demo-video-matrix.all-methods {
-      grid-template-columns: 1fr;
-    }
-
-    .demo-method-card {
-      border-radius: 0.75rem;
-      border: 1px solid #dbdbdb;
-      background-color: #fff;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      min-height: 220px;
-    }
-
-    .demo-method-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.25rem;
-    }
-
-    .demo-method-card .method-videos {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 0.5rem;
-    }
-
-    .demo-method-card figure {
-      margin: 0;
-    }
-
-    .demo-method-card video {
-      width: 100%;
-      border-radius: 0.35rem;
-      background-color: #000;
-    }
-
-    .demo-video-placeholder {
-      margin-top: 0.25rem;
-      font-size: 0.75rem;
-      line-height: 1.2;
-    }
-
-    .demo-method-card figcaption {
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
-      font-weight: 500;
-    }
-
-    @media (max-width: 1024px) {
-      .demo-video-controls {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .demo-video-controls .field {
-        width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .demo-video-box {
-        padding: 1.5rem;
-      }
-    }
-  </style>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
+  <script defer src="./static/js/index.js"></script>
 </head>
 
+<body class="blog-page" id="top">
+  <header class="blog-topbar">
+    <a href="#top" class="blog-home">Ordered Action Tokenization</a>
+    <nav aria-label="Project links">
+      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
+      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener">X Article</a>
+    </nav>
+  </header>
 
+  <main class="blog-layout">
+    <aside class="blog-side-nav" aria-label="Page sections">
+      <a href="#why-tokenization">Why tokens</a>
+      <a href="#modelability">Modelability</a>
+      <a href="#properties">Desiderata</a>
+      <a href="#compare-tokenizers">Compare</a>
+      <a href="#missing-tokenizers">Current gaps</a>
+      <a href="#oat">OAT</a>
+      <a href="#info-theory">Info theory</a>
+      <a href="#prefix-decoding">Prefix decoding</a>
+      <a href="#prefix-lab">Prefix lab</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#open-directions">Open directions</a>
+      <a href="#appendix">Appendix</a>
+    </aside>
 
+    <article class="blog-article">
+      <header class="blog-hero">
+        <h1>Ordered Action Tokenization</h1>
+        <p class="blog-dek">
+          How should we design action tokens for autoregressive robot policies? <span class="oat-name">OAT</span> is an ordered, prefix-decodable action representation built to be compact, totally decodable, and easy to model.
+        </p>
+        <p class="blog-source">
+          <span class="blog-venue-pill">RSS 2026</span> accepted paper, expanded from the original
+          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener">X Article</a> with native web controls.
+        </p>
+        <p class="blog-authors">
+          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
+          <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
+          <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
+          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
+          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup>, and
+          <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
+        </p>
+        <p class="blog-affiliations"><sup>1</sup>Harvard University · <sup>2</sup>Stanford University</p>
+        <div class="blog-project-links" aria-label="Project links">
+          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
+          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
+          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener">X Article</a>
+        </div>
+      </header>
 
+      <div class="blog-metric-strip" aria-label="Article highlights">
+        <div>
+          <span>Three</span>
+          <strong>tokenizer desiderata</strong>
+        </div>
+        <div>
+          <span>Any</span>
+          <strong>prefix tokens at inference</strong>
+        </div>
+        <div>
+          <span>Superior</span>
+          <strong>policy performance</strong>
+        </div>
+        <div>
+          <span>20+</span>
+          <strong>evaluated tasks</strong>
+        </div>
+      </div>
 
+      <figure class="blog-figure blog-figure-paper blog-figure-teaser">
+        <img src="./media/fig/teaser-white.png" alt="OAT teaser summarizing tokenizer desiderata and policy performance"
+          width="8203" height="2665">
+      </figure>
 
+      <section class="blog-section" id="why-tokenization">
+        <h2>1. Why should we care about action tokenization?</h2>
+        <p>
+          Discrete action tokens are becoming an increasingly important design choice in modern robot learning systems.
+          Recent systems:
+          <a href="https://rdt-robotics.github.io/rdt2/" target="_blank" rel="noopener">RDT-2</a> employs
+          vector-quantized (VQ) action tokens for its stage-1 training;
+          <a href="https://co-training-lbm.github.io/" target="_blank" rel="noopener">TRI's LBM/VLA</a> leverages FAST
+          and VQ-style tokenizations; and the
+          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">winning solution</a> of the
+          BEHAVIOR 2025 Challenge integrated FAST tokens in training and inference.
+        </p>
+        <p>
+          Across these systems, action tokenization plays a particularly critical role during pre-training, where
+          discrete tokens provide a structured, scalable interface between high-capacity sequence models and continuous
+          robot control. As a result, the choice of action tokenizer increasingly shapes not only efficiency, but also
+          what kinds of behaviors models can learn and generalize.
+        </p>
+      </section>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-fullhd">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <div class="title publication-title title-inline">
-            <span class="texttt oat-name title-inline-main">OAT:</span>
-            <span class="title-inline-main">Ordered Action Tokenization</span>
+      <section class="blog-section" id="modelability">
+        <h2>2. An overlooked axis: <span class="blog-heading-emphasis">Modelability</span>.</h2>
+        <p>
+          Classical theories like the
+          <a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">rate-distortion
+            tradeoff</a> focus on balancing compression rate and reconstruction fidelity. In the era of GenAI, we argue
+          that a third axis, modelability, is crucial and often overlooked: how difficult it is for a generative model to
+          capture the distribution of a representation. Poorly structured representations may be compact and accurate,
+          yet fundamentally hard to model.
+        </p>
+        <div class="blog-axis-panel" aria-label="Rate distortion modelability trade-off">
+          <div>
+            <span>Rate</span>
+            <strong>How many tokens?</strong>
+            <p>Shorter action codes reduce autoregressive depth and latency.</p>
           </div>
-
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://chaoqi-liu.github.io">Chaoqi Liu</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://xshenhan.github.io/">Xiaoshen Han</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://gao-jiawei.com/">Jiawei Gao</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://zhaoyue-zephyrus.github.io/">Yue Zhao</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://haonan16.github.io/">Haonan Chen</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://yilundu.github.io/">Yilun Du</a><sup>1</sup>
-            </span>
+          <div>
+            <span>Distortion</span>
+            <strong>How much action detail?</strong>
+            <p>Continuous robot control still needs enough precision for contact-rich execution.</p>
           </div>
-
-          <div class="is-size-6 publication-authors">
-            <span class="author-block"><sup>1</sup>Harvard University</span>&nbsp;&nbsp;
-            <span class="author-block"><sup>2</sup>Stanford University</span>
+          <div>
+            <span>Modelability</span>
+            <strong>How predictable is the sequence?</strong>
+            <p>Token order should make next-token prediction easier, not merely possible.</p>
           </div>
+        </div>
+      </section>
 
+      <section class="blog-section" id="properties">
+        <h2>3. Three properties we seek.</h2>
+        <p>
+          We argue that an effective action tokenizer for autoregressive policies should satisfy three key properties:
+        </p>
+        <ul class="blog-property-list">
+          <li>
+            <strong>(P.1) Reasonable compression.</strong> The representation should compress action chunks enough to
+            enable efficient sequence modeling, but not so aggressively that too much information is lost.
+          </li>
+          <li>
+            <strong>(P.2) Total decodability.</strong> The detokenization mapping should be a well-defined
+            <a href="https://en.wikipedia.org/wiki/Partial_function" target="_blank" rel="noopener">total function</a>:
+            every token sequence in the discrete token space must decode to a valid action chunk. This is essential
+            because policies may generate arbitrary token sequences at inference time. If decoding is only partially
+            defined, invalid tokens can lead to undefined behavior or catastrophic failures during execution.
+          </li>
+          <li>
+            <strong>(P.3) Ordering.</strong> Token sequences should admit a meaningful left-to-right causal ordering
+            aligned with next-token prediction. This structure is critical for modelability, allowing autoregressive
+            models to learn stable, predictable token dynamics.
+          </li>
+        </ul>
+        <p>
+          In the remainder of this article, I explain them.
+        </p>
+      </section>
 
-          <div class="column has-text-centered">
-            <div class="publication-links">
+      <section class="blog-interactive" id="compare-tokenizers" aria-labelledby="compare-tokenizers-title">
+        <div class="blog-interactive-header">
+          <span>Interactive Comparison</span>
+          <h2 id="compare-tokenizers-title">Which tokenizer satisfies the desiderata?</h2>
+          <p>
+            Select a tokenizer family to compare compression, total decodability, and&nbsp;<span
+              class="text-nowrap">AR-friendly ordering</span>.
+          </p>
+        </div>
 
-              <span class="link-block">
-                <a target="_blank" href="https://arxiv.org/abs/2602.04215"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
+        <div class="tokenizer-selector" role="tablist" aria-label="Tokenizer families">
+          <button type="button" role="tab" id="tokenizer-tab-binning" class="is-active" data-tokenizer-target="binning"
+            aria-controls="tokenizer-panel" aria-selected="true">Binning</button>
+          <button type="button" role="tab" id="tokenizer-tab-fast" data-tokenizer-target="fast"
+            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
+          <button type="button" role="tab" id="tokenizer-tab-latent" data-tokenizer-target="latent"
+            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">Vanilla Latents</button>
+          <button type="button" role="tab" id="tokenizer-tab-oat" data-tokenizer-target="oat"
+            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">OAT</button>
+        </div>
 
-              <span class="link-block">
-                <a href="https://github.com/Chaoqi-LIU/oat"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-
-                <span class="link-block">
-                  <a href="https://x.com/liu730chaoqi/status/2020268786046390357?s=20"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="height: 1em; width: 1em;">
-                        <title>X</title>
-                        <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
-                      </svg>
-                    </span>
-                    <span>Blog</span>
-                  </a>
-                </span>
-
+        <div class="tokenizer-readout" id="tokenizer-panel" role="tabpanel" aria-labelledby="tokenizer-tab-binning"
+          aria-live="polite">
+          <div class="tokenizer-score-grid">
+            <div>
+              <span>Compression</span>
+              <meter min="0" max="100" value="35" data-tokenizer-meter="compression"></meter>
+              <strong data-tokenizer-label="compression">Low</strong>
+            </div>
+            <div>
+              <span>Total decodability</span>
+              <meter min="0" max="100" value="100" data-tokenizer-meter="decodability"></meter>
+              <strong data-tokenizer-label="decodability">Yes</strong>
+            </div>
+            <div>
+              <span>AR-friendly ordering</span>
+              <meter min="0" max="100" value="20" data-tokenizer-meter="ordering"></meter>
+              <strong data-tokenizer-label="ordering">Low</strong>
             </div>
           </div>
-         
-
-
-
-          <div class="container is-max-desktop">
-            <img src="./media/fig/teaser.png" alt="OAT teaser" style="width:100%; height:auto;" />
-          </div>
-
-
+          <p data-tokenizer-summary>
+            Binning is universally decodable but produces long, flat token sequences that are hard for autoregressive
+            policies to model efficiently.
+          </p>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
+      <section class="blog-section" id="missing-tokenizers">
+        <h2>4. What's missing in today's action tokens?</h2>
+        <p>
+          <strong>Binning.</strong> The most common scheme is per-dimension, per-timestamp binning. While simple, it
+          scales poorly: long horizons and high-dimensional actions can produce hundreds of tokens per chunk,
+          dramatically slowing training and inference and increasing latency. More importantly, such long, flat
+          sequences have poor modelability. There is also no meaningful ordering across dimensions, knowing a[t, 1...i]
+          offers little help in predicting a[t, i+1], making binning poorly aligned with autoregressive generation.
+        </p>
+        <p>
+          <strong>Frequency-domain transform.</strong> Frequency-based methods such as FAST achieve high information
+          density (P.1) and impose a low-to-high frequency ordering (P.3), where early tokens capture global trajectory
+          structure and later tokens refine details. However, FAST violates P.2 (total decodability). Because
+          <a href="https://en.wikipedia.org/wiki/Byte-pair_encoding" target="_blank" rel="noopener">Byte Pair Encoding</a>
+          (BPE) produces variable-length sequences, arbitrary token sequences may not decode into a valid fixed-size
+          frequency representation, leading to undefined behavior and runtime failures. We refer readers to appendix of
+          our paper and the
+          <a href="https://huggingface.co/physical-intelligence/fast/discussions/4" target="_blank" rel="noopener">discussion
+            on Hugging Face</a> for further details.
+        </p>
+        <p>
+          <strong>Vanilla Latents.</strong> Learned encoder-decoder latent tokenizers can achieve strong compression
+          (P.1), and neural decoders ensure total decodability (P.2). However, the resulting token spaces are typically
+          unstructured, lacking a consistent ordering or hierarchy. This makes them poorly suited for autoregressive
+          policies, which rely on meaningful left-to-right structure (P.3) for stable next-token prediction.
+        </p>
+        <p>
+          In summary, existing approaches each satisfy subsets of the desiderata, but none simultaneously achieve
+          compression, total decodability, and autoregressive-friendly ordering.
+        </p>
+      </section>
 
+      <section class="blog-section" id="oat">
+        <h2>5. Ordered Action Tokenization</h2>
+        <p>
+          We introduce <span class="oat-name">OAT</span>, a learned autoencoder framework that discretizes action chunks into an ordered sequence of
+          tokens. <span class="oat-name">OAT</span> encodes actions using transformer-based register tokens, discretizes the resulting latents with
+          FSQ, and reconstructs actions via a conditional decoder. To induce ordering in the token space, we combine
+          causal attention over register tokens with nested dropout during training. Together, these design choices
+          encourage an ordered latent representation in which earlier tokens capture coarse, global structure and later
+          tokens refine details.
+        </p>
+      </section>
 
+      <figure class="blog-figure blog-figure-paper blog-figure-method">
+        <img src="./media/fig/method-white.png" alt="OAT method overview with register tokens and prefix decoding"
+          width="7928" height="2354" loading="lazy">
+      </figure>
 
+      <section class="blog-section" id="info-theory">
+        <h2>6. Why ordering? An information-theoretic perspective.</h2>
+        <p>
+          The ordering induced by <span class="oat-name">OAT</span> admits a natural interpretation through information theory.
+          <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon showed
+            that</a> the optimal code length for an event scales with the negative logarithm of its probability,
+          - log p: frequent patterns require fewer bits, while rare events demand more representational capacity. Action
+          chunks follow a similarly skewed distribution, most trajectories share common coarse structure, whereas
+          fine-grained deviations occur infrequently.
+        </p>
+        <p>
+          From this perspective, <span class="oat-name">OAT</span> learns a form of progressive coding. Early tokens capture high-probability,
+          globally shared motion patterns, while later tokens encode increasingly rare residual details. This ordering
+          emerges naturally from nested dropout: because the decoder must reconstruct actions from partial prefixes, the
+          tokenizer is incentivized to allocate information in decreasing order of frequency and importance. As a result,
+          longer prefixes yield monotonic reconstruction improvement, and token order aligns closely with autoregressive
+          next-token prediction, without imposing any hand-crafted hierarchy.
+        </p>
+      </section>
 
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-full-width">
-          <h2 class="title is-3">Abstract</h2>
-          <div class="content has-text-justified">
-            <p>
-              Autoregressive policies offer a compelling foundation for scalable robot learning by enabling discrete
-              abstraction, token-level reasoning, and flexible inference. However, applying autoregressive modeling to
-              continuous robot actions requires an effective action tokenization scheme. Existing approaches either rely
-              on analytical discretization methods that produce prohibitively long token sequences, or learned latent
-              tokenizers that lack structure, limiting their compatibility with next-token prediction. In this work, we
-              identify three desiderata for action tokenization — reasonable compression, universal decodability, and a
-              left-to-right causally ordered token space — and introduce <span style="color:maroon;">Ordered Action Tokenization</span> (<span class="texttt oat-name">OAT</span>), a learned
-              action tokenizer that satisfies all three. <span class="texttt oat-name">OAT</span> discretizes action
-              chunks into an ordered sequence of
-              tokens using transformer with register tokens, finite scalar quantization, and ordering-inducing training
-              mechanisms. The resulting token space aligns naturally with autoregressive generation and enables
-              prefix-based detokenization, yielding an anytime trade-off between inference cost and action fidelity.
-              Across more than 20 tasks spanning four simulation benchmarks and real-world settings, autoregressive
-              policies equipped with <span class="texttt oat-name">OAT</span> consistently outperform prior
-              tokenization schemes and diffusion-based
-              baselines, while offering significantly greater flexibility at inference time.
+      <section class="blog-section" id="prefix-decoding">
+        <h2>7. A by-product: prefix-based decoding.</h2>
+        <p>
+          Autoregressive policy trained on <span class="oat-name">OAT</span> need not proceed to completion. Because any prefix of <span class="oat-name">OAT</span> token sequence
+          can be detokenized into a valid action chunk, <span class="oat-name">OAT</span> supports prefix-based execution and enables an anytime
+          trade-off between computation and performance. Short prefixes yield fast but coarse predictions, while longer
+          prefixes produce more refined actions at higher computational cost. This flexibility arises naturally from the
+          ordered tokenization and requires no changes to the policy architecture or training objective, distinguishing
+          <span class="oat-name">OAT</span> from prior tokenizers that rely on fixed-length detokenization.
+        </p>
+      </section>
+
+      <section class="blog-interactive blog-prefix-lab" id="prefix-lab" aria-labelledby="prefix-lab-title">
+        <div class="blog-interactive-header">
+          <span>Prefix Lab</span>
+          <h2 id="prefix-lab-title">Decode fewer tokens, keep the action valid.</h2>
+          <p>
+            <span class="oat-name">OAT</span> makes every prefix executable. More tokens refine the trajectory, but the policy can stop early when
+            latency matters.
+          </p>
+        </div>
+
+        <div class="prefix-lab-grid">
+          <div class="prefix-trajectory"
+            aria-label="Prefix reconstruction plot comparing the full decoded action chunk against the full ground-truth action chunk."
+            role="img">
+            <span class="prefix-plot-label prefix-label-recon">decoded prefix</span>
+            <span class="prefix-plot-label prefix-label-gt">ground truth</span>
+            <svg class="prefix-plot" viewBox="0 0 640 240" aria-hidden="true">
+              <polyline class="prefix-gt-line"
+                points="70,170 145,145 220,122 295,102 370,88 445,74 520,61 590,50" />
+              <polyline class="prefix-decoded-line" data-prefix-decoded-line
+                points="70,170 145,145 220,122 295,102 370,88 445,74 520,61 590,50" />
+              <g class="prefix-gt-points">
+                <circle class="prefix-gt-dot" cx="70" cy="170" r="6" />
+                <circle class="prefix-gt-dot" cx="145" cy="145" r="6" />
+                <circle class="prefix-gt-dot" cx="220" cy="122" r="6" />
+                <circle class="prefix-gt-dot" cx="295" cy="102" r="6" />
+                <circle class="prefix-gt-dot" cx="370" cy="88" r="6" />
+                <circle class="prefix-gt-dot" cx="445" cy="74" r="6" />
+                <circle class="prefix-gt-dot" cx="520" cy="61" r="6" />
+                <circle class="prefix-gt-dot" cx="590" cy="50" r="6" />
+              </g>
+              <g class="prefix-decoded-points">
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="0" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="1" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="2" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="3" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="4" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="5" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="6" r="6" />
+                <circle class="prefix-decoded-dot" data-prefix-decoded-point="7" r="6" />
+              </g>
+            </svg>
+          </div>
+          <div class="prefix-readout">
+            <strong data-prefix-title>1 prefix token</strong>
+            <p data-prefix-copy>
+              One token decodes a complete action chunk, but the reconstruction is coarse and visibly offset from the
+              ground truth.
             </p>
           </div>
         </div>
-      </div>
-    </div>
-</section>
 
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-full-width">
-          <h2 class="title is-3 publication-title oat-heading has-text-centered">Method</h2>
-          <img src="./media/fig/method.png" alt="OAT method overview"
-            style="width:100%; height:auto;" />
-          <div class="content has-text-justified" style="margin-top:1.5rem;">
-            <p>
-              Our objective is to learn an action tokenizer that satisfies the three desiderata: reasonable
-              compression, universal decodability, and a structured left-to-right causal ordering over tokens. Prior
-              learned tokenizers produce
-              compact, decodable latents but lack an explicit ordering, which limits compatibility with autoregressive
-              policies. <span class="texttt oat-name">OAT</span> remedies that by discretizing action chunks through
-              transformer-based
-              register tokens, FSQ quantization, and a conditional decoder. Causal attention across registers together
-              with
-              nested dropout during training induces a coarse-to-fine ordering where earlier tokens capture global
-              structure
-              and later tokens refine details. This ordered latent space makes any prefix decode-worthy, enabling
-              variable-length
-              and anytime reconstruction as shown in the figure above.
-            </p>
-          </div>
+        <div class="prefix-stepper" role="group" aria-label="Prefix token choices">
+          <button type="button" class="is-active" data-prefix-choice="1">1 token</button>
+          <button type="button" data-prefix-choice="2">2 tokens</button>
+          <button type="button" data-prefix-choice="4">4 tokens</button>
+          <button type="button" data-prefix-choice="8">8 tokens</button>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
 
+        <p class="prefix-notation">
+          Each prefix decodes to a complete action chunk. Green points are ground-truth waypoints; red points are the
+          full chunk reconstructed from the selected prefix. More prefix tokens reduce the red-green error and increase
+          fine-grained fidelity.
+        </p>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-fullhd">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-3 publication-title oat-heading">Interactive MeshCat Rollouts</h1>
-          <p class="has-text-justified" style="max-width: 760px; margin: 0.5rem auto 1.5rem;">
+        <div class="prefix-meshcat-panel" id="meshcat-vis">
+          <h3 class="title is-4 publication-title oat-heading">Interactive MeshCat Visualization</h3>
+          <p class="section-lead has-text-justified">
             Visualization of reconstructed action chunks using increasing numbers of decoded tokens. Earlier tokens
             capture the coarse, global structure of the motion, and additional tokens progressively refine fine-grained
-            details, producing trajectories that increasingly match the ground truth. All rollouts are generated by the
-            same model.
+            details, producing trajectories that increasingly match the ground truth. All trajectories are generated by
+            the same model.
           </p>
 
           <div class="meshcat-global-controls">
             <div class="meshcat-control-buttons">
-              <button id="meshcat-play-all" class="button is-link is-light">Play</button>
-              <button id="meshcat-pause-all" class="button is-warning is-light">Pause</button>
+              <button id="meshcat-play-all" class="button">Play</button>
+              <button id="meshcat-pause-all" class="button">Pause</button>
               <button id="meshcat-reset-all" class="button is-light">Reset</button>
-              <button id="meshcat-reload-all" class="button is-danger is-light">Reload</button>
+              <button id="meshcat-reload-all" class="button">Reload</button>
             </div>
             <div class="meshcat-control-slider">
-              <input id="meshcat-global-slider" type="range" min="0" max="100" step="1" value="0">
+              <input id="meshcat-global-slider" type="range" min="0" max="100" step="1" value="0"
+                aria-label="MeshCat visualization timeline">
             </div>
+          </div>
+
+          <div class="episode-tabs" role="tablist" aria-label="MeshCat visualization episode">
+            <button class="button is-small is-dark" type="button" data-episode-target="idx254425" aria-selected="true">
+              Episode A
+            </button>
+            <button class="button is-small is-light" type="button" data-episode-target="idx5788" aria-selected="false">
+              Episode B
+            </button>
           </div>
 
           <div class="embed-row" data-episode="idx254425">
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 1 token</h2>
-              <iframe src="./media/html/idx254425/reconst_k1.html" title="Reconstruction K=1 (idx254425)"
+              <p class="meshcat-card-label">1 token</p>
+              <iframe data-src="./media/html/idx254425/reconst_k1.html" title="Reconstruction K=1 (idx254425)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.592</h2>
+              <p class="meshcat-card-metric">MSE = 0.592</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 2 tokens</h2>
-              <iframe src="./media/html/idx254425/reconst_k2.html" title="Reconstruction K=2 (idx254425)"
+              <p class="meshcat-card-label">2 tokens</p>
+              <iframe data-src="./media/html/idx254425/reconst_k2.html" title="Reconstruction K=2 (idx254425)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.446</h2>
+              <p class="meshcat-card-metric">MSE = 0.446</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 4 tokens</h2>
-              <iframe src="./media/html/idx254425/reconst_k4.html" title="Reconstruction K=4 (idx254425)"
+              <p class="meshcat-card-label">4 tokens</p>
+              <iframe data-src="./media/html/idx254425/reconst_k4.html" title="Reconstruction K=4 (idx254425)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.038</h2>
+              <p class="meshcat-card-metric">MSE = 0.038</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 8 tokens</h2>
-              <iframe src="./media/html/idx254425/reconst_k8.html" title="Reconstruction K=8 (idx254425)"
+              <p class="meshcat-card-label">8 tokens</p>
+              <iframe data-src="./media/html/idx254425/reconst_k8.html" title="Reconstruction K=8 (idx254425)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.009</h2>
+              <p class="meshcat-card-metric">MSE = 0.009</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Ground Truth</h2>
-              <iframe src="./media/html/idx254425/ground_truth.html" title="Ground Truth Trajectory (idx254425)"
+              <p class="meshcat-card-label">ground truth</p>
+              <iframe data-src="./media/html/idx254425/ground_truth.html" title="Ground Truth Trajectory (idx254425)"
                 loading="lazy"></iframe>
             </div>
 
           </div>
 
-          <div class="embed-row" data-episode="idx5788">
+          <div class="embed-row" data-episode="idx5788" hidden>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 1 token</h2>
-              <iframe src="./media/html/idx5788/reconst_k1.html" title="Reconstruction K=1 (idx5788)"
+              <p class="meshcat-card-label">1 token</p>
+              <iframe data-src="./media/html/idx5788/reconst_k1.html" title="Reconstruction K=1 (idx5788)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.365</h2>
+              <p class="meshcat-card-metric">MSE = 0.365</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 2 tokens</h2>
-              <iframe src="./media/html/idx5788/reconst_k2.html" title="Reconstruction K=2 (idx5788)"
+              <p class="meshcat-card-label">2 tokens</p>
+              <iframe data-src="./media/html/idx5788/reconst_k2.html" title="Reconstruction K=2 (idx5788)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.082</h2>
+              <p class="meshcat-card-metric">MSE = 0.082</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 4 tokens</h2>
-              <iframe src="./media/html/idx5788/reconst_k4.html" title="Reconstruction K=4 (idx5788)"
+              <p class="meshcat-card-label">4 tokens</p>
+              <iframe data-src="./media/html/idx5788/reconst_k4.html" title="Reconstruction K=4 (idx5788)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.056</h2>
+              <p class="meshcat-card-metric">MSE = 0.056</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Reconst. with 8 tokens</h2>
-              <iframe src="./media/html/idx5788/reconst_k8.html" title="Reconstruction K=8 (idx5788)"
+              <p class="meshcat-card-label">8 tokens</p>
+              <iframe data-src="./media/html/idx5788/reconst_k8.html" title="Reconstruction K=8 (idx5788)"
                 loading="lazy"></iframe>
-              <h2 class="title is-6">MSE = 0.027</h2>
+              <p class="meshcat-card-metric">MSE = 0.027</p>
             </div>
 
             <div class="embed-card">
-              <h2 class="title is-6">Ground Truth</h2>
-              <iframe src="./media/html/idx5788/ground_truth.html" title="Ground Truth Trajectory (idx5788)"
+              <p class="meshcat-card-label">ground truth</p>
+              <iframe data-src="./media/html/idx5788/ground_truth.html" title="Ground Truth Trajectory (idx5788)"
                 loading="lazy"></iframe>
             </div>
 
           </div>
 
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 oat-heading has-text-centered">Rate-Distortion-<span
-          style="color:maroon;">Modelability</span> Trade-Off</h2>
-      <div class="columns is-vcentered">
-        <div class="column is-half">
-          <p>
-            Tokenizers juggle rate (compression) and distortion (fidelity). <span class="texttt oat-name">OAT</span>
-            adds modelability as a third axis.
-            By inducing ordering, we give autoregressive models structured prefixes to learn from, which keeps the
-            model's job focused on the distribution instead of discovering structure from scratch. Enforcing ordering
-            keeps rate-distortion curves smooth and ensures policies can decode at any prefix
-            length, making deployment more reliable in real-world robot settings.
-          </p>
-        </div>
-        <div class="column">
-          <div class="box has-background-white-bis">
-            <h3 class="title is-6">Why ordering drives modelability</h3>
-            <ul>
-              <li>Structured prefixes reduce entropy for the generative model. Anytime decoding remains meaningful
-                because every prefix obeys the coarse-to-fine hierarchy. By staying aligned with the rate-distortion
-                trade-off, we keep both efficiency and expressiveness.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 oat-heading has-text-centered">Information-Theoretic Interpretation of Token Ordering</h2>
-      <div class="content has-text-justified">
+      <section class="blog-section experiments-section" id="experiments">
+        <h2>8. Experiments</h2>
         <p>
-          The ordering induced by <span class="texttt oat-name">OAT</span> mirrors an information-theoretic
-          principle: the number of bits required to represent information is inversely proportional to its frequency. So the tokenizer learns to prioritize
-          coarse structure before fine-grained details. Since action chunks \(a_{1:H_a}\) follow a highly skewed
-          distribution, the early tokens capture dominant motions shared across trajectories, while later tokens
-          progressively refine the residuals.
+          We evaluate <span class="oat-name">OAT</span> across more than 20 tasks spanning four simulation benchmarks
+          (LIBERO, RoboMimic, MetaWorld, and RoboCasa) and real-world robot execution. The results
+          compare success rate, autoregressive depth and latency, token ordering ablations, and
+          real-world task success, showing how ordered prefix decoding translates into both stronger
+          policies and more flexible inference.
         </p>
-        <p>
-          This progressive coding behavior comes directly from nested dropout. Because every prefix needs to decode
-          into a meaningful action, the tokenizer allocates capacity in decreasing order of frequency and importance.
-          The result is a natural explanation for why reconstruction quality improves monotonically with prefix length
-          and why token order aligns strongly with autoregressive prediction—ordering emerges from optimizing under
-          variable information budgets, not from a heuristic.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 oat-heading has-text-centered">Experiments</h2>
+        <div class="project-section project-experiments">
+          <div class="result-stack">
+	      <article class="result-block">
+	        <div class="result-caption">
+		          <h3 class="title is-6"><span class="oat-name">OAT</span> Is Superior</h3>
+	          <p>
+		            <span class="oat-name">OAT</span> consistently outperforms prior action tokenization schemes and
+	            matches or exceeds the strongest baselines, while additionally enabling prefix-based decoding that is
+		            unavailable to existing methods. <span class="oat-name">OAT</span><sub>8</sub> achieves the best
+	            performance across simulated and real-world benchmarks.
+	          </p>
+	        </div>
+	        <div class="result-table-wrap">
+	          <table class="result-table combined-result-table">
+	            <caption class="result-table-caption">Simulation success rate across manipulation benchmarks, with real-world success over 20 independent trials.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Policy</th>
+                <th scope="col">LIBERO</th>
+                <th scope="col">RoboMimic</th>
+                <th scope="col">MetaWorld</th>
+                <th scope="col">RoboCasa</th>
+                <th scope="col">PnP Ball</th>
+                <th scope="col">Stack Cups</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">DP</th><td><span class="aligned-num"><span class="num-int">36</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">67</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num aligned-frac"><span>14</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td></tr>
+              <tr><th scope="row">Bin</th><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">27</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>4</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
+              <tr><th scope="row">FAST</th><td><span class="aligned-num"><span class="num-int">23</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">7</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">13</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>6</span><span>/</span><span>20</span></span></td></tr>
+              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>7</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>3</span><span>/</span><span>20</span></span></td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>9</span><span>/</span><span>20</span></span></td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>13</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>12</span><span>/</span><span>20</span></span></td></tr>
+              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td></tr>
+            </tbody>
+	          </table>
+	        </div>
+	      </article>
 
-      <div class="columns is-vcentered">
-        <div class="column is-half">
-          <figure>
-            <img src="./media/fig/table1.png" alt="Simulation benchmarking table 1" />
-          </figure>
-        </div>
-        <div class="column">
-          <div class="box has-background-white-bis">
-            <h3 class="title is-6"><span class="texttt oat-name title is-5">OAT</span> Is Superior</h3>
-            <p>
-              <span class="texttt oat-name">OAT</span> consistently outperforms prior action tokenization schemes and
-              matches or exceeds the strongest baselines, while additionally enabling prefix-based decoding that is
-              unavailable to existing methods. <span class="texttt oat-name">OAT</span> exhibits a clear and
-              consistent monotonic performance trend as the number of autoregressive steps increases. As additional
-              tokens are generated, performance improves steadily: <span
-                class="texttt oat-name">OAT</span><sub>4</sub> closes much of the
-              gap to QueST and DP, while
-              <span class="texttt oat-name">OAT</span><sub>8</sub> achieves the best performance across all
-              benchmarks.
-            </p>
+	      <article class="result-block">
+	        <div class="result-caption">
+	          <h3 class="title is-6">Compression Rate And Inference Latency</h3>
+	          <p>
+		            <span class="oat-name">OAT</span> enables a smooth and controllable trade-off between compression
+			            rate, inference latency, and policy performance. With full decoding, <span class="oat-name">OAT</span> and QueST have the same amount of compute per inference.
+	          </p>
+	        </div>
+	        <div class="result-table-wrap">
+	          <table class="result-table latency-table">
+	            <caption class="result-table-caption">Token count and policy inference latency in milliseconds.</caption>
+            <thead>
+              <tr>
+                <th scope="col" rowspan="2">Policy</th>
+                <th scope="colgroup" colspan="2">LIBERO</th>
+                <th scope="colgroup" colspan="2">RoboMimic</th>
+                <th scope="colgroup" colspan="2">MetaWorld</th>
+                <th scope="colgroup" colspan="2">RoboCasa</th>
+              </tr>
+              <tr>
+                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
+                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
+                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
+                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">DP</th><td>&times;</td><td>42.0</td><td>&times;</td><td>38.1</td><td>&times;</td><td>37.7</td><td>&times;</td><td>35.3</td></tr>
+              <tr><th scope="row">Bin</th><td>224</td><td>517.2</td><td>224</td><td>509.5</td><td>128</td><td>306.6</td><td>384</td><td>888.3</td></tr>
+              <tr><th scope="row">FAST</th><td>44.2</td><td>114.4</td><td>53.1</td><td>142.0</td><td>49.8</td><td>129.7</td><td>69.7</td><td>166.1</td></tr>
+              <tr><th scope="row">QueST</th><td>8</td><td>27.1</td><td>8</td><td>29.6</td><td>8</td><td>31.4</td><td>8</td><td>30.2</td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td>1</td><td>10.5</td><td>1</td><td>11.3</td><td>1</td><td>15.5</td><td>1</td><td>13.5</td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td>2</td><td>13.2</td><td>2</td><td>15.3</td><td>2</td><td>17.9</td><td>2</td><td>15.8</td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td>4</td><td>17.4</td><td>4</td><td>18.4</td><td>4</td><td>22.1</td><td>4</td><td>19.8</td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>8</sub></th><td>8</td><td>27.4</td><td>8</td><td>29.9</td><td>8</td><td>31.3</td><td>8</td><td>30.0</td></tr>
+            </tbody>
+	          </table>
+	        </div>
+	      </article>
+
+	      <article class="result-block">
+	        <div class="result-caption">
+	          <h3 class="title is-6">Token Ordering Is The Key To Success</h3>
+	          <p>
+	            Across all benchmarks, removing token ordering leads to a consistent performance degradation.
+			            <span class="oat-name">OAT</span><sub>&times;</sub>'s performance is significantly worse than <span class="oat-name">OAT</span><sub>4</sub> and
+                <span class="oat-name">OAT</span><sub>8</sub>, and in some cases falls below QueST.
+	          </p>
+	        </div>
+	        <div class="result-table-wrap">
+	          <table class="result-table">
+	            <caption class="result-table-caption">Ordering ablation success rate.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Policy</th>
+                <th scope="col">LIBERO</th>
+                <th scope="col">RoboMimic</th>
+                <th scope="col">MetaWorld</th>
+                <th scope="col">RoboCasa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
+              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
+              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td></tr>
+              <tr class="ablation-row"><th scope="row">OAT<sub>&times;</sub></th><td><span class="aligned-num"><span class="num-int">35</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">61</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td></tr>
+            </tbody>
+	          </table>
+	        </div>
+	      </article>
+
           </div>
         </div>
-      </div>
-
-      <div class="columns is-vcentered">
-        <div class="column is-half">
-          <figure>
-            <img src="./media/fig/table2.png" alt="Simulation benchmarking table 2" />
-          </figure>
-        </div>
-        <div class="column">
-          <div class="box has-background-white-bis">
-            <h3 class="title is-6">Compression Rate And Inference Latency</h3>
-            <p>
-              <span class="texttt oat-name">OAT</span> enables a smooth and controllable trade-off between compression
-              rate, inference latency, and policy performance. With full decoding, <span
-                class="texttt oat-name">OAT</span> and QueST have the same amount of compute due per inference.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="columns is-vcentered">
-        <div class="column is-half">
-          <figure>
-            <img src="./media/fig/table3.png" alt="Simulation benchmarking table 3" />
-          </figure>
-        </div>
-        <div class="column">
-          <div class="box has-background-white-bis">
-            <h3 class="title is-6">Token Ordering Is The Key To Success</h3>
-            <p>
-              Across all benchmarks, removing token ordering leads to a consistent performance degradation.
-              <span class="texttt oat-name">OAT</span><sub>X</sub>'s performance is significantly worse than <span
-                class="texttt oat-name">OAT</span><sub>4</sub> and <span
-                class="texttt oat-name">OAT</span><sub>8</sub>, and in some
-              cases falls below QueST. This indicates that the structure of the token space plays a critical role in
-              effective autoregressive policy learning: by aligning the token space with next-token prediction, ordering
-              introduces a favorable inductive bias that facilitates both learning and inference.
-            </p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-
-
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-fullhd">
+	
+        <div class="project-section project-real-world" id="real-world">
+	  <div class="hero-body">
+	    <div class="container is-fullhd">
       <div class="columns is-centered">
         <div class="column is-full">
           <div class="demo-video-box">
-            <h1 class="title is-3 publication-title oat-heading has-text-centered">Real-World Execution</h1>
-            <p class="has-text-justified" style="max-width: 760px; margin: 0.5rem auto 1.5rem;">
-              We provide over 90+ real-world robot execution videos, with both successful and failed attempts. Reloading
-              the page randomizes the initial configurations. Use the controls below to filter videos by task and
-              method. Halting during FAST execution is primarily caused by undecodable action tokens. In such cases, the
+            <h3 class="title is-4 publication-title experiments-subheading">Real-World Execution</h3>
+            <p class="section-lead has-text-justified">
+              More than 90 real-world robot execution videos cover successful and failed attempts across tasks, methods,
+              and camera views. Reloading randomizes the initial configurations. Halting during FAST execution is
+              primarily caused by undecodable action tokens. In such cases, the
               policy is instructed not to produce any action and to remain stationary for safety reasons.
             </p>
             <div class="demo-video-controls">
               <div class="field">
-                <!-- <label class="label is-size-7 has-text-weight-semibold">Task</label> -->
+                <label class="label is-size-7 has-text-weight-semibold" for="demo-task-select">Task</label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select id="demo-task-select" aria-label="Choose real-world task">
-                      <option value="pnp_ball">Pick & Place Ball</option>
+                      <option value="pnp_ball">PnP Ball</option>
                       <option value="stack_cups">Stack Cups</option>
                     </select>
                   </div>
                 </div>
               </div>
               <div class="field">
-                <!-- <label class="label is-size-7 has-text-weight-semibold">Method</label> -->
+                <label class="label is-size-7 has-text-weight-semibold" for="demo-method-select">Method</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select id="demo-method-select" aria-label="Choose evaluation method" data-initial-method="all">
+                    <select id="demo-method-select" aria-label="Choose evaluation method" data-initial-method="oat8">
                       <option value="all">All Methods</option>
                       <option value="dp">DP</option>
                       <option value="bin">Bin</option>
@@ -605,8 +657,20 @@
                 </div>
               </div>
               <div class="field">
+                <label class="label is-size-7 has-text-weight-semibold" for="demo-camera-select">Camera</label>
                 <div class="control">
-                  <button id="demo-video-reload" class="button is-danger is-light is-fullwidth">Reload</button>
+                  <div class="select is-fullwidth">
+                    <select id="demo-camera-select" aria-label="Choose video camera">
+                      <option value="iphone">iPhone</option>
+                      <option value="logi">Logitech</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label is-size-7 has-text-weight-semibold" aria-hidden="true">&nbsp;</label>
+                <div class="control">
+                  <button id="demo-video-reload" class="button is-fullwidth">Reload</button>
                 </div>
               </div>
             </div>
@@ -617,7 +681,7 @@
                 <h3>DP</h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="dp" data-status="success">
+                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
                     <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
@@ -625,7 +689,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="dp" data-status="failure">
+                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
                     <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
@@ -639,7 +703,7 @@
                 <h3>Bin</h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="bin"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -648,7 +712,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="bin"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -663,7 +727,7 @@
                 <h3>FAST</h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="fast"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -672,7 +736,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="fast"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -687,7 +751,7 @@
                 <h3>QueST</h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="quest"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -696,7 +760,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="quest"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -708,10 +772,10 @@
               </div>
 
               <div class="demo-method-card box" data-method-card="oat1">
-                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>1</sub></h3>
+                <h3><span class="oat-name">OAT</span><sub>1</sub></h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat1"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -720,7 +784,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat1"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -732,10 +796,10 @@
               </div>
 
               <div class="demo-method-card box" data-method-card="oat2">
-                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>2</sub></h3>
+                <h3><span class="oat-name">OAT</span><sub>2</sub></h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat2"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -744,7 +808,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat2"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -756,10 +820,10 @@
               </div>
 
               <div class="demo-method-card box" data-method-card="oat4">
-                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>4</sub></h3>
+                <h3><span class="oat-name">OAT</span><sub>4</sub></h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat4"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -768,7 +832,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat4"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -780,10 +844,10 @@
               </div>
 
               <div class="demo-method-card box" data-method-card="oat8">
-                <h3><span class="texttt oat-name has-text-weight-bold">OAT</span><sub>8</sub></h3>
+                <h3><span class="oat-name">OAT</span><sub>8</sub></h3>
                 <div class="method-videos">
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat8"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
                       data-status="success">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -792,7 +856,7 @@
                     <figcaption>Success execution</figcaption>
                   </figure>
                   <figure>
-                    <video autoplay loop muted playsinline controls preload="metadata" data-method="oat8"
+                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
                       data-status="failure">
                       <p>Your browser does not support this video.</p>
                     </video>
@@ -807,271 +871,62 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+	    </div>
+	  </div>
+	</div>
+      </section>
 
+      <section class="blog-section" id="open-directions">
+        <h2>9. Closing thoughts and open directions.</h2>
+        <p>
+          A recurring question throughout this project has been whether action tokens are still necessary in the presence
+          of powerful continuous models such as flow or diffusion policies. Our view is that future robotic systems will
+          likely combine both discrete and continuous representations rather than choosing one over the other. A concrete
+          example is the BEHAVIOR 2025 Challenge
+          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">winning solution</a>, which
+          integrates discrete action tokens with continuous action experts.
+        </p>
+        <p>
+          A key capability enabled by <span class="oat-name">OAT</span> is prefix-based detokenization: actions can be decoded from variable-length
+          token prefixes, yielding an anytime trade-off between computation and action fidelity. In this work, the
+          autoregressive depth is fixed at deployment time. From an information-theoretic perspective, this is
+          suboptimal. The number of tokens required to represent an action chunk should depend on its intrinsic
+          complexity and the precision required for successful execution. Simple, predictable behaviors may admit compact
+          representations, whereas complex, contact-rich interactions may require deeper autoregressive refinement.
+          Estimating this action complexity online, and determining when additional tokens meaningfully reduce
+          uncertainty, remains an open problem. We view adaptive autoregressive depth as a natural and important
+          direction for future work, made possible precisely by <span class="oat-name">OAT</span>'s ordered and prefix-decodable structure. Ultimately,
+          we believe this estimation problem deserves a principled solution grounded in uncertainty and information,
+          rather than ad hoc engineering heuristics.
+        </p>
+      </section>
 
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@misc{liu2026oatorderedactiontokenization,
-      title={OAT: Ordered Action Tokenization}, 
-      author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
-      year={2026},
-      eprint={2602.04215},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2602.04215}, 
-}</code></pre>
-  </div>
-</section>
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column">
-        <div class="content has-text-centered">
-          <p>
-            Website template borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>.
+      <section class="blog-section blog-callout" id="appendix">
+        <h2>Appendix</h2>
+        <div class="appendix-stack">
+          <p class="appendix-row">
+            <strong>Webpage</strong>
+            <a href="https://ordered-action-tokenization.github.io/">https://ordered-action-tokenization.github.io/</a>
           </p>
+          <p class="appendix-row">
+            <strong>GitHub</strong>
+            <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">https://github.com/Chaoqi-LIU/oat</a>
+          </p>
+          <div class="bibtex-block appendix-row">
+            <pre><code id="bibtex-code">@misc{liu2026oatorderedactiontokenization,
+  title = {OAT: Ordered Action Tokenization},
+  author = {Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
+  year = {2026},
+  eprint = {2602.04215},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.RO},
+  url = {https://arxiv.org/abs/2602.04215},
+}</code></pre>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</footer>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const iframeSelectors = Array.from(document.querySelectorAll('.embed-card iframe'));
-    iframeSelectors.forEach((iframe) => {
-      iframe.dataset.originalSrc = iframe.src;
-    });
-
-    function broadcast(type, payload = {}) {
-      iframeSelectors.forEach((iframe) => {
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.postMessage({ type, ...payload }, '*');
-        }
-      });
-    }
-
-    const playButton = document.getElementById('meshcat-play-all');
-    const pauseButton = document.getElementById('meshcat-pause-all');
-    const resetButton = document.getElementById('meshcat-reset-all');
-    const reloadButton = document.getElementById('meshcat-reload-all');
-    const slider = document.getElementById('meshcat-global-slider');
-    let sliderIsDragging = false;
-
-    playButton?.addEventListener('click', () => broadcast('meshcat-play'));
-    pauseButton?.addEventListener('click', () => broadcast('meshcat-pause'));
-    resetButton?.addEventListener('click', () => {
-      if (slider) {
-        slider.value = 0;
-      }
-      broadcast('meshcat-seek', { value: 0 });
-      broadcast('meshcat-pause');
-    });
-    reloadButton?.addEventListener('click', () => {
-      broadcast('meshcat-reset');
-      iframeSelectors.forEach((iframe) => {
-        if (iframe.dataset.originalSrc) {
-          iframe.src = iframe.dataset.originalSrc;
-        } else {
-          iframe.contentWindow?.postMessage({ type: 'meshcat-reset-view' }, '*');
-        }
-      });
-      if (slider) {
-        slider.value = 0;
-      }
-    });
-
-    slider?.addEventListener('input', () => {
-      const value = Number(slider.value) / 100;
-      broadcast('meshcat-seek', { value });
-    });
-
-    slider?.addEventListener('pointerdown', () => {
-      sliderIsDragging = true;
-    });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach((evt) => {
-      slider?.addEventListener(evt, () => {
-        sliderIsDragging = false;
-      });
-    });
-
-    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-    window.addEventListener('message', (event) => {
-      if (event.data?.type !== 'meshcat-time' || !slider || sliderIsDragging) {
-        return;
-      }
-      const normalized = clamp(Number(event.data.value) || 0, 0, 1);
-      slider.value = Math.round(normalized * 100);
-    });
-
-    const demoTaskSelect = document.getElementById('demo-task-select');
-    const demoMethodSelect = document.getElementById('demo-method-select');
-    const demoVideoReloadButton = document.getElementById('demo-video-reload');
-    const demoMethodInitial = demoMethodSelect?.dataset.initialMethod;
-    if (
-      demoMethodSelect &&
-      demoMethodInitial &&
-      demoMethodSelect.querySelector(`option[value="${demoMethodInitial}"]`)
-    ) {
-      demoMethodSelect.value = demoMethodInitial;
-    }
-    const demoMethodCards = Array.from(document.querySelectorAll('.demo-method-card'));
-    const demoVideoMatrix = document.getElementById('demo-video-matrix');
-    const demoVideoBase = './media/video/real_iphone';
-    const demoVideoInventory = {
-      pnp_ball: {
-        dp: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        bin: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        fast: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4'],
-        },
-        quest: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat1: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat2: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat4: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat8: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-      },
-      stack_cups: {
-        dp: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4',],
-        },
-        bin: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4'],
-        },
-        fast: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4'],
-        },
-        quest: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat1: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat2: {
-          failure: ['failure_1.mp4', 'failure_2.mp4', 'failure_3.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat4: {
-          failure: ['failure_1.mp4', 'failure_2.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-        oat8: {
-          failure: ['failure_1.mp4', 'failure_2.mp4'],
-          success: ['success_1.mp4', 'success_2.mp4', 'success_3.mp4'],
-        },
-      },
-    };
-
-    const pickSampleVariant = (variants) => {
-      if (!variants?.length) {
-        return null;
-      }
-      const index = Math.floor(Math.random() * variants.length);
-      return variants[index];
-    };
-
-    const resetDemoVideoCache = () => {
-      demoMethodCards.forEach((card) => {
-        card.querySelectorAll('video[data-status]').forEach((video) => {
-          delete video.dataset.currentSrc;
-        });
-      });
-    };
-
-    const refreshDemoGrid = () => {
-      if (!demoTaskSelect || !demoMethodSelect) {
-        return;
-      }
-      const task = demoTaskSelect.value;
-      const methodFilter = demoMethodSelect.value;
-      demoVideoMatrix?.classList.toggle('all-methods', methodFilter === 'all');
-      demoMethodCards.forEach((card) => {
-        const method = card.dataset.methodCard;
-        const matchesMethod = methodFilter === 'all' || methodFilter === method;
-        card.style.display = matchesMethod ? 'flex' : 'none';
-        const methodInventory = demoVideoInventory[task]?.[method] ?? {};
-        card.querySelectorAll('figure').forEach((figure) => {
-          const video = figure.querySelector('video[data-status]');
-          const placeholder = figure.querySelector('.demo-video-placeholder');
-          if (!video) {
-            return;
-          }
-          if (!matchesMethod) {
-            if (video.dataset.currentSrc) {
-              video.removeAttribute('src');
-              delete video.dataset.currentSrc;
-            }
-            video.style.display = 'none';
-            if (placeholder) {
-              placeholder.classList.remove('is-hidden');
-            }
-            return;
-          }
-          const status = video.dataset.status;
-          const variants = methodInventory[status] ?? [];
-          const selectedFile = pickSampleVariant(variants);
-          const hasVideo = Boolean(selectedFile);
-          video.style.display = hasVideo ? '' : 'none';
-          if (placeholder) {
-            placeholder.classList.toggle('is-hidden', hasVideo);
-          }
-          if (!hasVideo) {
-            video.removeAttribute('src');
-            delete video.dataset.currentSrc;
-            video.load();
-            return;
-          }
-          const src = `${demoVideoBase}/${task}/${method}/${selectedFile}`;
-          if (video.dataset.currentSrc !== src) {
-            video.dataset.currentSrc = src;
-            video.src = src;
-            video.load();
-          }
-        });
-      });
-    };
-
-    demoTaskSelect?.addEventListener('change', refreshDemoGrid);
-    demoMethodSelect?.addEventListener('change', refreshDemoGrid);
-    demoVideoReloadButton?.addEventListener('click', () => {
-      resetDemoVideoCache();
-      refreshDemoGrid();
-    });
-    refreshDemoGrid();
-  });
-</script>
+      </section>
+    </article>
+  </main>
 </body>
 
 </html>
