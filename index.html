@@ -37,16 +37,17 @@
     <nav aria-label="Project links">
       <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
       <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
-      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener">X Article</a>
+      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a>
     </nav>
   </header>
 
   <main class="blog-layout">
     <aside class="blog-side-nav" aria-label="Page sections">
+      <a href="#paper-minute">One minute</a>
+      <a href="#glossary">Glossary</a>
       <a href="#why-tokenization">Why tokens</a>
       <a href="#modelability">Modelability</a>
       <a href="#properties">Desiderata</a>
-      <a href="#compare-tokenizers">Compare</a>
       <a href="#missing-tokenizers">Current gaps</a>
       <a href="#oat">OAT</a>
       <a href="#info-theory">Info theory</a>
@@ -61,11 +62,11 @@
       <header class="blog-hero">
         <h1>Ordered Action Tokenization</h1>
         <p class="blog-dek">
-          How should we design action tokens for autoregressive robot policies? <span class="oat-name">OAT</span> is an ordered, prefix-decodable action representation built to be compact, totally decodable, and easy to model.
+          <span class="oat-name">OAT</span> is an ordered, prefix-decodable action representation built for compactness, total decodability, and high autoregressive modelability.
         </p>
         <p class="blog-source">
           <span class="blog-venue-pill">RSS 2026</span> accepted paper, expanded from the original
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener">X Article</a> with native web controls.
+          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a> with native web controls.
         </p>
         <p class="blog-authors">
           <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
@@ -79,7 +80,7 @@
         <div class="blog-project-links" aria-label="Project links">
           <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
           <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener">X Article</a>
+          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a>
         </div>
       </header>
 
@@ -106,6 +107,58 @@
         <img src="./media/fig/teaser-white.png" alt="OAT teaser summarizing tokenizer desiderata and policy performance"
           width="8203" height="2665">
       </figure>
+
+      <section class="blog-section blog-editorial-panel" id="paper-minute">
+        <span class="blog-section-kicker">Paper in one minute</span>
+        <h2>Action tokens are not just an implementation detail.</h2>
+        <p>
+          Autoregressive robot policies need a way to turn continuous control signals into discrete symbols. That
+          conversion decides how many steps the policy must generate, whether every generated sequence can be executed,
+          and how predictable the next token is. <span class="oat-name">OAT</span> argues that a good action tokenizer
+          should optimize all three at once.
+        </p>
+        <ol class="blog-summary-list">
+          <li>
+            <strong>The problem:</strong> binning is valid but too long, FAST is compact but can be non-decodable, and
+            learned latent tokenizers are compact but often have weak autoregressive modelability.
+          </li>
+          <li>
+            <strong>The method:</strong> <span class="oat-name">OAT</span> learns a small sequence of discrete register
+            tokens and trains them with a coarse-to-fine modelability priority.
+          </li>
+          <li>
+            <strong>The result:</strong> policies can trade inference cost for action fidelity by choosing how many
+            high-modelability tokens to generate, while still decoding a valid action chunk.
+          </li>
+        </ol>
+      </section>
+
+      <section class="blog-section" id="glossary">
+        <span class="blog-section-kicker">Small glossary</span>
+        <h2>Five terms used throughout this page.</h2>
+        <dl class="blog-glossary-grid">
+          <div>
+            <dt>Action chunk</dt>
+            <dd>A short future sequence of robot actions predicted at once, then partially executed before re-planning.</dd>
+          </div>
+          <div>
+            <dt>Tokenization</dt>
+            <dd>The map from continuous actions to discrete symbols that an autoregressive policy can model.</dd>
+          </div>
+          <div>
+            <dt>Detokenization</dt>
+            <dd>The reverse map from generated symbols back to executable continuous robot actions.</dd>
+          </div>
+          <div>
+            <dt>Autoregressive policy</dt>
+            <dd>A policy that predicts the next action token conditioned on observations and previously generated tokens.</dd>
+          </div>
+          <div>
+            <dt>Modelability</dt>
+            <dd>How easy the token distribution is for a generative model to learn, sample, and use downstream.</dd>
+          </div>
+        </dl>
+      </section>
 
       <section class="blog-section" id="why-tokenization">
         <h2>1. Why should we care about action tokenization?</h2>
@@ -137,6 +190,12 @@
           capture the distribution of a representation. Poorly structured representations may be compact and accurate,
           yet fundamentally hard to model.
         </p>
+        <p>
+          This is the central distinction: a tokenizer can reconstruct actions well and still be a poor interface for
+          policy learning. If the token stream has low autoregressive modelability, or is sparse and high-entropy, the
+          model pays that cost at every next-token prediction step. The representation is not merely a storage format;
+          it is the learning problem the policy actually sees.
+        </p>
         <div class="blog-axis-panel" aria-label="Rate distortion modelability trade-off">
           <div>
             <span>Rate</span>
@@ -153,6 +212,14 @@
             <strong>How predictable is the sequence?</strong>
             <p>Token order should make next-token prediction easier, not merely possible.</p>
           </div>
+        </div>
+        <div class="blog-insight-card">
+          <strong>Reconstruction is not enough.</strong>
+          <p>
+            For robot control, the tokenizer is useful only if the downstream policy can reliably model its tokens.
+            Low reconstruction error matters, but it does not guarantee a token sequence with stable left-to-right
+            structure.
+          </p>
         </div>
       </section>
 
@@ -174,9 +241,9 @@
             defined, invalid tokens can lead to undefined behavior or catastrophic failures during execution.
           </li>
           <li>
-            <strong>(P.3) Ordering.</strong> Token sequences should admit a meaningful left-to-right causal ordering
-            aligned with next-token prediction. This structure is critical for modelability, allowing autoregressive
-            models to learn stable, predictable token dynamics.
+            <strong>(P.3) Predictive ordering.</strong> Token sequences should admit a meaningful left-to-right causal
+            structure aligned with next-token prediction. This structure is critical for modelability, allowing
+            autoregressive models to learn stable, predictable token dynamics.
           </li>
         </ul>
         <p>
@@ -190,7 +257,7 @@
           <h2 id="compare-tokenizers-title">Which tokenizer satisfies the desiderata?</h2>
           <p>
             Select a tokenizer family to compare compression, total decodability, and&nbsp;<span
-              class="text-nowrap">AR-friendly ordering</span>.
+              class="text-nowrap">autoregressive modelability</span>.
           </p>
         </div>
 
@@ -219,7 +286,7 @@
               <strong data-tokenizer-label="decodability">Yes</strong>
             </div>
             <div>
-              <span>AR-friendly ordering</span>
+              <span>Autoregressive modelability</span>
               <meter min="0" max="100" value="20" data-tokenizer-meter="ordering"></meter>
               <strong data-tokenizer-label="ordering">Low</strong>
             </div>
@@ -234,16 +301,42 @@
       <section class="blog-section" id="missing-tokenizers">
         <h2>4. What's missing in today's action tokens?</h2>
         <p>
+          Each existing tokenizer family misses the target in a different way. The practical failure mode depends on
+          which desideratum it gives up.
+        </p>
+        <div class="blog-failure-grid" aria-label="Practical failure modes of action tokenizers">
+          <div>
+            <span>Binning</span>
+            <strong>Valid but slow.</strong>
+            <p>Every generated token decodes, but the policy must generate hundreds of flat dimension-time tokens.</p>
+          </div>
+          <div>
+            <span>FAST</span>
+            <strong>Compact but partial.</strong>
+            <p>The frequency structure helps next-token prediction, but arbitrary BPE sequences may not decode.</p>
+          </div>
+          <div>
+            <span>Latents</span>
+            <strong>Compact but low-modelability.</strong>
+            <p>A neural decoder makes outputs valid, but the token sequence has weak autoregressive modelability.</p>
+          </div>
+          <div>
+            <span><span class="oat-name">OAT</span></span>
+            <strong>Compact, valid, high-modelability.</strong>
+            <p>Tokens are learned as a progressive sequence, so early predictions carry coarse motion structure.</p>
+          </div>
+        </div>
+        <p>
           <strong>Binning.</strong> The most common scheme is per-dimension, per-timestamp binning. While simple, it
           scales poorly: long horizons and high-dimensional actions can produce hundreds of tokens per chunk,
           dramatically slowing training and inference and increasing latency. More importantly, such long, flat
-          sequences have poor modelability. There is also no meaningful ordering across dimensions, knowing a[t, 1...i]
-          offers little help in predicting a[t, i+1], making binning poorly aligned with autoregressive generation.
+          sequences have poor modelability across dimensions: knowing a[t, 1...i] offers little help in predicting
+          a[t, i+1], making binning poorly aligned with autoregressive generation.
         </p>
         <p>
           <strong>Frequency-domain transform.</strong> Frequency-based methods such as FAST achieve high information
-          density (P.1) and impose a low-to-high frequency ordering (P.3), where early tokens capture global trajectory
-          structure and later tokens refine details. However, FAST violates P.2 (total decodability). Because
+          density (P.1) and impose a low-to-high frequency structure (P.3), where early tokens capture global
+          trajectory structure and later tokens refine details. However, FAST violates P.2 (total decodability). Because
           <a href="https://en.wikipedia.org/wiki/Byte-pair_encoding" target="_blank" rel="noopener">Byte Pair Encoding</a>
           (BPE) produces variable-length sequences, arbitrary token sequences may not decode into a valid fixed-size
           frequency representation, leading to undefined behavior and runtime failures. We refer readers to appendix of
@@ -253,13 +346,14 @@
         </p>
         <p>
           <strong>Vanilla Latents.</strong> Learned encoder-decoder latent tokenizers can achieve strong compression
-          (P.1), and neural decoders ensure total decodability (P.2). However, the resulting token spaces are typically
-          unstructured, lacking a consistent ordering or hierarchy. This makes them poorly suited for autoregressive
-          policies, which rely on meaningful left-to-right structure (P.3) for stable next-token prediction.
+          (P.1), and neural decoders ensure total decodability (P.2). However, the resulting token spaces often have
+          weak autoregressive modelability: the token positions do not provide a stable left-to-right structure for
+          next-token prediction. This makes them poorly aligned with policies that rely on meaningful left-to-right
+          structure (P.3) for stable generation.
         </p>
         <p>
           In summary, existing approaches each satisfy subsets of the desiderata, but none simultaneously achieve
-          compression, total decodability, and autoregressive-friendly ordering.
+          compression, total decodability, and high autoregressive modelability.
         </p>
       </section>
 
@@ -268,11 +362,33 @@
         <p>
           We introduce <span class="oat-name">OAT</span>, a learned autoencoder framework that discretizes action chunks into an ordered sequence of
           tokens. <span class="oat-name">OAT</span> encodes actions using transformer-based register tokens, discretizes the resulting latents with
-          FSQ, and reconstructs actions via a conditional decoder. To induce ordering in the token space, we combine
+          FSQ, and reconstructs actions via a conditional decoder. To improve autoregressive modelability, we combine
           causal attention over register tokens with nested dropout during training. Together, these design choices
-          encourage an ordered latent representation in which earlier tokens capture coarse, global structure and later
-          tokens refine details.
+          encourage a high-modelability latent representation in which earlier tokens capture coarse, global structure
+          and later tokens refine details.
         </p>
+        <ol class="blog-step-list">
+          <li>
+            <strong>Summarize the action chunk.</strong> A transformer encoder reads the continuous action sequence and
+            writes the important temporal information into a fixed set of register tokens.
+          </li>
+          <li>
+            <strong>Discretize the registers.</strong> Finite scalar quantization turns the register latents into
+            discrete tokens that an autoregressive policy can predict.
+          </li>
+          <li>
+            <strong>Force a left-to-right structure.</strong> Causal attention makes later registers depend on earlier
+            registers, aligning the representation with next-token generation.
+          </li>
+          <li>
+            <strong>Train with missing tails.</strong> Nested dropout randomly masks later tokens during tokenizer
+            training, so early tokens must carry the highest-priority information.
+          </li>
+          <li>
+            <strong>Decode back to control.</strong> A conditional decoder maps the generated token prefix back into a
+            continuous action chunk for execution.
+          </li>
+        </ol>
       </section>
 
       <figure class="blog-figure blog-figure-paper blog-figure-method">
@@ -281,7 +397,7 @@
       </figure>
 
       <section class="blog-section" id="info-theory">
-        <h2>6. Why ordering? An information-theoretic perspective.</h2>
+        <h2>6. Why does order improve modelability?</h2>
         <p>
           The ordering induced by <span class="oat-name">OAT</span> admits a natural interpretation through information theory.
           <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon showed
@@ -296,7 +412,7 @@
           emerges naturally from nested dropout: because the decoder must reconstruct actions from partial prefixes, the
           tokenizer is incentivized to allocate information in decreasing order of frequency and importance. As a result,
           longer prefixes yield monotonic reconstruction improvement, and token order aligns closely with autoregressive
-          next-token prediction, without imposing any hand-crafted hierarchy.
+          next-token prediction, without manually assigning physical features to particular token positions.
         </p>
       </section>
 
@@ -492,10 +608,29 @@
         <p>
           We evaluate <span class="oat-name">OAT</span> across more than 20 tasks spanning four simulation benchmarks
           (LIBERO, RoboMimic, MetaWorld, and RoboCasa) and real-world robot execution. The results
-          compare success rate, autoregressive depth and latency, token ordering ablations, and
-          real-world task success, showing how ordered prefix decoding translates into both stronger
+          compare success rate, autoregressive depth and latency, modelability ablations, and
+          real-world task success, showing how ordered, high-modelability prefix decoding translates into both stronger
           policies and more flexible inference.
         </p>
+
+        <div class="blog-reading-guide" id="reading-results">
+          <span class="blog-section-kicker">How to read the results</span>
+          <ul>
+            <li>
+              <strong>Look for monotonicity.</strong> <span class="oat-name">OAT</span><sub>1</sub>,
+              <span class="oat-name">OAT</span><sub>2</sub>, <span class="oat-name">OAT</span><sub>4</sub>, and
+              <span class="oat-name">OAT</span><sub>8</sub> should improve as more high-modelability tokens are decoded.
+            </li>
+            <li>
+              <strong>Compare equal-depth methods.</strong> <span class="oat-name">OAT</span><sub>8</sub> and QueST both
+              use eight tokens, so differences are mostly about token structure rather than token count.
+            </li>
+            <li>
+              <strong>Separate latency from success.</strong> Shorter prefixes expose the speed/performance trade-off,
+              while the ablation tests whether the modelability objective is doing real work.
+            </li>
+          </ul>
+        </div>
 
         <div class="project-section project-experiments">
           <div class="result-stack">
@@ -579,9 +714,9 @@
 
 	      <article class="result-block">
 	        <div class="result-caption">
-	          <h3 class="title is-6">Token Ordering Is The Key To Success</h3>
+	          <h3 class="title is-6">Token Modelability Is The Key To Success</h3>
 	          <p>
-	            Across all benchmarks, removing token ordering leads to a consistent performance degradation.
+	            Across all benchmarks, removing the ordering-inducing objective leads to a consistent performance degradation.
 			            <span class="oat-name">OAT</span><sub>&times;</sub>'s performance is significantly worse than <span class="oat-name">OAT</span><sub>4</sub> and
                 <span class="oat-name">OAT</span><sub>8</sub>, and in some cases falls below QueST.
 	          </p>
@@ -899,20 +1034,41 @@
           we believe this estimation problem deserves a principled solution grounded in uncertainty and information,
           rather than ad hoc engineering heuristics.
         </p>
+        <div class="blog-opportunity-grid" aria-label="Future directions enabled by OAT">
+          <div>
+            <span>Adaptive depth</span>
+            <strong>Stop when the action is good enough.</strong>
+            <p>Simple motions could execute from short prefixes, while contact-rich steps could request more tokens.</p>
+          </div>
+          <div>
+            <span>Uncertainty</span>
+            <strong>Use confidence to allocate compute.</strong>
+            <p>The policy could generate additional tokens only when uncertainty remains high or precision matters.</p>
+          </div>
+          <div>
+            <span>VLA systems</span>
+            <strong>Expose a discrete action interface.</strong>
+            <p>Ordered action tokens could act as an auxiliary supervision signal or planning abstraction.</p>
+          </div>
+          <div>
+            <span>Hybrid control</span>
+            <strong>Combine tokens with continuous experts.</strong>
+            <p>Discrete action reasoning and diffusion or flow decoders do not need to be competing choices.</p>
+          </div>
+        </div>
       </section>
 
       <section class="blog-section blog-callout" id="appendix">
         <h2>Appendix</h2>
         <div class="appendix-stack">
-          <p class="appendix-row">
-            <strong>Webpage</strong>
-            <a href="https://ordered-action-tokenization.github.io/">https://ordered-action-tokenization.github.io/</a>
-          </p>
-          <p class="appendix-row">
-            <strong>GitHub</strong>
-            <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">https://github.com/Chaoqi-LIU/oat</a>
-          </p>
+          <div class="appendix-actions">
+            <a class="appendix-link-button" href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">GitHub</a>
+          </div>
           <div class="bibtex-block appendix-row">
+            <div class="bibtex-toolbar">
+              <strong>BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="bibtex-code">Copy</button>
+            </div>
             <pre><code id="bibtex-code">@inproceedings{liu2026orderedactiontokenization, 
     title={OAT: Ordered Action Tokenization}, 
     author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},

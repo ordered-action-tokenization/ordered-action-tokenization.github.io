@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupDemoVideos();
   setupBlogTokenizerLab();
   setupBlogPrefixLab();
+  setupBibtexCopy();
 });
 
 function setupStickyHeader() {
@@ -134,39 +135,24 @@ function setupActiveNavigation() {
     });
   };
 
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visibleEntry) {
-          return;
-        }
-        const active = sections.find(({ section }) => section === visibleEntry.target);
-        if (active) {
-          setActiveLink(active.link);
-        }
-      },
-      { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.2, 0.45, 0.7] }
-    );
-
-    sections.forEach(({ section }) => observer.observe(section));
-    return;
-  }
-
   const updateActiveLink = () => {
+    const scroller = document.scrollingElement || document.documentElement;
+    const isAtBottom = window.innerHeight + scroller.scrollTop >= scroller.scrollHeight - 2;
     const anchorOffset = window.innerHeight * 0.35;
-    const active =
-      sections
-        .map(({ link, section }) => ({ link, top: section.getBoundingClientRect().top }))
-        .filter(({ top }) => top <= anchorOffset)
-        .sort((a, b) => b.top - a.top)[0] || sections[0];
+
+    const active = isAtBottom
+      ? sections[sections.length - 1]
+      : sections
+          .map(({ link, section }) => ({ link, top: section.getBoundingClientRect().top }))
+          .filter(({ top }) => top <= anchorOffset)
+          .sort((a, b) => b.top - a.top)[0] || sections[0];
+
     setActiveLink(active.link);
   };
 
   updateActiveLink();
   window.addEventListener('scroll', updateActiveLink, { passive: true });
+  window.addEventListener('resize', updateActiveLink);
 }
 
 function setupMeshcatTabs() {
@@ -558,21 +544,21 @@ function setupBlogTokenizerLab() {
       decodability: [0, 'No'],
       ordering: [60, 'Medium'],
       summary:
-        'FAST has medium compression and medium ordering, but variable-length BPE can make arbitrary generated sequences undefined for fixed-size action decoding.',
+        'FAST has useful frequency structure for next-token prediction, but variable-length BPE can make arbitrary generated sequences undefined for fixed-size action decoding.',
     },
     latent: {
       compression: [86, 'High'],
       decodability: [100, 'Yes'],
       ordering: [36, 'Low'],
       summary:
-        'Vanilla latents can compress and decode well, but the token order is usually not structured for left-to-right next-token prediction.',
+        'Vanilla latents can compress and decode well, but their token positions often have weak autoregressive modelability.',
     },
     oat: {
       compression: [90, 'High'],
       decodability: [100, 'Yes'],
       ordering: [92, 'High'],
       summary:
-        'OAT is designed to satisfy all three desiderata: compact action chunks, total decoding, and a prefix order that aligns with autoregressive generation.',
+        'OAT is designed to satisfy all three desiderata: compact action chunks, total decoding, and high-modelability token positions for autoregressive generation.',
     },
   };
 
@@ -631,6 +617,59 @@ function setupBlogTokenizerLab() {
   });
 
   activate(buttons.find((button) => button.classList.contains('is-active'))?.dataset.tokenizerTarget || 'binning');
+}
+
+function setupBibtexCopy() {
+  const buttons = Array.from(document.querySelectorAll('[data-copy-target]'));
+
+  buttons.forEach((button) => {
+    const target = document.getElementById(button.dataset.copyTarget);
+    if (!target) {
+      return;
+    }
+
+    const originalLabel = button.textContent || 'Copy';
+    const setTemporaryLabel = (label) => {
+      button.textContent = label;
+      window.setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 1200);
+    };
+
+    const fallbackCopy = (text) => {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      let copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (_error) {
+        copied = false;
+      }
+
+      textarea.remove();
+      return copied;
+    };
+
+    button.addEventListener('click', () => {
+      const text = target.textContent.trim();
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(
+          () => setTemporaryLabel('Copied'),
+          () => setTemporaryLabel(fallbackCopy(text) ? 'Copied' : 'Error')
+        );
+        return;
+      }
+
+      setTemporaryLabel(fallbackCopy(text) ? 'Copied' : 'Error');
+    });
+  });
 }
 
 function setupBlogPrefixLab() {
