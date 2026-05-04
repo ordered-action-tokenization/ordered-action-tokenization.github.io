@@ -684,43 +684,44 @@ function setupBlogPrefixLab() {
   }
 
   const summaries = {
-    1: 'One token decodes a complete action chunk, but the reconstruction is coarse and visibly offset from the ground truth.',
-    2: 'Two tokens keep the whole chunk executable while pulling the decoded trajectory closer to the reference.',
-    4: 'Four tokens recover most coarse structure and start aligning fine-grained contact timing.',
-    8: 'Eight tokens nearly overlap the ground truth, giving the highest-fidelity reconstruction in this view.',
+    1: 'One token decodes a complete action chunk, but it is a broad, offset motion that misses the detailed route.',
+    2: 'Two tokens keep the chunk executable while bending the trajectory toward the main ground-truth arc.',
+    4: 'Four tokens recover the local waypoint structure and follow the mid-trajectory correction.',
+    8: 'Eight tokens nearly overlap the ground truth, leaving only small residual error.',
   };
   const groundTruth = [
-    [70, 170],
-    [145, 145],
-    [220, 122],
-    [295, 102],
-    [370, 88],
-    [445, 74],
-    [520, 61],
-    [590, 50],
+    [70, 180],
+    [135, 166],
+    [205, 105],
+    [285, 156],
+    [360, 118],
+    [435, 62],
+    [515, 96],
+    [590, 45],
   ];
-  const offsets = [
-    [24, 26],
-    [-28, -22],
-    [30, 16],
-    [-25, -18],
-    [20, -20],
-    [-21, 24],
-    [17, -14],
-    [-15, 13],
+  const coarseDecoded = [
+    [96, 205],
+    [170, 190],
+    [244, 174],
+    [318, 159],
+    [392, 144],
+    [466, 128],
+    [540, 113],
+    [612, 98],
   ];
-  const fidelity = {
-    1: 1.25,
-    2: 0.75,
-    4: 0.35,
-    8: 0.06,
+  const detailBlend = {
+    1: 0,
+    2: 0.36,
+    4: 0.72,
+    8: 0.97,
   };
+  const formatPoint = ([x, y]) => `${Number(x.toFixed(1))},${Number(y.toFixed(1))}`;
 
   const update = (nextValue) => {
     const value = [1, 2, 4, 8].includes(Number(nextValue)) ? Number(nextValue) : 4;
-    const decoded = groundTruth.map(([x, y], index) => [
-      x + offsets[index][0] * fidelity[value],
-      y + offsets[index][1] * fidelity[value],
+    const decoded = groundTruth.map(([gtX, gtY], index) => [
+      coarseDecoded[index][0] + (gtX - coarseDecoded[index][0]) * detailBlend[value],
+      coarseDecoded[index][1] + (gtY - coarseDecoded[index][1]) * detailBlend[value],
     ]);
 
     choices.forEach((choice) => {
@@ -731,11 +732,11 @@ function setupBlogPrefixLab() {
 
     title.textContent = `${value} prefix token${value === 1 ? '' : 's'}`;
     copy.textContent = summaries[value];
-    decodedLine.setAttribute('points', decoded.map(([x, y]) => `${x},${y}`).join(' '));
+    decodedLine.setAttribute('points', decoded.map(formatPoint).join(' '));
     decodedPoints.forEach((point, index) => {
       const [x, y] = decoded[index];
-      point.setAttribute('cx', x);
-      point.setAttribute('cy', y);
+      point.setAttribute('cx', Number(x.toFixed(1)));
+      point.setAttribute('cy', Number(y.toFixed(1)));
     });
   };
 
