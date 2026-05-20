@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hans" data-asset-base="..">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
-    content="Ordered Action Tokenization is an ordered, prefix-decodable action representation for autoregressive robot policies, accepted to RSS 2026.">
-  <meta property="og:title" content="Ordered Action Tokenization">
+    content="Ordered Action Tokenization 是一种面向自回归机器人策略的有序、前缀可解码动作表示，论文已被 RSS 2026 接收。">
+  <meta property="og:title" content="Ordered Action Tokenization | 中文">
   <meta property="og:description"
-    content="OAT introduces ordered, prefix-decodable action tokens for autoregressive robot policies, with interactive explainers, MeshCat reconstructions, and policy results.">
+    content="OAT 为自回归机器人策略引入有序、前缀可解码的动作 token，并提供交互式解释、MeshCat 重建和策略结果。">
   <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser-white.png">
-  <meta property="og:url" content="https://ordered-action-tokenization.github.io/">
+  <meta property="og:url" content="https://ordered-action-tokenization.github.io/zh/">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="https://ordered-action-tokenization.github.io/">
+  <link rel="canonical" href="https://ordered-action-tokenization.github.io/zh/">
   <link rel="alternate" hreflang="en" href="https://ordered-action-tokenization.github.io/">
   <link rel="alternate" hreflang="zh-Hans" href="https://ordered-action-tokenization.github.io/zh/">
   <link rel="alternate" hreflang="x-default" href="https://ordered-action-tokenization.github.io/">
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <title>Ordered Action Tokenization</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <title>Ordered Action Tokenization | 中文</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,253 +26,237 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="../static/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/index.css">
 
-  <link rel="stylesheet" href="./static/css/misc.css">
+  <link rel="stylesheet" href="../static/css/misc.css">
 
-  <script defer src="./static/js/index.js"></script>
+  <script defer src="../static/js/index.js"></script>
 </head>
 
 <body class="blog-page" id="top">
   <header class="blog-topbar">
     <a href="#top" class="blog-home">Ordered Action Tokenization</a>
-    <nav aria-label="Project links and language">
+    <nav aria-label="项目链接和语言">
       <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
-      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a>
-      <a href="./" hreflang="en" lang="en" aria-current="page">English</a>
-      <a href="./zh/" hreflang="zh-Hans" lang="zh-Hans">中文</a>
+      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">代码</a>
+      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a>
+      <a href="../" hreflang="en" lang="en">English</a>
+      <a href="./" hreflang="zh-Hans" lang="zh-Hans" aria-current="page">中文</a>
     </nav>
   </header>
 
   <main class="blog-layout">
-    <aside class="blog-side-nav" aria-label="Page sections">
-      <a href="#paper-minute">One minute</a>
-      <a href="#glossary">Glossary</a>
-      <a href="#why-tokenization">Why tokens</a>
-      <a href="#modelability">Modelability</a>
-      <a href="#properties">Desiderata</a>
-      <a href="#missing-tokenizers">Current gaps</a>
+    <aside class="blog-side-nav" aria-label="页面章节">
+      <a href="#paper-minute">一分钟读懂</a>
+      <a href="#glossary">术语表</a>
+      <a href="#why-tokenization">为什么要 token</a>
+      <a href="#modelability">可建模性</a>
+      <a href="#properties">设计要求</a>
+      <a href="#missing-tokenizers">现有缺口</a>
       <a href="#oat">OAT</a>
-      <a href="#info-theory">Info theory</a>
-      <a href="#prefix-decoding">Prefix decoding</a>
-      <a href="#prefix-lab">Prefix lab</a>
-      <a href="#experiments">Experiments</a>
-      <a href="#open-directions">Open directions</a>
-      <a href="#appendix">Appendix</a>
+      <a href="#info-theory">信息论</a>
+      <a href="#prefix-decoding">前缀解码</a>
+      <a href="#prefix-lab">前缀实验室</a>
+      <a href="#experiments">实验</a>
+      <a href="#open-directions">开放方向</a>
+      <a href="#appendix">附录</a>
     </aside>
 
     <article class="blog-article">
       <header class="blog-hero">
         <h1>Ordered Action Tokenization</h1>
         <p class="blog-dek">
-          <span class="oat-name">OAT</span> is an ordered, prefix-decodable action representation built for compactness, total decodability, and high autoregressive modelability.
+          <span class="oat-name">OAT</span> 是一种有序、前缀可解码的动作表示，兼顾紧凑性、全域可解码性和高自回归可建模性。
         </p>
         <p class="blog-source">
-          <span class="blog-venue-pill">RSS 2026</span> accepted paper, expanded from the original
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a> with native web controls.
+          <span class="blog-venue-pill">RSS 2026</span> 录用论文，基于原始
+          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a> 扩展，并加入原生网页交互控件。
         </p>
         <p class="blog-authors">
           <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
           <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
           <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
           <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
-          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup>, and
+          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup>,
           <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
         </p>
         <p class="blog-affiliations"><sup>1</sup>Harvard University · <sup>2</sup>Stanford University</p>
-        <div class="blog-project-links" aria-label="Project links">
+        <div class="blog-project-links" aria-label="项目链接">
           <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a>
+          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">代码</a>
+          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a>
         </div>
       </header>
 
-      <div class="blog-metric-strip" aria-label="Article highlights">
+      <div class="blog-metric-strip" aria-label="文章亮点">
         <div>
-          <span>Three</span>
-          <strong>tokenizer desiderata</strong>
+          <span>三项</span>
+          <strong>tokenizer 设计要求</strong>
         </div>
         <div>
-          <span>Any</span>
-          <strong>prefix tokens at inference</strong>
+          <span>任意</span>
+          <strong>推理阶段前缀 token</strong>
         </div>
         <div>
-          <span>Superior</span>
-          <strong>policy performance</strong>
+          <span>更强</span>
+          <strong>策略性能</strong>
         </div>
         <div>
           <span>20+</span>
-          <strong>evaluated tasks</strong>
+          <strong>评测任务</strong>
         </div>
       </div>
 
       <figure class="blog-figure blog-figure-paper blog-figure-teaser">
-        <img src="./media/fig/teaser-white.png" alt="OAT teaser summarizing tokenizer desiderata and policy performance"
+        <img src="../media/fig/teaser-white.png" alt="OAT teaser，总结 tokenizer 设计要求和策略性能"
           width="8203" height="2665">
       </figure>
 
       <section class="blog-section blog-editorial-panel" id="paper-minute">
-        <span class="blog-section-kicker">Paper in one minute</span>
-        <h2>Action tokens are not just an implementation detail.</h2>
+        <span class="blog-section-kicker">一分钟读懂论文</span>
+        <h2>动作 token 不只是实现细节。</h2>
         <p>
-          Autoregressive robot policies need a way to turn continuous control signals into discrete symbols. That
-          conversion decides how many steps the policy must generate, whether every generated sequence can be executed,
-          and how predictable the next token is. <span class="oat-name">OAT</span> argues that a good action tokenizer
-          should optimize all three at once.
+          自回归机器人策略需要一种方式，把连续控制信号转成离散符号。这个转换决定了策略要生成多少步、每个生成序列是否都能执行，
+          以及下一个 token 有多容易预测。<span class="oat-name">OAT</span> 认为，一个好的动作 tokenizer 应该同时优化这三点。
         </p>
         <ol class="blog-summary-list">
           <li>
-            <strong>The problem:</strong> binning is valid but too long, FAST is compact but can be non-decodable, and
-            learned latent tokenizers are compact but often have weak autoregressive modelability.
+            <strong>问题：</strong>分箱方法有效但序列太长；FAST 很紧凑但可能无法解码；学习式 latent tokenizer 很紧凑，但自回归可建模性常常较弱。
           </li>
           <li>
-            <strong>The method:</strong> <span class="oat-name">OAT</span> learns a small sequence of discrete register
-            tokens and trains them with a coarse-to-fine modelability priority.
+            <strong>方法：</strong><span class="oat-name">OAT</span> 学习一小段离散 register token，并用从粗到细的可建模性优先级来训练它们。
           </li>
           <li>
-            <strong>The result:</strong> policies can trade inference cost for action fidelity by choosing how many
-            high-modelability tokens to generate, while still decoding a valid action chunk.
+            <strong>结果：</strong>策略可以选择生成多少个高可建模性 token，在推理成本和动作精度之间取舍，同时始终解码出有效动作块。
           </li>
         </ol>
       </section>
 
       <section class="blog-section" id="glossary">
-        <span class="blog-section-kicker">Small glossary</span>
-        <h2>Five terms used throughout this page.</h2>
+        <span class="blog-section-kicker">简短术语表</span>
+        <h2>本文会反复用到的五个术语。</h2>
         <dl class="blog-glossary-grid">
           <div>
-            <dt>Action chunk</dt>
-            <dd>A short future sequence of robot actions predicted at once, then partially executed before re-planning.</dd>
+            <dt>动作块</dt>
+            <dd>一次性预测的一小段未来机器人动作序列，执行其中一部分后再重新规划。</dd>
           </div>
           <div>
             <dt>Tokenization</dt>
-            <dd>The map from continuous actions to discrete symbols that an autoregressive policy can model.</dd>
+            <dd>把连续动作映射成离散符号，使自回归策略可以对其建模。</dd>
           </div>
           <div>
             <dt>Detokenization</dt>
-            <dd>The reverse map from generated symbols back to executable continuous robot actions.</dd>
+            <dd>把生成的符号反向映射回可执行的连续机器人动作。</dd>
           </div>
           <div>
-            <dt>Autoregressive policy</dt>
-            <dd>A policy that predicts the next action token conditioned on observations and previously generated tokens.</dd>
+            <dt>自回归策略</dt>
+            <dd>根据观测和已经生成的 token 来预测下一个动作 token 的策略。</dd>
           </div>
           <div>
-            <dt>Modelability</dt>
-            <dd>How easy the token distribution is for a generative model to learn, sample, and use downstream.</dd>
+            <dt>可建模性</dt>
+            <dd>生成模型学习、采样并在下游使用该 token 分布的难易程度。</dd>
           </div>
         </dl>
       </section>
 
       <section class="blog-section" id="why-tokenization">
-        <h2>1. Why should we care about action tokenization?</h2>
+        <h2>1. 为什么要关心动作 tokenization？</h2>
         <p>
-          Discrete action tokens are becoming an increasingly important design choice in modern robot learning systems.
-          Recent systems:
-          <a href="https://rdt-robotics.github.io/rdt2/" target="_blank" rel="noopener">RDT-2</a> employs
-          vector-quantized (VQ) action tokens for its stage-1 training;
-          <a href="https://co-training-lbm.github.io/" target="_blank" rel="noopener">TRI's LBM/VLA</a> leverages FAST
-          and VQ-style tokenizations; and the
-          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">winning solution</a> of the
-          BEHAVIOR 2025 Challenge integrated FAST tokens in training and inference.
+          离散动作 token 正在成为现代机器人学习系统中越来越重要的设计选择。近期系统中：
+          <a href="https://rdt-robotics.github.io/rdt2/" target="_blank" rel="noopener">RDT-2</a> 在第一阶段训练中使用
+          vector-quantized (VQ) 动作 token；
+          <a href="https://co-training-lbm.github.io/" target="_blank" rel="noopener">TRI 的 LBM/VLA</a> 使用 FAST
+          和 VQ 风格 tokenization；而 BEHAVIOR 2025 Challenge 的
+          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">获胜方案</a>
+          在训练和推理中集成了 FAST token。
         </p>
         <p>
-          Across these systems, action tokenization plays a particularly critical role during pre-training, where
-          discrete tokens provide a structured, scalable interface between high-capacity sequence models and continuous
-          robot control. As a result, the choice of action tokenizer increasingly shapes not only efficiency, but also
-          what kinds of behaviors models can learn and generalize.
+          在这些系统中，动作 tokenization 在预训练阶段尤其关键：离散 token 为大容量序列模型和连续机器人控制之间提供了结构化、可扩展的接口。
+          因此，动作 tokenizer 的选择不仅影响效率，也越来越深刻地影响模型能学习和泛化哪些行为。
         </p>
       </section>
 
       <section class="blog-section" id="modelability">
-        <h2>2. An overlooked axis: <span class="blog-heading-emphasis">Modelability</span>.</h2>
+        <h2>2. 一个被忽视的维度：<span class="blog-heading-emphasis">可建模性</span>。</h2>
         <p>
-          Classical theories like the
-          <a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">rate-distortion
-            tradeoff</a> focus on balancing compression rate and reconstruction fidelity. In the era of GenAI, we argue
-          that a third axis, modelability, is crucial and often overlooked: how difficult it is for a generative model to
-          capture the distribution of a representation. Poorly structured representations may be compact and accurate,
-          yet fundamentally hard to model.
+          经典理论如
+          <a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">率失真权衡</a>
+          关注压缩率和重建精度之间的平衡。在生成式 AI 时代，我们认为第三个维度，可建模性，同样关键但经常被忽视：
+          生成模型捕捉某种表示分布的难度。结构不佳的表示可能既紧凑又准确，但从根本上难以建模。
         </p>
         <p>
-          This is the central distinction: a tokenizer can reconstruct actions well and still be a poor interface for
-          policy learning. If the token stream has low autoregressive modelability, or is sparse and high-entropy, the
-          model pays that cost at every next-token prediction step. The representation is not merely a storage format;
-          it is the learning problem the policy actually sees.
+          这是核心区别：一个 tokenizer 可以很好地重建动作，却仍然不是策略学习的好接口。如果 token 流的自回归可建模性较低，
+          或者稀疏且高熵，模型会在每一次下一个 token 预测中付出代价。表示不只是存储格式；它就是策略实际面对的学习问题。
         </p>
-        <div class="blog-axis-panel" aria-label="Rate distortion modelability trade-off">
+        <div class="blog-axis-panel" aria-label="率失真可建模性权衡">
           <div>
             <span>Rate</span>
-            <strong>How many tokens?</strong>
-            <p>Shorter action codes reduce autoregressive depth and latency.</p>
+            <strong>需要多少 token？</strong>
+            <p>更短的动作编码可以降低自回归深度和延迟。</p>
           </div>
           <div>
             <span>Distortion</span>
-            <strong>How much action detail?</strong>
-            <p>Continuous robot control still needs enough precision for contact-rich execution.</p>
+            <strong>保留多少动作细节？</strong>
+            <p>连续机器人控制仍然需要足够精度，尤其是接触丰富的执行场景。</p>
           </div>
           <div>
-            <span>Modelability</span>
-            <strong>How predictable is the sequence?</strong>
-            <p>Token order should make next-token prediction easier, not merely possible.</p>
+            <span>可建模性</span>
+            <strong>序列有多可预测？</strong>
+            <p>Token 顺序应该让下一个 token 预测更容易，而不只是让它可行。</p>
           </div>
         </div>
         <div class="blog-insight-card">
-          <strong>Reconstruction is not enough.</strong>
+          <strong>仅有重建还不够。</strong>
           <p>
-            For robot control, the tokenizer is useful only if the downstream policy can reliably model its tokens.
-            Low reconstruction error matters, but it does not guarantee a token sequence with stable left-to-right
-            structure.
+            对机器人控制而言，只有当下游策略能可靠建模这些 token 时，tokenizer 才真正有用。
+            低重建误差很重要，但它并不保证 token 序列具有稳定的从左到右结构。
           </p>
         </div>
       </section>
 
       <section class="blog-section" id="properties">
-        <h2>3. Three properties we seek.</h2>
+        <h2>3. 我们希望满足的三项性质。</h2>
         <p>
-          We argue that an effective action tokenizer for autoregressive policies should satisfy three key properties:
+          我们认为，面向自回归策略的有效动作 tokenizer 应该满足三项关键性质：
         </p>
         <ul class="blog-property-list">
           <li>
-            <strong>(P.1) Reasonable compression.</strong> The representation should compress action chunks enough to
-            enable efficient sequence modeling, but not so aggressively that too much information is lost.
+            <strong>(P.1) 合理压缩。</strong> 该表示应足够压缩动作块，以支持高效序列建模，但不能过度压缩到丢失太多信息。
           </li>
           <li>
-            <strong>(P.2) Total decodability.</strong> The detokenization mapping should be a well-defined
-            <a href="https://en.wikipedia.org/wiki/Partial_function" target="_blank" rel="noopener">total function</a>:
-            every token sequence in the discrete token space must decode to a valid action chunk. This is essential
-            because policies may generate arbitrary token sequences at inference time. If decoding is only partially
-            defined, invalid tokens can lead to undefined behavior or catastrophic failures during execution.
+            <strong>(P.2) 全域可解码。</strong> detokenization 映射应当是定义良好的
+            <a href="https://en.wikipedia.org/wiki/Partial_function" target="_blank" rel="noopener">全函数</a>：
+            离散 token 空间中的每个 token 序列都必须解码成有效动作块。这一点很关键，因为策略在推理时可能生成任意 token 序列。
+            如果解码只在部分输入上有定义，无效 token 就可能导致未定义行为或执行中的灾难性失败。
           </li>
           <li>
-            <strong>(P.3) Predictive ordering.</strong> Token sequences should admit a meaningful left-to-right causal
-            structure aligned with next-token prediction. This structure is critical for modelability, allowing
-            autoregressive models to learn stable, predictable token dynamics.
+            <strong>(P.3) 可预测排序。</strong> Token 序列应该具有有意义的从左到右因果结构，并与下一个 token 预测对齐。
+            这种结构对可建模性至关重要，使自回归模型能够学习稳定、可预测的 token 动态。
           </li>
         </ul>
         <p>
-          In the remainder of this article, I explain them.
+          下文会逐一解释这些性质。
         </p>
       </section>
 
       <section class="blog-interactive" id="compare-tokenizers" aria-labelledby="compare-tokenizers-title">
         <div class="blog-interactive-header">
-          <span>Interactive Comparison</span>
-          <h2 id="compare-tokenizers-title">Which tokenizer satisfies the desiderata?</h2>
+          <span>交互式比较</span>
+          <h2 id="compare-tokenizers-title">哪个 tokenizer 满足这些设计要求？</h2>
           <p>
-            Select a tokenizer family to compare compression, total decodability, and&nbsp;<span
-              class="text-nowrap">autoregressive modelability</span>.
+            选择一个 tokenizer 家族，比较压缩率、全域可解码性和&nbsp;<span
+              class="text-nowrap">自回归可建模性</span>。
           </p>
         </div>
 
-        <div class="tokenizer-selector" role="tablist" aria-label="Tokenizer families">
+        <div class="tokenizer-selector" role="tablist" aria-label="Tokenizer 家族">
           <button type="button" role="tab" id="tokenizer-tab-binning" class="is-active" data-tokenizer-target="binning"
             aria-controls="tokenizer-panel" aria-selected="true">Binning</button>
           <button type="button" role="tab" id="tokenizer-tab-fast" data-tokenizer-target="fast"
             aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
           <button type="button" role="tab" id="tokenizer-tab-latent" data-tokenizer-target="latent"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">Vanilla Latents</button>
+            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">普通 Latents</button>
           <button type="button" role="tab" id="tokenizer-tab-oat" data-tokenizer-target="oat"
             aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">OAT</button>
         </div>
@@ -281,174 +265,151 @@
           aria-live="polite">
           <div class="tokenizer-score-grid">
             <div>
-              <span>Compression</span>
+              <span>压缩率</span>
               <meter min="0" max="100" value="35" data-tokenizer-meter="compression"></meter>
-              <strong data-tokenizer-label="compression">Low</strong>
+              <strong data-tokenizer-label="compression">低</strong>
             </div>
             <div>
-              <span>Total decodability</span>
+              <span>全域可解码性</span>
               <meter min="0" max="100" value="100" data-tokenizer-meter="decodability"></meter>
-              <strong data-tokenizer-label="decodability">Yes</strong>
+              <strong data-tokenizer-label="decodability">是</strong>
             </div>
             <div>
-              <span>Autoregressive modelability</span>
+              <span>自回归可建模性</span>
               <meter min="0" max="100" value="20" data-tokenizer-meter="ordering"></meter>
-              <strong data-tokenizer-label="ordering">Low</strong>
+              <strong data-tokenizer-label="ordering">低</strong>
             </div>
           </div>
           <p data-tokenizer-summary>
-            Binning is universally decodable but produces long, flat token sequences that are hard for autoregressive
-            policies to model efficiently.
+            分箱方法可以全域解码，但会产生又长又扁平的 token 序列，难以让自回归策略高效建模。
           </p>
         </div>
       </section>
 
       <section class="blog-section" id="missing-tokenizers">
-        <h2>4. What's missing in today's action tokens?</h2>
+        <h2>4. 现有动作 token 缺少什么？</h2>
         <p>
-          Each existing tokenizer family misses the target in a different way. The practical failure mode depends on
-          which desideratum it gives up.
+          每类现有 tokenizer 都以不同方式偏离目标。实际失败模式取决于它放弃了哪项设计要求。
         </p>
-        <div class="blog-failure-grid" aria-label="Practical failure modes of action tokenizers">
+        <div class="blog-failure-grid" aria-label="动作 tokenizer 的实际失败模式">
           <div>
             <span>Binning</span>
-            <strong>Valid but slow.</strong>
-            <p>Every generated token decodes, but the policy must generate hundreds of flat dimension-time tokens.</p>
+            <strong>有效但慢。</strong>
+            <p>每个生成 token 都能解码，但策略必须生成数百个扁平的维度-时间 token。</p>
           </div>
           <div>
             <span>FAST</span>
-            <strong>Compact but partial.</strong>
-            <p>The frequency structure helps next-token prediction, but arbitrary BPE sequences may not decode.</p>
+            <strong>紧凑但只部分可解码。</strong>
+            <p>频域结构有助于下一个 token 预测，但任意 BPE 序列可能无法解码。</p>
           </div>
           <div>
             <span>Latents</span>
-            <strong>Compact but low-modelability.</strong>
-            <p>A neural decoder makes outputs valid, but the token sequence has weak autoregressive modelability.</p>
+            <strong>紧凑但可建模性低。</strong>
+            <p>神经解码器让输出有效，但 token 序列的自回归可建模性较弱。</p>
           </div>
           <div>
             <span><span class="oat-name">OAT</span></span>
-            <strong>Compact, valid, high-modelability.</strong>
-            <p>Tokens are learned as a progressive sequence, so early predictions carry coarse motion structure.</p>
+            <strong>紧凑、有效、可建模性高。</strong>
+            <p>Token 被学习成渐进序列，因此早期预测携带粗粒度运动结构。</p>
           </div>
         </div>
         <p>
-          <strong>Binning.</strong> The most common scheme is per-dimension, per-timestamp binning. While simple, it
-          scales poorly: long horizons and high-dimensional actions can produce hundreds of tokens per chunk,
-          dramatically slowing training and inference and increasing latency. More importantly, such long, flat
-          sequences have poor modelability across dimensions: knowing a[t, 1...i] offers little help in predicting
-          a[t, i+1], making binning poorly aligned with autoregressive generation.
+          <strong>Binning.</strong> 最常见的方案是按维度、按时间步分箱。它很简单，但扩展性差：长时域和高维动作可能让每个动作块产生数百个 token，
+          显著拖慢训练和推理并增加延迟。更重要的是，这类又长又扁平的序列在跨维度上可建模性较差：知道 a[t, 1...i]
+          对预测 a[t, i+1] 帮助很小，使分箱方法与自回归生成不够匹配。
         </p>
         <p>
-          <strong>Frequency-domain transform.</strong> Frequency-based methods such as FAST achieve high information
-          density (P.1) and impose a low-to-high frequency structure (P.3), where early tokens capture global
-          trajectory structure and later tokens refine details. However, FAST violates P.2 (total decodability). Because
+          <strong>频域变换。</strong> FAST 等基于频率的方法具有高信息密度 (P.1)，并引入从低频到高频的结构 (P.3)：
+          早期 token 捕捉全局轨迹结构，后期 token 细化细节。然而，FAST 违反了 P.2（全域可解码性）。因为
           <a href="https://en.wikipedia.org/wiki/Byte-pair_encoding" target="_blank" rel="noopener">Byte Pair Encoding</a>
-          (BPE) produces variable-length sequences, arbitrary token sequences may not decode into a valid fixed-size
-          frequency representation, leading to undefined behavior and runtime failures. We refer readers to appendix of
-          our paper and the
-          <a href="https://huggingface.co/physical-intelligence/fast/discussions/4" target="_blank" rel="noopener">discussion
-            on Hugging Face</a> for further details.
+          (BPE) 会产生可变长度序列，任意 token 序列未必能解码成有效的固定大小频域表示，从而导致未定义行为和运行时失败。
+          更多细节见论文附录以及
+          <a href="https://huggingface.co/physical-intelligence/fast/discussions/4" target="_blank" rel="noopener">Hugging Face 上的讨论</a>。
         </p>
         <p>
-          <strong>Vanilla Latents.</strong> Learned encoder-decoder latent tokenizers can achieve strong compression
-          (P.1), and neural decoders ensure total decodability (P.2). However, the resulting token spaces often have
-          weak autoregressive modelability: the token positions do not provide a stable left-to-right structure for
-          next-token prediction. This makes them poorly aligned with policies that rely on meaningful left-to-right
-          structure (P.3) for stable generation.
+          <strong>普通 Latents。</strong> 学习式 encoder-decoder latent tokenizer 可以获得较强压缩 (P.1)，神经解码器也能保证全域可解码 (P.2)。
+          但所得 token 空间通常自回归可建模性较弱：token 位置没有为下一个 token 预测提供稳定的从左到右结构。
+          这使其难以适配依赖有意义左到右结构 (P.3) 来稳定生成的策略。
         </p>
         <p>
-          In summary, existing approaches each satisfy subsets of the desiderata, but none simultaneously achieve
-          compression, total decodability, and high autoregressive modelability.
+          总结来说，现有方法各自满足了部分设计要求，但没有同时实现压缩、全域可解码和高自回归可建模性。
         </p>
       </section>
 
       <section class="blog-section" id="oat">
         <h2>5. Ordered Action Tokenization</h2>
         <p>
-          We introduce <span class="oat-name">OAT</span>, a learned autoencoder framework that discretizes action chunks into an ordered sequence of
-          tokens. <span class="oat-name">OAT</span> encodes actions using transformer-based register tokens, discretizes the resulting latents with
-          FSQ, and reconstructs actions via a conditional decoder. To improve autoregressive modelability, we combine
-          causal attention over register tokens with nested dropout during training. Together, these design choices
-          encourage a high-modelability latent representation in which earlier tokens capture coarse, global structure
-          and later tokens refine details.
+          我们提出 <span class="oat-name">OAT</span>，一个学习式 autoencoder 框架，把动作块离散化为有序 token 序列。
+          <span class="oat-name">OAT</span> 使用基于 transformer 的 register token 编码动作，用 FSQ 离散化所得 latent，
+          再通过条件解码器重建动作。为提升自回归可建模性，我们在训练中结合 register token 上的因果注意力和 nested dropout。
+          这些设计共同鼓励形成高可建模性的 latent 表示：早期 token 捕捉粗粒度全局结构，后期 token 细化细节。
         </p>
         <ol class="blog-step-list">
           <li>
-            <strong>Summarize the action chunk.</strong> A transformer encoder reads the continuous action sequence and
-            writes the important temporal information into a fixed set of register tokens.
+            <strong>概括动作块。</strong> Transformer encoder 读取连续动作序列，并把重要时间信息写入固定数量的 register token。
           </li>
           <li>
-            <strong>Discretize the registers.</strong> Finite scalar quantization turns the register latents into
-            discrete tokens that an autoregressive policy can predict.
+            <strong>离散化 registers。</strong> Finite scalar quantization 把 register latents 转成自回归策略可以预测的离散 token。
           </li>
           <li>
-            <strong>Force a left-to-right structure.</strong> Causal attention makes later registers depend on earlier
-            registers, aligning the representation with next-token generation.
+            <strong>强制从左到右结构。</strong> 因果注意力让后面的 register 依赖前面的 register，使表示与下一个 token 生成对齐。
           </li>
           <li>
-            <strong>Train with missing tails.</strong> Nested dropout randomly masks later tokens during tokenizer
-            training, so early tokens must carry the highest-priority information.
+            <strong>用缺失尾部训练。</strong> Nested dropout 在 tokenizer 训练中随机遮蔽后续 token，因此早期 token 必须承载最高优先级信息。
           </li>
           <li>
-            <strong>Decode back to control.</strong> A conditional decoder maps the generated token prefix back into a
-            continuous action chunk for execution.
+            <strong>解码回控制信号。</strong> 条件解码器把生成的 token 前缀映射回可执行的连续动作块。
           </li>
         </ol>
       </section>
 
       <figure class="blog-figure blog-figure-paper blog-figure-method">
-        <img src="./media/fig/method-white.png" alt="OAT method overview with register tokens and prefix decoding"
+        <img src="../media/fig/method-white.png" alt="OAT 方法概览，包含 register token 和前缀解码"
           width="7928" height="2354" loading="lazy">
       </figure>
 
       <section class="blog-section" id="info-theory">
-        <h2>6. Why does order improve modelability?</h2>
+        <h2>6. 为什么顺序能提升可建模性？</h2>
         <p>
-          The ordering induced by <span class="oat-name">OAT</span> admits a natural interpretation through information theory.
-          <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon showed
-            that</a> the optimal code length for an event scales with the negative logarithm of its probability,
-          - log p: frequent patterns require fewer bits, while rare events demand more representational capacity. Action
-          chunks follow a similarly skewed distribution, most trajectories share common coarse structure, whereas
-          fine-grained deviations occur infrequently.
+          <span class="oat-name">OAT</span> 引入的排序可以从信息论得到自然解释。
+          <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon 表明</a>，
+          一个事件的最优编码长度随其概率的负对数 - log p 缩放：常见模式需要更少 bit，而罕见事件需要更多表示容量。
+          动作块也有类似的偏斜分布：大多数轨迹共享常见的粗粒度结构，而细粒度偏差较少出现。
         </p>
         <p>
-          From this perspective, <span class="oat-name">OAT</span> learns a form of progressive coding. Early tokens capture high-probability,
-          globally shared motion patterns, while later tokens encode increasingly rare residual details. This ordering
-          emerges naturally from nested dropout: because the decoder must reconstruct actions from partial prefixes, the
-          tokenizer is incentivized to allocate information in decreasing order of frequency and importance. As a result,
-          longer prefixes yield monotonic reconstruction improvement, and token order aligns closely with autoregressive
-          next-token prediction, without manually assigning physical features to particular token positions.
+          从这个角度看，<span class="oat-name">OAT</span> 学到了一种渐进编码。早期 token 捕捉高概率、全局共享的运动模式，
+          后期 token 编码越来越罕见的残差细节。这种顺序从 nested dropout 中自然出现：因为解码器必须从部分前缀重建动作，
+          tokenizer 被鼓励按频率和重要性递减的顺序分配信息。结果是，前缀越长，重建单调改善；token 顺序也与自回归下一个 token
+          预测紧密对齐，而无需手工把物理特征分配给特定 token 位置。
         </p>
       </section>
 
       <section class="blog-section" id="prefix-decoding">
-        <h2>7. A by-product: prefix-based decoding.</h2>
+        <h2>7. 一个副产品：基于前缀的解码。</h2>
         <p>
-          Autoregressive policy trained on <span class="oat-name">OAT</span> need not proceed to completion. Because any prefix of <span class="oat-name">OAT</span> token sequence
-          can be detokenized into a valid action chunk, <span class="oat-name">OAT</span> supports prefix-based execution and enables an anytime
-          trade-off between computation and performance. Short prefixes yield fast but coarse predictions, while longer
-          prefixes produce more refined actions at higher computational cost. This flexibility arises naturally from the
-          ordered tokenization and requires no changes to the policy architecture or training objective, distinguishing
-          <span class="oat-name">OAT</span> from prior tokenizers that rely on fixed-length detokenization.
+          基于 <span class="oat-name">OAT</span> 训练的自回归策略不必生成到完整长度。由于 <span class="oat-name">OAT</span> token
+          序列的任意前缀都可以 detokenize 成有效动作块，<span class="oat-name">OAT</span> 支持基于前缀的执行，
+          从而在计算量和性能之间提供 anytime 权衡。短前缀带来更快但更粗糙的预测；长前缀以更高计算成本产生更精细动作。
+          这种灵活性自然来自有序 tokenization，不需要修改策略架构或训练目标，也使 <span class="oat-name">OAT</span>
+          区别于依赖固定长度 detokenization 的先前 tokenizer。
         </p>
       </section>
 
       <section class="blog-interactive blog-prefix-lab" id="prefix-lab" aria-labelledby="prefix-lab-title">
         <div class="blog-interactive-header">
-          <span>Prefix Lab</span>
-          <h2 id="prefix-lab-title">Decode fewer tokens, keep the action valid.</h2>
+          <span>前缀实验室</span>
+          <h2 id="prefix-lab-title">解码更少 token，动作仍然有效。</h2>
           <p>
-            <span class="oat-name">OAT</span> makes every prefix executable. More tokens refine the trajectory, but the policy can stop early when
-            latency matters.
+            <span class="oat-name">OAT</span> 让每个前缀都可执行。更多 token 会细化轨迹，但在延迟重要时，策略可以提前停止。
           </p>
         </div>
 
         <div class="prefix-lab-grid">
           <div class="prefix-trajectory"
-            aria-label="Prefix reconstruction plot comparing the full decoded action chunk against the full ground-truth action chunk."
+            aria-label="前缀重建图，对比完整解码动作块和真实动作块。"
             role="img">
-            <span class="prefix-plot-label prefix-label-recon">decoded prefix</span>
-            <span class="prefix-plot-label prefix-label-gt">ground truth</span>
+            <span class="prefix-plot-label prefix-label-recon">解码前缀</span>
+            <span class="prefix-plot-label prefix-label-gt">真实轨迹</span>
             <svg class="prefix-plot" viewBox="0 0 640 240" aria-hidden="true">
               <polyline class="prefix-gt-line"
                 points="70,180 135,166 205,105 285,156 360,118 435,62 515,96 590,45" />
@@ -477,91 +438,87 @@
             </svg>
           </div>
           <div class="prefix-readout">
-            <strong data-prefix-title>1 prefix token</strong>
+            <strong data-prefix-title>1 个前缀 token</strong>
             <p data-prefix-copy>
-              One token decodes a complete action chunk, but the reconstruction is coarse and visibly offset from the
-              ground truth.
+              1 个 token 可以解码出完整动作块，但重建较粗糙，且与真实轨迹有明显偏移。
             </p>
           </div>
         </div>
 
-        <div class="prefix-stepper" role="group" aria-label="Prefix token choices">
-          <button type="button" class="is-active" data-prefix-choice="1">1 token</button>
-          <button type="button" data-prefix-choice="2">2 tokens</button>
-          <button type="button" data-prefix-choice="4">4 tokens</button>
-          <button type="button" data-prefix-choice="8">8 tokens</button>
+        <div class="prefix-stepper" role="group" aria-label="前缀 token 选择">
+          <button type="button" class="is-active" data-prefix-choice="1">1 个 token</button>
+          <button type="button" data-prefix-choice="2">2 个 token</button>
+          <button type="button" data-prefix-choice="4">4 个 token</button>
+          <button type="button" data-prefix-choice="8">8 个 token</button>
         </div>
 
         <p class="prefix-notation">
-          Each prefix decodes to a complete action chunk. Green points are ground-truth waypoints; red points are the
-          full chunk reconstructed from the selected prefix. More prefix tokens reduce the red-green error and increase
-          fine-grained fidelity.
+          每个前缀都会解码成完整动作块。绿色点是真实路标；红色点是从所选前缀重建出的完整动作块。
+          更多前缀 token 会减少红绿误差，并提升细粒度保真度。
         </p>
 
         <div class="prefix-meshcat-panel" id="meshcat-vis">
-          <h3 class="title is-4 publication-title oat-heading">Interactive MeshCat Visualization</h3>
+          <h3 class="title is-4 publication-title oat-heading">交互式 MeshCat 可视化</h3>
           <p class="section-lead has-text-justified">
-            Visualization of reconstructed action chunks using increasing numbers of decoded tokens. Earlier tokens
-            capture the coarse, global structure of the motion, and additional tokens progressively refine fine-grained
-            details, producing trajectories that increasingly match the ground truth. All trajectories are generated by
-            the same model.
+            这里可视化使用不同数量解码 token 得到的动作块重建。早期 token 捕捉运动的粗粒度全局结构，
+            额外 token 会逐步细化细节，生成越来越接近真实轨迹的结果。所有轨迹都由同一个模型生成。
           </p>
 
           <div class="meshcat-global-controls">
             <div class="meshcat-control-buttons">
-              <button id="meshcat-play-all" class="button">Play</button>
-              <button id="meshcat-pause-all" class="button">Pause</button>
-              <button id="meshcat-reset-all" class="button is-light">Reset</button>
-              <button id="meshcat-reload-all" class="button">Reload</button>
+              <button id="meshcat-play-all" class="button">播放</button>
+              <button id="meshcat-pause-all" class="button">暂停</button>
+              <button id="meshcat-reset-all" class="button is-light">重置</button>
+              <button id="meshcat-reload-all" class="button">重新加载</button>
             </div>
             <div class="meshcat-control-slider">
               <input id="meshcat-global-slider" type="range" min="0" max="100" step="1" value="0"
-                aria-label="MeshCat visualization timeline">
+                aria-label="MeshCat 可视化时间轴">
             </div>
           </div>
 
-          <div class="episode-tabs" role="tablist" aria-label="MeshCat visualization episode">
+          <div class="episode-tabs" role="tablist" aria-label="MeshCat 可视化片段">
             <button class="button is-small is-dark" type="button" data-episode-target="idx254425" aria-selected="true">
-              Episode A
+              片段 A
             </button>
             <button class="button is-small is-light" type="button" data-episode-target="idx5788" aria-selected="false">
-              Episode B
+              片段 B
             </button>
           </div>
 
           <div class="embed-row" data-episode="idx254425">
 
             <div class="embed-card">
-              <p class="meshcat-card-label">1 token</p>
-              <iframe data-src="./media/html/idx254425/reconst_k1.html" title="Reconstruction K=1 (idx254425)"
+              <p class="meshcat-card-label">1 个 token</p>
+              <iframe data-src="../media/html/idx254425/reconst_k1.html" title="重建 K=1 (idx254425)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.592</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">2 tokens</p>
-              <iframe data-src="./media/html/idx254425/reconst_k2.html" title="Reconstruction K=2 (idx254425)"
+              <p class="meshcat-card-label">2 个 token</p>
+              <iframe data-src="../media/html/idx254425/reconst_k2.html" title="重建 K=2 (idx254425)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.446</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">4 tokens</p>
-              <iframe data-src="./media/html/idx254425/reconst_k4.html" title="Reconstruction K=4 (idx254425)"
+              <p class="meshcat-card-label">4 个 token</p>
+              <iframe data-src="../media/html/idx254425/reconst_k4.html" title="重建 K=4 (idx254425)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.038</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">8 tokens</p>
-              <iframe data-src="./media/html/idx254425/reconst_k8.html" title="Reconstruction K=8 (idx254425)"
+              <p class="meshcat-card-label">8 个 token</p>
+              <iframe data-src="../media/html/idx254425/reconst_k8.html" title="重建 K=8 (idx254425)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.009</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">ground truth</p>
-              <iframe data-src="./media/html/idx254425/ground_truth.html" title="Ground Truth Trajectory (idx254425)"
+              <p class="meshcat-card-label">真实轨迹</p>
+              <iframe data-src="../media/html/idx254425/ground_truth.html" title="真实轨迹 (idx254425)"
                 loading="lazy"></iframe>
             </div>
 
@@ -570,36 +527,36 @@
           <div class="embed-row" data-episode="idx5788" hidden>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">1 token</p>
-              <iframe data-src="./media/html/idx5788/reconst_k1.html" title="Reconstruction K=1 (idx5788)"
+              <p class="meshcat-card-label">1 个 token</p>
+              <iframe data-src="../media/html/idx5788/reconst_k1.html" title="重建 K=1 (idx5788)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.365</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">2 tokens</p>
-              <iframe data-src="./media/html/idx5788/reconst_k2.html" title="Reconstruction K=2 (idx5788)"
+              <p class="meshcat-card-label">2 个 token</p>
+              <iframe data-src="../media/html/idx5788/reconst_k2.html" title="重建 K=2 (idx5788)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.082</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">4 tokens</p>
-              <iframe data-src="./media/html/idx5788/reconst_k4.html" title="Reconstruction K=4 (idx5788)"
+              <p class="meshcat-card-label">4 个 token</p>
+              <iframe data-src="../media/html/idx5788/reconst_k4.html" title="重建 K=4 (idx5788)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.056</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">8 tokens</p>
-              <iframe data-src="./media/html/idx5788/reconst_k8.html" title="Reconstruction K=8 (idx5788)"
+              <p class="meshcat-card-label">8 个 token</p>
+              <iframe data-src="../media/html/idx5788/reconst_k8.html" title="重建 K=8 (idx5788)"
                 loading="lazy"></iframe>
               <p class="meshcat-card-metric">MSE = 0.027</p>
             </div>
 
             <div class="embed-card">
-              <p class="meshcat-card-label">ground truth</p>
-              <iframe data-src="./media/html/idx5788/ground_truth.html" title="Ground Truth Trajectory (idx5788)"
+              <p class="meshcat-card-label">真实轨迹</p>
+              <iframe data-src="../media/html/idx5788/ground_truth.html" title="真实轨迹 (idx5788)"
                 loading="lazy"></iframe>
             </div>
 
@@ -609,30 +566,27 @@
       </section>
 
       <section class="blog-section experiments-section" id="experiments">
-        <h2>8. Experiments</h2>
+        <h2>8. 实验</h2>
         <p>
-          We evaluate <span class="oat-name">OAT</span> across more than 20 tasks spanning four simulation benchmarks
-          (LIBERO, RoboMimic, MetaWorld, and RoboCasa) and real-world robot execution. The results
-          compare success rate, autoregressive depth and latency, modelability ablations, and
-          real-world task success, showing how ordered, high-modelability prefix decoding translates into both stronger
-          policies and more flexible inference.
+          我们在 20 多个任务上评估 <span class="oat-name">OAT</span>，覆盖四个仿真 benchmark
+          (LIBERO, RoboMimic, MetaWorld 和 RoboCasa) 以及真实机器人执行。实验比较成功率、自回归深度和延迟、
+          可建模性消融，以及真实任务成功率，展示有序、高可建模性的前缀解码如何带来更强策略和更灵活推理。
         </p>
 
         <div class="blog-reading-guide" id="reading-results">
-          <span class="blog-section-kicker">How to read the results</span>
+          <span class="blog-section-kicker">如何阅读结果</span>
           <ul>
             <li>
-              <strong>Look for monotonicity.</strong> <span class="oat-name">OAT</span><sub>1</sub>,
-              <span class="oat-name">OAT</span><sub>2</sub>, <span class="oat-name">OAT</span><sub>4</sub>, and
-              <span class="oat-name">OAT</span><sub>8</sub> should improve as more high-modelability tokens are decoded.
+              <strong>关注单调性。</strong> <span class="oat-name">OAT</span><sub>1</sub>,
+              <span class="oat-name">OAT</span><sub>2</sub>, <span class="oat-name">OAT</span><sub>4</sub> 和
+              <span class="oat-name">OAT</span><sub>8</sub> 应该随着解码更多高可建模性 token 而提升。
             </li>
             <li>
-              <strong>Compare equal-depth methods.</strong> <span class="oat-name">OAT</span><sub>8</sub> and QueST both
-              use eight tokens, so differences are mostly about token structure rather than token count.
+              <strong>比较同深度方法。</strong> <span class="oat-name">OAT</span><sub>8</sub> 和 QueST 都使用 8 个 token，
+              因此差异主要来自 token 结构，而不是 token 数量。
             </li>
             <li>
-              <strong>Separate latency from success.</strong> Shorter prefixes expose the speed/performance trade-off,
-              while the ablation tests whether the modelability objective is doing real work.
+              <strong>区分延迟和成功率。</strong> 更短前缀展示速度/性能权衡；消融实验检验可建模性目标是否真的起作用。
             </li>
           </ul>
         </div>
@@ -641,20 +595,19 @@
           <div class="result-stack">
 	      <article class="result-block">
 	        <div class="result-caption">
-		          <h3 class="title is-6"><span class="oat-name">OAT</span> Is Superior</h3>
+		          <h3 class="title is-6"><span class="oat-name">OAT</span> 更优</h3>
 	          <p>
-		            <span class="oat-name">OAT</span> consistently outperforms prior action tokenization schemes and
-	            matches or exceeds the strongest baselines, while additionally enabling prefix-based decoding that is
-		            unavailable to existing methods. <span class="oat-name">OAT</span><sub>8</sub> achieves the best
-	            performance across simulated and real-world benchmarks.
+		            <span class="oat-name">OAT</span> 稳定优于先前动作 tokenization 方案，并达到或超过最强 baseline；
+	            同时，它还支持现有方法不具备的基于前缀的解码。<span class="oat-name">OAT</span><sub>8</sub>
+	            在仿真和真实 benchmark 中取得最佳性能。
 	          </p>
 	        </div>
 	        <div class="result-table-wrap">
 	          <table class="result-table combined-result-table">
-	            <caption class="result-table-caption">Simulation success rate across manipulation benchmarks, with real-world success over 20 independent trials.</caption>
+	            <caption class="result-table-caption">操作 benchmark 上的仿真成功率，以及 20 次独立真实实验中的成功次数。</caption>
             <thead>
               <tr>
-                <th scope="col">Policy</th>
+                <th scope="col">策略</th>
                 <th scope="col">LIBERO</th>
                 <th scope="col">RoboMimic</th>
                 <th scope="col">MetaWorld</th>
@@ -679,28 +632,28 @@
 
 	      <article class="result-block">
 	        <div class="result-caption">
-	          <h3 class="title is-6">Compression Rate And Inference Latency</h3>
+	          <h3 class="title is-6">压缩率和推理延迟</h3>
 	          <p>
-		            <span class="oat-name">OAT</span> enables a smooth and controllable trade-off between compression
-			            rate, inference latency, and policy performance. With full decoding, <span class="oat-name">OAT</span> and QueST have the same amount of compute per inference.
+		            <span class="oat-name">OAT</span> 在压缩率、推理延迟和策略性能之间提供平滑且可控的权衡。
+			            在完整解码时，<span class="oat-name">OAT</span> 和 QueST 每次推理的计算量相同。
 	          </p>
 	        </div>
 	        <div class="result-table-wrap">
 	          <table class="result-table latency-table">
-	            <caption class="result-table-caption">Token count and policy inference latency in milliseconds.</caption>
+	            <caption class="result-table-caption">Token 数量和策略推理延迟，单位为毫秒。</caption>
             <thead>
               <tr>
-                <th scope="col" rowspan="2">Policy</th>
+                <th scope="col" rowspan="2">策略</th>
                 <th scope="colgroup" colspan="2">LIBERO</th>
                 <th scope="colgroup" colspan="2">RoboMimic</th>
                 <th scope="colgroup" colspan="2">MetaWorld</th>
                 <th scope="colgroup" colspan="2">RoboCasa</th>
               </tr>
               <tr>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
+                <th scope="col">#Tok.</th><th scope="col">延迟</th>
+                <th scope="col">#Tok.</th><th scope="col">延迟</th>
+                <th scope="col">#Tok.</th><th scope="col">延迟</th>
+                <th scope="col">#Tok.</th><th scope="col">延迟</th>
               </tr>
             </thead>
             <tbody>
@@ -719,19 +672,19 @@
 
 	      <article class="result-block">
 	        <div class="result-caption">
-	          <h3 class="title is-6">Token Modelability Is The Key To Success</h3>
+	          <h3 class="title is-6">Token 可建模性是成功关键</h3>
 	          <p>
-	            Across all benchmarks, removing the ordering-inducing objective leads to a consistent performance degradation.
-			            <span class="oat-name">OAT</span><sub>&times;</sub>'s performance is significantly worse than <span class="oat-name">OAT</span><sub>4</sub> and
-                <span class="oat-name">OAT</span><sub>8</sub>, and in some cases falls below QueST.
+	            在所有 benchmark 上，移除诱导排序的目标都会导致性能稳定下降。
+			            <span class="oat-name">OAT</span><sub>&times;</sub> 的性能显著弱于 <span class="oat-name">OAT</span><sub>4</sub> 和
+                <span class="oat-name">OAT</span><sub>8</sub>，部分情况下甚至低于 QueST。
 	          </p>
 	        </div>
 	        <div class="result-table-wrap">
 	          <table class="result-table">
-	            <caption class="result-table-caption">Ordering ablation success rate.</caption>
+	            <caption class="result-table-caption">排序消融成功率。</caption>
             <thead>
               <tr>
-                <th scope="col">Policy</th>
+                <th scope="col">策略</th>
                 <th scope="col">LIBERO</th>
                 <th scope="col">RoboMimic</th>
                 <th scope="col">MetaWorld</th>
@@ -759,19 +712,18 @@
       <div class="columns is-centered">
         <div class="column is-full">
           <div class="demo-video-box">
-            <h3 class="title is-4 publication-title experiments-subheading">Real-World Execution</h3>
+            <h3 class="title is-4 publication-title experiments-subheading">真实机器人执行</h3>
             <p class="section-lead has-text-justified">
-              More than 90 real-world robot execution videos cover successful and failed attempts across tasks, methods,
-              and camera views. Reloading randomizes the initial configurations. Halting during FAST execution is
-              primarily caused by undecodable action tokens. In such cases, the
-              policy is instructed not to produce any action and to remain stationary for safety reasons.
+              90 多个真实机器人执行视频覆盖不同任务、方法和相机视角下的成功与失败尝试。重新加载会随机化初始配置。
+              FAST 执行中的停止主要由不可解码动作 token 引起。在这类情况下，出于安全原因，
+              策略被要求不输出任何动作并保持静止。
             </p>
             <div class="demo-video-controls">
               <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-task-select">Task</label>
+                <label class="label is-size-7 has-text-weight-semibold" for="demo-task-select">任务</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select id="demo-task-select" aria-label="Choose real-world task">
+                    <select id="demo-task-select" aria-label="选择真实机器人任务">
                       <option value="pnp_ball">PnP Ball</option>
                       <option value="stack_cups">Stack Cups</option>
                     </select>
@@ -779,11 +731,11 @@
                 </div>
               </div>
               <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-method-select">Method</label>
+                <label class="label is-size-7 has-text-weight-semibold" for="demo-method-select">方法</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select id="demo-method-select" aria-label="Choose evaluation method" data-initial-method="oat8">
-                      <option value="all">All Methods</option>
+                    <select id="demo-method-select" aria-label="选择评测方法" data-initial-method="oat8">
+                      <option value="all">所有方法</option>
                       <option value="dp">DP</option>
                       <option value="bin">Bin</option>
                       <option value="fast">FAST</option>
@@ -797,10 +749,10 @@
                 </div>
               </div>
               <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-camera-select">Camera</label>
+                <label class="label is-size-7 has-text-weight-semibold" for="demo-camera-select">相机</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select id="demo-camera-select" aria-label="Choose video camera">
+                    <select id="demo-camera-select" aria-label="选择视频相机">
                       <option value="iphone">iPhone</option>
                       <option value="logi">Logitech</option>
                     </select>
@@ -810,7 +762,7 @@
               <div class="field">
                 <label class="label is-size-7 has-text-weight-semibold" aria-hidden="true">&nbsp;</label>
                 <div class="control">
-                  <button id="demo-video-reload" class="button is-fullwidth">Reload</button>
+                  <button id="demo-video-reload" class="button is-fullwidth">重新加载</button>
                 </div>
               </div>
             </div>
@@ -822,19 +774,19 @@
                 <div class="method-videos">
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -845,20 +797,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="bin"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="bin"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -869,20 +821,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="fast"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="fast"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -893,20 +845,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="quest"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="quest"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -917,20 +869,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -941,20 +893,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -965,20 +917,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -989,20 +941,20 @@
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
                       data-status="success">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Success execution</figcaption>
+                    <figcaption>成功执行</figcaption>
                   </figure>
                   <figure>
                     <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
                       data-status="failure">
-                      <p>Your browser does not support this video.</p>
+                      <p>你的浏览器不支持该视频。</p>
                     </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
+                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
                     </p>
-                    <figcaption>Failure execution</figcaption>
+                    <figcaption>失败执行</figcaption>
                   </figure>
                 </div>
               </div>
@@ -1017,54 +969,49 @@
       </section>
 
       <section class="blog-section" id="open-directions">
-        <h2>9. Closing thoughts and open directions.</h2>
+        <h2>9. 总结和开放方向。</h2>
         <p>
-          A recurring question throughout this project has been whether action tokens are still necessary in the presence
-          of powerful continuous models such as flow or diffusion policies. Our view is that future robotic systems will
-          likely combine both discrete and continuous representations rather than choosing one over the other. A concrete
-          example is the BEHAVIOR 2025 Challenge
-          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">winning solution</a>, which
-          integrates discrete action tokens with continuous action experts.
+          这个项目中反复出现的一个问题是：在 flow 或 diffusion policy 等强连续模型存在时，动作 token 是否仍然必要？
+          我们的观点是，未来机器人系统很可能会结合离散和连续表示，而不是二选一。一个具体例子是 BEHAVIOR 2025 Challenge 的
+          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">获胜方案</a>，
+          它把离散动作 token 与连续动作 expert 集成在一起。
         </p>
         <p>
-          A key capability enabled by <span class="oat-name">OAT</span> is prefix-based detokenization: actions can be decoded from variable-length
-          token prefixes, yielding an anytime trade-off between computation and action fidelity. In this work, the
-          autoregressive depth is fixed at deployment time. From an information-theoretic perspective, this is
-          suboptimal. The number of tokens required to represent an action chunk should depend on its intrinsic
-          complexity and the precision required for successful execution. Simple, predictable behaviors may admit compact
-          representations, whereas complex, contact-rich interactions may require deeper autoregressive refinement.
-          Estimating this action complexity online, and determining when additional tokens meaningfully reduce
-          uncertainty, remains an open problem. We view adaptive autoregressive depth as a natural and important
-          direction for future work, made possible precisely by <span class="oat-name">OAT</span>'s ordered and prefix-decodable structure. Ultimately,
-          we believe this estimation problem deserves a principled solution grounded in uncertainty and information,
-          rather than ad hoc engineering heuristics.
+          <span class="oat-name">OAT</span> 支持的一项关键能力是基于前缀的 detokenization：动作可以从可变长度 token 前缀解码出来，
+          从而在计算量和动作保真度之间实现 anytime 权衡。在本文中，自回归深度在部署时是固定的。
+          从信息论角度看，这并非最优。表示一个动作块所需的 token 数量应该取决于其内在复杂度，以及成功执行所需的精度。
+          简单、可预测的行为可以使用紧凑表示，而复杂、接触丰富的交互可能需要更深的自回归细化。
+          在线估计这种动作复杂度，并判断额外 token 何时能显著降低不确定性，仍然是开放问题。
+          我们认为，自适应自回归深度是未来工作的自然且重要方向，而这正是由 <span class="oat-name">OAT</span>
+          的有序、前缀可解码结构所支持的。最终，我们相信这个估计问题需要基于不确定性和信息的原则性解法，
+          而不是临时工程启发式。
         </p>
-        <div class="blog-opportunity-grid" aria-label="Future directions enabled by OAT">
+        <div class="blog-opportunity-grid" aria-label="OAT 支持的未来方向">
           <div>
-            <span>Adaptive depth</span>
-            <strong>Stop when the action is good enough.</strong>
-            <p>Simple motions could execute from short prefixes, while contact-rich steps could request more tokens.</p>
+            <span>自适应深度</span>
+            <strong>动作足够好时就停止。</strong>
+            <p>简单运动可以从短前缀执行，而接触丰富的步骤可以请求更多 token。</p>
           </div>
           <div>
-            <span>Uncertainty</span>
-            <strong>Use confidence to allocate compute.</strong>
-            <p>The policy could generate additional tokens only when uncertainty remains high or precision matters.</p>
+            <span>不确定性</span>
+            <strong>用置信度分配计算量。</strong>
+            <p>只有在不确定性仍高或精度很重要时，策略才生成额外 token。</p>
           </div>
           <div>
-            <span>VLA systems</span>
-            <strong>Expose a discrete action interface.</strong>
-            <p>Ordered action tokens could act as an auxiliary supervision signal or planning abstraction.</p>
+            <span>VLA 系统</span>
+            <strong>暴露离散动作接口。</strong>
+            <p>有序动作 token 可以作为辅助监督信号或规划抽象。</p>
           </div>
           <div>
-            <span>Hybrid control</span>
-            <strong>Combine tokens with continuous experts.</strong>
-            <p>Discrete action reasoning and diffusion or flow decoders do not need to be competing choices.</p>
+            <span>混合控制</span>
+            <strong>结合 token 与连续 expert。</strong>
+            <p>离散动作推理和 diffusion 或 flow 解码器不必相互竞争。</p>
           </div>
         </div>
       </section>
 
       <section class="blog-section blog-callout" id="appendix">
-        <h2>Appendix</h2>
+        <h2>附录</h2>
         <div class="appendix-stack">
           <div class="appendix-actions">
             <a class="appendix-link-button" href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">GitHub</a>
@@ -1072,7 +1019,7 @@
           <div class="bibtex-block appendix-row">
             <div class="bibtex-toolbar">
               <strong>BibTeX</strong>
-              <button type="button" class="bibtex-copy" data-copy-target="bibtex-code">Copy</button>
+              <button type="button" class="bibtex-copy" data-copy-target="bibtex-code">复制</button>
             </div>
             <pre><code id="bibtex-code">@inproceedings{liu2026orderedactiontokenization, 
     title={OAT: Ordered Action Tokenization}, 

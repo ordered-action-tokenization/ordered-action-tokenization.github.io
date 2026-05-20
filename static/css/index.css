@@ -1078,6 +1078,11 @@ figure {
   color: var(--oat-accent-dark);
 }
 
+.blog-topbar nav a[aria-current="page"] {
+  color: #fff;
+  font-weight: 700;
+}
+
 .blog-layout {
   width: min(100% - 2rem, var(--oat-wide));
   margin: 0 auto;

@@ -1,6 +1,11 @@
+const SITE_LANG = document.documentElement.lang?.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+const SITE_ASSET_BASE = document.documentElement.dataset.assetBase || '.';
+const assetPath = (path) => `${SITE_ASSET_BASE}/${path.replace(/^\.?\//, '')}`;
+const localized = (en, zh) => (SITE_LANG === 'zh' ? zh : en);
+
 const DEMO_VIDEO_ROOTS = {
-  iphone: './media/video/real_iphone',
-  logi: './media/video/real_logi',
+  iphone: assetPath('media/video/real_iphone'),
+  logi: assetPath('media/video/real_logi'),
 };
 
 const DEMO_VIDEO_INVENTORY = {
@@ -208,7 +213,7 @@ function setupMeshcatControls() {
     if (!iframe.getAttribute('src')) {
       const placeholder = document.createElement('div');
       placeholder.className = 'iframe-placeholder';
-      placeholder.textContent = 'Loading 3D visualization.';
+      placeholder.textContent = localized('Loading 3D visualization.', '正在加载 3D 可视化。');
       placeholder.setAttribute('aria-hidden', 'true');
       iframe.hidden = true;
       iframe.insertAdjacentElement('afterend', placeholder);
@@ -405,7 +410,11 @@ function setupDemoVideos() {
     });
   };
 
-  const setVideoPlaceholder = (video, placeholder, message = 'Video loads when this section is visible.') => {
+  const setVideoPlaceholder = (
+    video,
+    placeholder,
+    message = localized('Video loads when this section is visible.', '视频会在此区域进入视野后加载。')
+  ) => {
     video.hidden = true;
     placeholder?.classList.remove('is-hidden');
     if (placeholder) {
@@ -413,7 +422,7 @@ function setupDemoVideos() {
     }
   };
 
-  const posterFor = (src) => src.replace('./media/video/', './media/poster/').replace(/\.mp4$/, '.jpg');
+  const posterFor = (src) => src.replace('media/video/', 'media/poster/').replace(/\.mp4$/, '.jpg');
 
   const refreshGrid = () => {
     const task = taskSelect.value;
@@ -450,7 +459,7 @@ function setupDemoVideos() {
           video.setAttribute('preload', 'none');
           delete video.dataset.currentSrc;
           video.load();
-          setVideoPlaceholder(video, placeholder, 'Video unavailable for this task.');
+          setVideoPlaceholder(video, placeholder, localized('Video unavailable for this task.', '该任务没有可用视频。'));
           return;
         }
 
@@ -533,32 +542,40 @@ function setupBlogTokenizerLab() {
 
   const data = {
     binning: {
-      compression: [35, 'Low'],
-      decodability: [100, 'Yes'],
-      ordering: [20, 'Low'],
-      summary:
+      compression: [35, localized('Low', '低')],
+      decodability: [100, localized('Yes', '是')],
+      ordering: [20, localized('Low', '低')],
+      summary: localized(
         'Binning is universally decodable but produces long, flat token sequences that are hard for autoregressive policies to model efficiently.',
+        '分箱方法可以全域解码，但会产生又长又扁平的 token 序列，难以让自回归策略高效建模。'
+      ),
     },
     fast: {
-      compression: [60, 'Medium'],
-      decodability: [0, 'No'],
-      ordering: [60, 'Medium'],
-      summary:
+      compression: [60, localized('Medium', '中')],
+      decodability: [0, localized('No', '否')],
+      ordering: [60, localized('Medium', '中')],
+      summary: localized(
         'FAST has useful frequency structure for next-token prediction, but variable-length BPE can make arbitrary generated sequences undefined for fixed-size action decoding.',
+        'FAST 的频域结构有利于下一个 token 预测，但可变长度 BPE 可能让任意生成序列无法解码成固定大小的动作表示。'
+      ),
     },
     latent: {
-      compression: [86, 'High'],
-      decodability: [100, 'Yes'],
-      ordering: [36, 'Low'],
-      summary:
+      compression: [86, localized('High', '高')],
+      decodability: [100, localized('Yes', '是')],
+      ordering: [36, localized('Low', '低')],
+      summary: localized(
         'Vanilla latents can compress and decode well, but their token positions often have weak autoregressive modelability.',
+        '普通 latent token 可以较好地压缩和解码，但 token 位置通常缺少强自回归可建模性。'
+      ),
     },
     oat: {
-      compression: [90, 'High'],
-      decodability: [100, 'Yes'],
-      ordering: [92, 'High'],
-      summary:
+      compression: [90, localized('High', '高')],
+      decodability: [100, localized('Yes', '是')],
+      ordering: [92, localized('High', '高')],
+      summary: localized(
         'OAT is designed to satisfy all three desiderata: compact action chunks, total decoding, and high-modelability token positions for autoregressive generation.',
+        'OAT 被设计为同时满足三项要求：紧凑的动作块、全域可解码，以及适合自回归生成的高可建模 token 位置。'
+      ),
     },
   };
 
@@ -628,7 +645,7 @@ function setupBibtexCopy() {
       return;
     }
 
-    const originalLabel = button.textContent || 'Copy';
+    const originalLabel = button.textContent || localized('Copy', '复制');
     const setTemporaryLabel = (label) => {
       button.textContent = label;
       window.setTimeout(() => {
@@ -661,13 +678,13 @@ function setupBibtexCopy() {
 
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(
-          () => setTemporaryLabel('Copied'),
-          () => setTemporaryLabel(fallbackCopy(text) ? 'Copied' : 'Error')
+          () => setTemporaryLabel(localized('Copied', '已复制')),
+          () => setTemporaryLabel(fallbackCopy(text) ? localized('Copied', '已复制') : localized('Error', '错误'))
         );
         return;
       }
 
-      setTemporaryLabel(fallbackCopy(text) ? 'Copied' : 'Error');
+      setTemporaryLabel(fallbackCopy(text) ? localized('Copied', '已复制') : localized('Error', '错误'));
     });
   });
 }
@@ -684,10 +701,22 @@ function setupBlogPrefixLab() {
   }
 
   const summaries = {
-    1: 'One token decodes a complete action chunk, but it is a broad, offset motion that misses the detailed route.',
-    2: 'Two tokens keep the chunk executable while bending the trajectory toward the main ground-truth arc.',
-    4: 'Four tokens recover the local waypoint structure and follow the mid-trajectory correction.',
-    8: 'Eight tokens nearly overlap the ground truth, leaving only small residual error.',
+    1: localized(
+      'One token decodes a complete action chunk, but it is a broad, offset motion that misses the detailed route.',
+      '1 个 token 可以解码出完整动作块，但轨迹较粗糙，与真实细节有明显偏移。'
+    ),
+    2: localized(
+      'Two tokens keep the chunk executable while bending the trajectory toward the main ground-truth arc.',
+      '2 个 token 保持动作块可执行，并让轨迹开始贴近真实轨迹的主要弧线。'
+    ),
+    4: localized(
+      'Four tokens recover the local waypoint structure and follow the mid-trajectory correction.',
+      '4 个 token 恢复了局部路标结构，并跟随轨迹中段的修正。'
+    ),
+    8: localized(
+      'Eight tokens nearly overlap the ground truth, leaving only small residual error.',
+      '8 个 token 几乎与真实轨迹重合，只留下很小的残差。'
+    ),
   };
   const groundTruth = [
     [70, 180],
@@ -730,7 +759,7 @@ function setupBlogPrefixLab() {
       choice.setAttribute('aria-pressed', String(isActive));
     });
 
-    title.textContent = `${value} prefix token${value === 1 ? '' : 's'}`;
+    title.textContent = localized(`${value} prefix token${value === 1 ? '' : 's'}`, `${value} 个前缀 token`);
     copy.textContent = summaries[value];
     decodedLine.setAttribute('points', decoded.map(formatPoint).join(' '));
     decodedPoints.forEach((point, index) => {
