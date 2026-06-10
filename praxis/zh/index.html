@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Praxis 是用于 VLA policy 研究的可控实验平台，由 praxis-vla 和 praxis-eval 组成。">
+  <meta property="og:title" content="Praxis：用于 VLA Policy 研究的可控实验平台">
+  <meta property="og:description"
+    content="用于构建 VLA policy cells、通过共享 driver 评测，并让比较过程可审计的受控实验平台。">
+  <meta property="og:image" content="https://ordered-action-tokenization.github.io/praxis/media/fig/tikz/teaser.png">
+  <meta property="og:url" content="https://ordered-action-tokenization.github.io/praxis/zh/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://ordered-action-tokenization.github.io/praxis/zh/">
+  <link rel="alternate" hreflang="en" href="https://ordered-action-tokenization.github.io/praxis/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://ordered-action-tokenization.github.io/praxis/zh/">
+  <link rel="alternate" hreflang="x-default" href="https://ordered-action-tokenization.github.io/praxis/">
+  <link rel="icon" href="../../token/favicon.svg" type="image/svg+xml">
+  <title>Praxis：用于 VLA Policy 研究的可控实验平台 | 中文</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="../../token/static/css/bulma.min.css">
+  <link rel="stylesheet" href="../../token/static/css/index.css">
+  <link rel="stylesheet" href="../../token/static/css/misc.css">
+
+  <style>
+    .blog-side-nav a {
+      white-space: nowrap;
+      font-size: 0.72rem;
+      letter-spacing: 0;
+      padding-left: 0.42rem;
+      padding-right: 0.42rem;
+    }
+
+    body.blog-page {
+      overflow-x: visible;
+    }
+
+    .blog-side-nav {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 0.25rem 0;
+    }
+
+    .blog-side-nav a:hover,
+    .blog-side-nav a[aria-current="true"] {
+      background: transparent;
+    }
+
+    .blog-section-kicker {
+      display: block;
+      width: max-content;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--oat-muted);
+      letter-spacing: 0.08em;
+      padding: 0;
+    }
+
+    .praxis-hero-title {
+      max-width: 1120px;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .praxis-title-line {
+      display: block;
+    }
+
+    .praxis-workmark {
+      font-family: var(--oat-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-style: normal;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .blog-metric-strip.praxis-hero-metrics {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0;
+      margin: 1.35rem 0 3rem;
+      padding: 0.95rem 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .blog-metric-strip.praxis-hero-metrics > div {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 0 0.85rem;
+    }
+
+    .blog-metric-strip.praxis-hero-metrics > div + div {
+      border-left: 1px solid var(--oat-line);
+    }
+
+    .blog-metric-strip.praxis-hero-metrics span {
+      color: var(--oat-accent);
+      font-size: 0.98rem;
+      line-height: 1.1;
+    }
+
+    .blog-metric-strip.praxis-hero-metrics strong {
+      margin-top: 0.35rem;
+      color: var(--oat-muted);
+      font-size: 0.76rem;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+
+    .praxis-paper-minute.blog-editorial-panel {
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
+    }
+
+    .praxis-paper-minute > p,
+    .praxis-paper-minute .blog-summary-list {
+      max-width: 980px;
+    }
+
+    .praxis-paper-minute .blog-summary-list {
+      gap: 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .praxis-paper-minute .blog-summary-list li {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 1rem 0 1rem 2.7rem;
+    }
+
+    .praxis-paper-minute .blog-summary-list li + li {
+      border-top: 1px solid var(--oat-line);
+    }
+
+    .praxis-paper-minute .blog-summary-list li::before {
+      left: 0;
+      top: 1.1rem;
+      background: var(--oat-ink);
+    }
+
+    .praxis-result-figure {
+      margin: 1.8rem 0;
+      overflow-x: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .praxis-result-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .praxis-result-figure.is-wide img {
+      min-width: 860px;
+    }
+
+    .praxis-result-figure figcaption {
+      margin-top: 0.75rem;
+      color: var(--oat-muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 980px) {
+      .blog-metric-strip.praxis-hero-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div:nth-child(4) {
+        border-left: 0;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .blog-axis-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .blog-layout {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .blog-article {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible;
+      }
+
+      .blog-hero,
+      .blog-section,
+      .blog-editorial-panel,
+      .blog-dek,
+      .blog-authors,
+      .blog-affiliations,
+      .blog-project-links,
+      .blog-figure {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .blog-figure,
+      .blog-figure-paper,
+      .blog-figure-teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible;
+      }
+
+      .praxis-hero-title {
+        max-width: 100%;
+        font-size: 2.05rem !important;
+        line-height: 1.13 !important;
+      }
+
+      .blog-dek,
+      .blog-authors,
+      .blog-affiliations {
+        width: min(100%, 21rem) !important;
+        max-width: 21rem !important;
+        margin-left: auto;
+        margin-right: auto;
+        overflow-wrap: anywhere;
+        white-space: normal !important;
+        text-align: center;
+      }
+
+      .blog-dek {
+        font-size: 1rem !important;
+      }
+
+      .blog-authors a,
+      .blog-affiliations a {
+        display: inline;
+        overflow-wrap: anywhere;
+        white-space: normal !important;
+      }
+
+      .blog-section h2 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+
+      .blog-project-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .blog-project-links a {
+        width: 100%;
+        min-width: 0;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+        text-align: center;
+      }
+
+      .blog-figure img,
+      .blog-figure-paper img {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .blog-figure-teaser {
+        overflow: visible;
+      }
+
+      .blog-figure-teaser img {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .praxis-result-figure.is-wide img {
+        min-width: min(760px, 220vw);
+      }
+
+      .blog-metric-strip.praxis-hero-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+        margin: 1rem 0 2.25rem;
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div {
+        padding: 0.75rem 0.7rem;
+        border-top: 1px solid var(--oat-line);
+        border-left: 0;
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div:nth-child(-n + 2) {
+        border-top: 0;
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div:nth-child(even) {
+        border-left: 1px solid var(--oat-line);
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div:nth-child(4) {
+        border-left: 1px solid var(--oat-line);
+      }
+
+    }
+
+    @media (max-width: 520px) {
+      .blog-metric-strip.praxis-hero-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div,
+      .blog-metric-strip.praxis-hero-metrics > div:nth-child(even) {
+        border-left: 0;
+      }
+
+      .blog-metric-strip.praxis-hero-metrics > div:nth-child(2) {
+        border-top: 1px solid var(--oat-line);
+      }
+    }
+  </style>
+
+  <script defer src="../../token/static/js/index.js"></script>
+</head>
+
+<body class="blog-page praxis-page" id="top">
+  <header class="blog-topbar">
+    <a href="../../" class="blog-home">Ordered Action Tokenization</a>
+    <nav aria-label="项目链接和语言">
+      <a href="../praxis.pdf">PDF</a>
+      <a href="https://chaoqi-liu.com/praxis-vla/" target="_blank" rel="noopener"><span class="praxis-workmark">praxis-vla</span></a>
+      <a href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener"><span class="praxis-workmark">praxis-eval</span></a>
+      <a href="../" hreflang="en" lang="en">English</a>
+      <a href="./" hreflang="zh-Hans" lang="zh-Hans" aria-current="page">中文</a>
+    </nav>
+  </header>
+
+  <main class="blog-layout">
+    <aside class="blog-side-nav" aria-label="页面章节">
+      <a href="#paper-minute">一分钟</a>
+      <a href="#problem">问题</a>
+      <a href="#components">两个组件</a>
+      <a href="#matrix">设计矩阵</a>
+      <a href="#cells">Policy cells</a>
+      <a href="#evaluation">评测边界</a>
+      <a href="#extend">扩展路径</a>
+      <a href="#appendix">附录</a>
+    </aside>
+
+    <article class="blog-article">
+      <header class="blog-hero">
+        <h1 class="praxis-hero-title">
+          <span class="praxis-title-line">Praxis</span>
+          <span class="praxis-title-line">用于 VLA Policy 研究的</span>
+          <span class="praxis-title-line">可控实验平台</span>
+        </h1>
+        <p class="blog-dek">
+          Praxis 把 VLA 实验整理成显式声明的 policy cells：先写清 objective、动作表示、backbone 和 evaluator，
+          再留下可审计的比较记录。
+        </p>
+        <p class="blog-authors">
+          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>
+        </p>
+        <p class="blog-affiliations"><sup>1</sup>Stanford University</p>
+        <div class="blog-project-links" aria-label="项目链接">
+          <a href="../praxis.pdf">PDF</a>
+          <a href="https://chaoqi-liu.com/praxis-vla/" target="_blank" rel="noopener"><span class="praxis-workmark">praxis-vla</span></a>
+          <a href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener"><span class="praxis-workmark">praxis-eval</span></a>
+        </div>
+      </header>
+
+      <figure class="blog-figure blog-figure-paper blog-figure-teaser">
+        <img src="../media/fig/tikz/teaser.png"
+          alt="Praxis 坐标系，覆盖 objectives、VLM backbones 和 action codecs"
+          width="1679" height="777">
+      </figure>
+
+      <div class="blog-metric-strip praxis-hero-metrics" aria-label="Praxis 亮点">
+        <div>
+          <span><span class="praxis-workmark">praxis-vla</span></span>
+          <strong>用显式 cells 构建 policy</strong>
+        </div>
+        <div>
+          <span><span class="praxis-workmark">praxis-eval</span></span>
+          <strong>统一本地和远程评测边界</strong>
+        </div>
+        <div>
+          <span>36 cells</span>
+          <strong>公开版本覆盖 objectives 与 backbones</strong>
+        </div>
+        <div>
+          <span>3 objectives</span>
+          <strong>BAR、KI 和连续 flow matching</strong>
+        </div>
+        <div>
+          <span>6 codecs</span>
+          <strong>Bin、FAST、QueST、ACodec、OAT 和 bOAT</strong>
+        </div>
+        <div>
+          <span>3 backbones</span>
+          <strong>SmolVLM、Qwen3-VL 和 PaliGemma2</strong>
+        </div>
+      </div>
+
+      <section class="blog-section blog-editorial-panel praxis-paper-minute" id="paper-minute">
+        <span class="blog-section-kicker">一分钟读懂 Praxis</span>
+        <h2>VLA 研究需要实验平台，而不是又一个私有栈。</h2>
+        <p>
+          一个 rollout 分数常常把 objective、tokenizer、backbone、simulator adapter、normalization state 和 serving path
+          全部压成一个数字。Praxis 要做的是在训练和评测开始前，把这些选择先写清楚。
+        </p>
+        <ol class="blog-summary-list">
+          <li>
+            <strong>问题：</strong>很多 VLA 比较一次替换太多组件，最后分数差异很难归因。
+          </li>
+          <li>
+            <strong>方法：</strong><span class="praxis-workmark">praxis-vla</span> 定义 policy cells，<span class="praxis-workmark">praxis-eval</span>
+            固定 benchmark drivers 看到的 reset/act 边界。
+          </li>
+          <li>
+            <strong>目标：</strong>一个新研究可以只添加一个 objective、codec、backbone 或 benchmark，而不必 fork 整个实验平台。
+          </li>
+        </ol>
+      </section>
+
+      <section class="blog-section" id="problem">
+        <span class="blog-section-kicker">为什么需要 Praxis</span>
+        <h2>Benchmarks 追踪能力，Praxis 追踪比较本身。</h2>
+        <p>
+          现在的 VLA 系统已经是完整 pipeline。如果一篇文章同时替换 action tokens、VLM family、processor logic、
+          action normalization 和 rollout glue，最后比较的可能是两个 pipeline，而不是一个清晰的研究想法。
+        </p>
+        <p>
+          Praxis 把讨论单位从系统名字改成 policy cell。这个 cell 会声明当前使用的 objective、
+          action representation、VLM backbone 和 evaluator interface。
+        </p>
+        <dl class="blog-glossary-grid">
+          <div>
+            <dt>Policy cell</dt>
+            <dd>一个被明确声明的组合：objective、action representation、backbone，以及 evaluator binding。</dd>
+          </div>
+          <div>
+            <dt>Study axis</dt>
+            <dd>这次研究真正想改变的那条轴，比如 OAT 对 bOAT，或者 BAR 对 KI。</dd>
+          </div>
+          <div>
+            <dt>Evaluation boundary</dt>
+            <dd>一条窄的 reset/act protocol，用来保证 simulator 语义仍由 benchmark driver 管理。</dd>
+          </div>
+          <div>
+            <dt>Artifact record</dt>
+            <dd>检查结果时需要的 metrics、configs、action specs、logs 和 runtime metadata。</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="blog-section" id="components">
+        <span class="blog-section-kicker">两个组件</span>
+        <h2>Praxis = <span class="praxis-workmark">praxis-vla</span> + <span class="praxis-workmark">praxis-eval</span>。</h2>
+        <p>
+          Praxis 不是某一个 repository 的名字。<span class="praxis-workmark">praxis-vla</span> 负责 policy 侧的 matrix，
+          <span class="praxis-workmark">praxis-eval</span> 负责面向 benchmark 的 protocol。两者合起来，才让一个 cell
+          可以被构建、运行和检查。
+        </p>
+        <figure class="praxis-result-figure is-wide">
+          <img src="../media/fig/tikz/cell_assembly.png"
+            alt="Policy cell 从 objective、action codec、VLM adapter 和 evaluation binding 装配到共享 interfaces"
+            width="1874" height="642">
+          <figcaption>
+            本地选择通过 objective、action codec、VLM adapter 和 evaluation binding 进入系统；被支持的 cells
+            会携带共享的 policy I/O、action specs、prefix state、artifacts、environment setup 和 runtime interfaces。
+          </figcaption>
+        </figure>
+        <div class="blog-axis-panel" aria-label="Praxis 组成部分">
+          <div>
+            <span>Policy 侧</span>
+            <strong><span class="praxis-workmark">praxis-vla</span></strong>
+            <p>注册 objectives、action representations、VLM adapters、policy I/O 和保存下来的 artifacts。</p>
+          </div>
+          <div>
+            <span>Evaluation 侧</span>
+            <strong><span class="praxis-workmark">praxis-eval</span></strong>
+            <p>通过共享 reset/act interface，让本地或远程 policies 跑在 benchmark drivers 上。</p>
+          </div>
+          <div>
+            <span>核心约束</span>
+            <strong>一次只改变一件事。</strong>
+            <p>让周围 protocol 保持可见，这样读者看到的是一项研究，而不是孤零零的分数。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="blog-section" id="matrix">
+        <span class="blog-section-kicker">Policy 设计矩阵</span>
+        <h2>一个 VLA policy 先成为 cell，再成为 claim。</h2>
+        <p>
+          Tokenized policies 占据 objective、action-codec 和 backbone 三条轴。Tokenless flow-matching policies
+          位于 objective-backbone 平面上。当前 release 是具体的，但这些轴本身刻意保持开放。
+        </p>
+        <figure class="praxis-result-figure is-wide">
+          <img src="../media/fig/tikz/design_matrix.png"
+            alt="Praxis policy-cell 几何结构，包含 objective layers、action-codec axis 和 VLM-backbone axis"
+            width="1768" height="676">
+          <figcaption>
+            公开 release 的数量会跨 backbones 展开：18 个 BAR cells、15 个 KI cells 和 3 个 FM cells。
+            轴上的省略号表示未来 objectives、codecs 和 backbones 可以继续进入。
+          </figcaption>
+        </figure>
+        <div class="blog-axis-panel" aria-label="矩阵坐标轴">
+          <div>
+            <span>Objective axis</span>
+            <strong>动作生成发生在哪里？</strong>
+            <p>BAR 预测 action-token blocks，KI 用 tokens 监督 VLM context，FM 直接预测连续 action chunks。</p>
+          </div>
+          <div>
+            <span>Action axis</span>
+            <strong>policy 在建模什么动作语言？</strong>
+            <p>Bin、FAST、QueST、ACodec、OAT 和 bOAT 展示了不同 rate、distortion 与建模难度之间的 tradeoffs。</p>
+          </div>
+          <div>
+            <span>Backbone axis</span>
+            <strong>控制使用哪一种 VLM context？</strong>
+            <p>SmolVLM、Qwen3-VL 和 PaliGemma2 被视为可替换的 policy inputs，preprocessing 由 adapter 管理。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="blog-section" id="cells">
+        <span class="blog-section-kicker">Policy cells</span>
+        <h2>每个 objective 隔离一种不同的控制假设。</h2>
+        <p>
+          Policy-cell notation 不只是记账。它会在 training、loading、serving 或 rollout 开始前，先声明这次比较打算改变什么。
+        </p>
+        <figure class="praxis-result-figure is-wide">
+          <img src="../media/fig/tikz/objective_families.png"
+            alt="BAR、FM 和 KI objective families，展示动作生成由 VLM lane 还是 action expert lane 负责"
+            width="1429" height="525">
+          <figcaption>
+            BAR 让 VLM 生成 scheduled action-token blocks。FM 把最终控制交给连续 expert。
+            KI 用 token 监督 VLM context，再通过 stop-gradient flow expert 输出控制。
+          </figcaption>
+        </figure>
+        <dl class="blog-glossary-grid">
+          <div>
+            <dt>BAR</dt>
+            <dd>按 schedule 分块生成 action tokens，再 detokenize 成可执行控制。</dd>
+          </div>
+          <div>
+            <dt>KI</dt>
+            <dd>把 action tokens 作为 VLM 监督信号，同时由连续 expert 负责最终动作生成。</dd>
+          </div>
+          <div>
+            <dt>FM</dt>
+            <dd>移除离散 token 轴，直接预测连续 action chunks。</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="blog-section" id="evaluation">
+        <span class="blog-section-kicker">评测边界</span>
+        <h2>Evaluation 应该是 protocol，不是藏起来的 glue。</h2>
+        <p>
+          一个 policy 只有放在具体上下文里才有意义：它接收什么 observations，需要满足什么 action convention，
+          在哪些 tasks 上 rollout，以及由哪个 simulator runtime 执行动作。<span class="praxis-workmark">praxis-eval</span>
+          把这些责任分开。
+        </p>
+        <figure class="praxis-result-figure is-wide">
+          <img src="../media/fig/tikz/praxis_eval_boundary.png"
+            alt="praxis-eval boundary 将 benchmark-owned evaluation 与 policy-owned execution 分开"
+            width="1772" height="712">
+          <figcaption>
+            Benchmark drivers 负责 rollout semantics、metrics 和 artifacts。Policies 接收声明好的 observations，
+            并通过同一个本地或远程 protocol 返回 actions。
+          </figcaption>
+        </figure>
+        <ul class="blog-property-list">
+          <li><strong>Benchmark-owned semantics.</strong> Task selection、simulator stepping、metrics 和 records 留在 driver 内部。</li>
+          <li><strong>Policy-owned execution.</strong> policy 暴露 reset 和 act 行为，但不接管 evaluator。</li>
+          <li><strong>Structured records.</strong> 每个 rollout 都可以携带 metrics、artifacts、metadata 和 runtime details，供之后检查。</li>
+        </ul>
+      </section>
+
+      <section class="blog-section" id="extend">
+        <span class="blog-section-kicker">扩展路径</span>
+        <h2>新的研究应该扩展一条轴，而不是 fork 整个 lab。</h2>
+        <p>
+          Praxis 不是封闭清单。它提供的是一种结构：在尽可能保留共享 interfaces 的前提下，添加新的 objectives、
+          action representations、backbones 和 benchmarks。
+        </p>
+        <ol class="blog-step-list">
+          <li><strong>添加 objective。</strong>声明 supervision signal、inference procedure、rollout-state 需求，以及兼容的 action representations。</li>
+          <li><strong>添加 action representation。</strong>声明 token space、decode semantics、prefix behavior、schedules 和 validity assumptions。</li>
+          <li><strong>添加 VLM backbone。</strong>把 processor、prompt format、image handling、prefix state、hidden geometry 和 cache behavior 局部化。</li>
+          <li><strong>添加 benchmark。</strong>把 simulator semantics 留在 driver 中，同时暴露 policy-facing observations、actions、metrics 和 records。</li>
+        </ol>
+      </section>
+
+      <section class="blog-section blog-callout" id="appendix">
+        <h2>附录</h2>
+        <div class="appendix-stack">
+          <p>
+            对使用 Praxis 感兴趣的读者，可以先看
+            <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-vla/" target="_blank" rel="noopener"><span class="praxis-workmark">praxis-vla</span></a>
+            和
+            <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener"><span class="praxis-workmark">praxis-eval</span></a>。
+          </p>
+          <div class="bibtex-block appendix-row">
+            <div class="bibtex-toolbar">
+              <strong>BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="praxis-bibtex-code">复制</button>
+            </div>
+            <pre><code id="praxis-bibtex-code">@misc{liu2026praxis,
+  title={Praxis: A Controlled Laboratory for Vision-Language-Action Policy Research},
+  author={Liu, Chaoqi},
+  year={2026},
+  url={https://ordered-action-tokenization.github.io/praxis/praxis.pdf}
+}</code></pre>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+</body>
+
+</html>

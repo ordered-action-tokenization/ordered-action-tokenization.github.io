@@ -1,1036 +1,360 @@
 <!DOCTYPE html>
-<html lang="zh-Hans" data-asset-base="..">
+<html lang="zh-Hans">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="Ordered Action Tokenization 是一种面向自回归机器人策略的有序、前缀可解码动作表示，论文已被 RSS 2026 接收。">
-  <meta property="og:title" content="Ordered Action Tokenization | 中文">
-  <meta property="og:description"
-    content="OAT 为自回归机器人策略引入有序、前缀可解码的动作 token，并提供交互式解释、MeshCat 重建和策略结果。">
-  <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser-white.png">
+  <meta name="description" content="Ordered Action Tokenization。">
+  <meta property="og:title" content="Ordered Action Tokenization">
+  <meta property="og:description" content="Ordered Action Tokenization。">
   <meta property="og:url" content="https://ordered-action-tokenization.github.io/zh/">
-  <meta property="og:type" content="article">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://ordered-action-tokenization.github.io/zh/">
   <link rel="alternate" hreflang="en" href="https://ordered-action-tokenization.github.io/">
   <link rel="alternate" hreflang="zh-Hans" href="https://ordered-action-tokenization.github.io/zh/">
-  <link rel="alternate" hreflang="x-default" href="https://ordered-action-tokenization.github.io/">
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <title>Ordered Action Tokenization | 中文</title>
+  <link rel="icon" href="../token/favicon.svg" type="image/svg+xml">
+  <title>Ordered Action Tokenization</title>
+  <style>
+    :root {
+      --color-primary: #0066cc;
+      --color-primary-focus: #0071e3;
+      --color-ink: #1d1d1f;
+      --color-muted: #6e6e73;
+      --color-muted-strong: #333333;
+      --color-hairline: #e0e0e0;
+      --color-canvas: #ffffff;
+      --color-dark: #000000;
+      --color-on-dark: #ffffff;
+      --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --page-max: 1120px;
+    }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap"
-    rel="stylesheet">
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
 
-  <link rel="stylesheet" href="../static/css/bulma.min.css">
-  <link rel="stylesheet" href="../static/css/index.css">
+    html {
+      background: var(--color-canvas);
+      color: var(--color-ink);
+      font-family: var(--font-text);
+      scroll-behavior: smooth;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-  <link rel="stylesheet" href="../static/css/misc.css">
+    body {
+      min-width: 300px;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--color-canvas);
+      color: var(--color-ink);
+      font-family: var(--font-text);
+      font-size: 17px;
+      line-height: 1.47;
+    }
 
-  <script defer src="../static/js/index.js"></script>
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--color-primary-focus);
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--color-primary-focus);
+      outline-offset: 3px;
+      border-radius: 5px;
+    }
+
+    p,
+    h1,
+    h3 {
+      margin: 0;
+    }
+
+    .global-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 44px;
+      background: var(--color-dark);
+      box-shadow: inset 0 -1px rgba(255, 255, 255, 0.08);
+      color: var(--color-on-dark);
+    }
+
+    .global-nav__inner {
+      width: min(100%, var(--page-max));
+      min-height: 44px;
+      margin: 0 auto;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    .global-nav__brand,
+    .global-nav__links a {
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 12px;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .global-nav__brand {
+      font-weight: 600;
+    }
+
+    .global-nav__links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .global-nav__links::-webkit-scrollbar {
+      display: none;
+    }
+
+    .global-nav__links a:hover,
+    .global-nav__brand:hover {
+      color: var(--color-on-dark);
+    }
+
+    .section-shell,
+    .intro {
+      width: min(100%, var(--page-max));
+      margin: 0 auto;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    .intro {
+      padding-top: 58px;
+      padding-bottom: 30px;
+    }
+
+    .intro h1 {
+      max-width: 880px;
+      color: var(--color-ink);
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: 0;
+      overflow-wrap: break-word;
+    }
+
+    .intro p {
+      max-width: 1000px;
+      margin-top: 18px;
+      color: var(--color-muted-strong);
+      font-size: 20px;
+      line-height: 1.42;
+    }
+
+    .index-section {
+      padding-top: 24px;
+      padding-bottom: 86px;
+    }
+
+    .index-list {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--color-hairline);
+    }
+
+    .index-entry {
+      display: block;
+      padding: 30px 0;
+      border-bottom: 1px solid var(--color-hairline);
+    }
+
+    .index-entry__copy {
+      max-width: 80%;
+      min-width: 0;
+    }
+
+    .index-entry h3 {
+      color: var(--color-ink);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.18;
+    }
+
+    .index-entry h3 a {
+      color: var(--color-ink);
+    }
+
+    .index-entry h3 a:hover {
+      color: var(--color-primary);
+    }
+
+    .index-entry__status {
+      color: var(--color-muted-strong);
+      font-size: 0.72em;
+      font-weight: 500;
+    }
+
+    .index-entry p {
+      margin-top: 10px;
+      color: var(--color-muted-strong);
+      font-size: 17px;
+    }
+
+    .index-entry__links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .index-entry__links > a,
+    .index-entry__links > span {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d8e8f8;
+      border-radius: 9999px;
+      padding: 5px 10px;
+      background: #f7fbff;
+      color: #004a99;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .index-entry__links > a:hover {
+      border-color: #c8def4;
+      background: #eaf4ff;
+      color: #003f85;
+    }
+
+    .index-entry__links > span {
+      border-color: var(--color-hairline);
+      background: #f5f5f7;
+      color: var(--color-muted);
+      cursor: default;
+    }
+
+    .x-symbol {
+      display: inline-block;
+      font-size: 1.12em;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    @media (max-width: 760px) {
+      .index-entry__copy {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .global-nav__inner,
+      .section-shell,
+      .intro {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .intro {
+        padding-top: 42px;
+        padding-bottom: 24px;
+      }
+
+      .intro h1 {
+        font-size: 40px;
+      }
+
+      .intro p {
+        font-size: 18px;
+      }
+
+      .index-section {
+        padding-top: 18px;
+        padding-bottom: 54px;
+      }
+
+      .index-entry {
+        padding: 26px 0;
+      }
+    }
+  </style>
 </head>
 
-<body class="blog-page" id="top">
-  <header class="blog-topbar">
-    <a href="#top" class="blog-home">Ordered Action Tokenization</a>
-    <nav aria-label="项目链接和语言">
-      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">代码</a>
-      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a>
-      <a href="../" hreflang="en" lang="en">English</a>
-      <a href="./" hreflang="zh-Hans" lang="zh-Hans" aria-current="page">中文</a>
+<body>
+  <header class="global-nav">
+    <nav class="global-nav__inner" aria-label="Primary">
+      <a class="global-nav__brand" href="./">Ordered Action Tokenization</a>
+      <div class="global-nav__links">
+        <a href="https://chaoqi-liu.com/" target="_blank" rel="noopener">Chaoqi Liu</a>
+        <a href="../" hreflang="en" lang="en">English</a>
+      </div>
     </nav>
   </header>
 
-  <main class="blog-layout">
-    <aside class="blog-side-nav" aria-label="页面章节">
-      <a href="#paper-minute">一分钟读懂</a>
-      <a href="#glossary">术语表</a>
-      <a href="#why-tokenization">为什么要 token</a>
-      <a href="#modelability">可建模性</a>
-      <a href="#properties">设计要求</a>
-      <a href="#missing-tokenizers">现有缺口</a>
-      <a href="#oat">OAT</a>
-      <a href="#info-theory">信息论</a>
-      <a href="#prefix-decoding">前缀解码</a>
-      <a href="#prefix-lab">前缀实验室</a>
-      <a href="#experiments">实验</a>
-      <a href="#open-directions">开放方向</a>
-      <a href="#appendix">附录</a>
-    </aside>
+  <main>
+    <section class="intro">
+      <h1>Ordered Action Tokenization</h1>
+      <p>一系列围绕动作 tokenization 与 VLA 系统的分析、评测与改进。</p>
+    </section>
 
-    <article class="blog-article">
-      <header class="blog-hero">
-        <h1>Ordered Action Tokenization</h1>
-        <p class="blog-dek">
-          <span class="oat-name">OAT</span> 是一种有序、前缀可解码的动作表示，兼顾紧凑性、全域可解码性和高自回归可建模性。
-        </p>
-        <p class="blog-source">
-          <span class="blog-venue-pill">RSS 2026</span> 录用论文，基于原始
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a> 扩展，并加入原生网页交互控件。
-        </p>
-        <p class="blog-authors">
-          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
-          <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
-          <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
-          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
-          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup>,
-          <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
-        </p>
-        <p class="blog-affiliations"><sup>1</sup>Harvard University · <sup>2</sup>Stanford University</p>
-        <div class="blog-project-links" aria-label="项目链接">
-          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">代码</a>
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a>
-        </div>
-      </header>
+    <section class="index-section">
+      <div class="section-shell">
+        <div class="index-list">
+          <article class="index-entry">
+            <div class="index-entry__copy">
+              <h3><a href="../token/zh/">什么是 OAT</a></h3>
+              <p>了解 Ordered Action Tokenization 的基本思路。</p>
+              <div class="index-entry__links" aria-label="什么是 OAT 的链接">
+                <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
+                <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
+                <a class="x-link" href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X article"><span class="x-symbol" aria-hidden="true">𝕏</span></a>
+              </div>
+            </div>
+          </article>
 
-      <div class="blog-metric-strip" aria-label="文章亮点">
-        <div>
-          <span>三项</span>
-          <strong>tokenizer 设计要求</strong>
-        </div>
-        <div>
-          <span>任意</span>
-          <strong>推理阶段前缀 token</strong>
-        </div>
-        <div>
-          <span>更强</span>
-          <strong>策略性能</strong>
-        </div>
-        <div>
-          <span>20+</span>
-          <strong>评测任务</strong>
+          <article class="index-entry">
+            <div class="index-entry__copy">
+              <h3>VLA 时代的 Tokens <span class="index-entry__status">（即将上线）</span></h3>
+              <p>系统研究 OAT 在自回归和知识隔离式 VLA 模型中的作用。</p>
+              <div class="index-entry__links" aria-label="VLA 时代的 Tokens 的链接">
+                <span aria-disabled="true">arXiv</span>
+                <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">Code</a>
+                <span class="x-link" aria-label="X article unavailable" aria-disabled="true"><span class="x-symbol" aria-hidden="true">𝕏</span></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="index-entry">
+            <div class="index-entry__copy">
+              <h3>Praxis</h3>
+              <p>用于系统化 VLA 研究的可控实验平台。</p>
+              <div class="index-entry__links" aria-label="Praxis 的链接">
+                <a href="../praxis/praxis.pdf">PDF</a>
+                <a href="https://chaoqi-liu.com/praxis-vla/" target="_blank" rel="noopener">praxis-vla</a>
+                <a href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener">praxis-eval</a>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
-
-      <figure class="blog-figure blog-figure-paper blog-figure-teaser">
-        <img src="../media/fig/teaser-white.png" alt="OAT teaser，总结 tokenizer 设计要求和策略性能"
-          width="8203" height="2665">
-      </figure>
-
-      <section class="blog-section blog-editorial-panel" id="paper-minute">
-        <span class="blog-section-kicker">一分钟读懂论文</span>
-        <h2>动作 token 不只是实现细节。</h2>
-        <p>
-          自回归机器人策略需要一种方式，把连续控制信号转成离散符号。这个转换决定了策略要生成多少步、每个生成序列是否都能执行，
-          以及下一个 token 有多容易预测。<span class="oat-name">OAT</span> 认为，一个好的动作 tokenizer 应该同时优化这三点。
-        </p>
-        <ol class="blog-summary-list">
-          <li>
-            <strong>问题：</strong>分箱方法有效但序列太长；FAST 很紧凑但可能无法解码；学习式 latent tokenizer 很紧凑，但自回归可建模性常常较弱。
-          </li>
-          <li>
-            <strong>方法：</strong><span class="oat-name">OAT</span> 学习一小段离散 register token，并用从粗到细的可建模性优先级来训练它们。
-          </li>
-          <li>
-            <strong>结果：</strong>策略可以选择生成多少个高可建模性 token，在推理成本和动作精度之间取舍，同时始终解码出有效动作块。
-          </li>
-        </ol>
-      </section>
-
-      <section class="blog-section" id="glossary">
-        <span class="blog-section-kicker">简短术语表</span>
-        <h2>本文会反复用到的五个术语。</h2>
-        <dl class="blog-glossary-grid">
-          <div>
-            <dt>动作块</dt>
-            <dd>一次性预测的一小段未来机器人动作序列，执行其中一部分后再重新规划。</dd>
-          </div>
-          <div>
-            <dt>Tokenization</dt>
-            <dd>把连续动作映射成离散符号，使自回归策略可以对其建模。</dd>
-          </div>
-          <div>
-            <dt>Detokenization</dt>
-            <dd>把生成的符号反向映射回可执行的连续机器人动作。</dd>
-          </div>
-          <div>
-            <dt>自回归策略</dt>
-            <dd>根据观测和已经生成的 token 来预测下一个动作 token 的策略。</dd>
-          </div>
-          <div>
-            <dt>可建模性</dt>
-            <dd>生成模型学习、采样并在下游使用该 token 分布的难易程度。</dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="blog-section" id="why-tokenization">
-        <h2>1. 为什么要关心动作 tokenization？</h2>
-        <p>
-          离散动作 token 正在成为现代机器人学习系统中越来越重要的设计选择。近期系统中：
-          <a href="https://rdt-robotics.github.io/rdt2/" target="_blank" rel="noopener">RDT-2</a> 在第一阶段训练中使用
-          vector-quantized (VQ) 动作 token；
-          <a href="https://co-training-lbm.github.io/" target="_blank" rel="noopener">TRI 的 LBM/VLA</a> 使用 FAST
-          和 VQ 风格 tokenization；而 BEHAVIOR 2025 Challenge 的
-          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">获胜方案</a>
-          在训练和推理中集成了 FAST token。
-        </p>
-        <p>
-          在这些系统中，动作 tokenization 在预训练阶段尤其关键：离散 token 为大容量序列模型和连续机器人控制之间提供了结构化、可扩展的接口。
-          因此，动作 tokenizer 的选择不仅影响效率，也越来越深刻地影响模型能学习和泛化哪些行为。
-        </p>
-      </section>
-
-      <section class="blog-section" id="modelability">
-        <h2>2. 一个被忽视的维度：<span class="blog-heading-emphasis">可建模性</span>。</h2>
-        <p>
-          经典理论如
-          <a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">率失真权衡</a>
-          关注压缩率和重建精度之间的平衡。在生成式 AI 时代，我们认为第三个维度，可建模性，同样关键但经常被忽视：
-          生成模型捕捉某种表示分布的难度。结构不佳的表示可能既紧凑又准确，但从根本上难以建模。
-        </p>
-        <p>
-          这是核心区别：一个 tokenizer 可以很好地重建动作，却仍然不是策略学习的好接口。如果 token 流的自回归可建模性较低，
-          或者稀疏且高熵，模型会在每一次下一个 token 预测中付出代价。表示不只是存储格式；它就是策略实际面对的学习问题。
-        </p>
-        <div class="blog-axis-panel" aria-label="率失真可建模性权衡">
-          <div>
-            <span>Rate</span>
-            <strong>需要多少 token？</strong>
-            <p>更短的动作编码可以降低自回归深度和延迟。</p>
-          </div>
-          <div>
-            <span>Distortion</span>
-            <strong>保留多少动作细节？</strong>
-            <p>连续机器人控制仍然需要足够精度，尤其是接触丰富的执行场景。</p>
-          </div>
-          <div>
-            <span>可建模性</span>
-            <strong>序列有多可预测？</strong>
-            <p>Token 顺序应该让下一个 token 预测更容易，而不只是让它可行。</p>
-          </div>
-        </div>
-        <div class="blog-insight-card">
-          <strong>仅有重建还不够。</strong>
-          <p>
-            对机器人控制而言，只有当下游策略能可靠建模这些 token 时，tokenizer 才真正有用。
-            低重建误差很重要，但它并不保证 token 序列具有稳定的从左到右结构。
-          </p>
-        </div>
-      </section>
-
-      <section class="blog-section" id="properties">
-        <h2>3. 我们希望满足的三项性质。</h2>
-        <p>
-          我们认为，面向自回归策略的有效动作 tokenizer 应该满足三项关键性质：
-        </p>
-        <ul class="blog-property-list">
-          <li>
-            <strong>(P.1) 合理压缩。</strong> 该表示应足够压缩动作块，以支持高效序列建模，但不能过度压缩到丢失太多信息。
-          </li>
-          <li>
-            <strong>(P.2) 全域可解码。</strong> detokenization 映射应当是定义良好的
-            <a href="https://en.wikipedia.org/wiki/Partial_function" target="_blank" rel="noopener">全函数</a>：
-            离散 token 空间中的每个 token 序列都必须解码成有效动作块。这一点很关键，因为策略在推理时可能生成任意 token 序列。
-            如果解码只在部分输入上有定义，无效 token 就可能导致未定义行为或执行中的灾难性失败。
-          </li>
-          <li>
-            <strong>(P.3) 可预测排序。</strong> Token 序列应该具有有意义的从左到右因果结构，并与下一个 token 预测对齐。
-            这种结构对可建模性至关重要，使自回归模型能够学习稳定、可预测的 token 动态。
-          </li>
-        </ul>
-        <p>
-          下文会逐一解释这些性质。
-        </p>
-      </section>
-
-      <section class="blog-interactive" id="compare-tokenizers" aria-labelledby="compare-tokenizers-title">
-        <div class="blog-interactive-header">
-          <span>交互式比较</span>
-          <h2 id="compare-tokenizers-title">哪个 tokenizer 满足这些设计要求？</h2>
-          <p>
-            选择一个 tokenizer 家族，比较压缩率、全域可解码性和&nbsp;<span
-              class="text-nowrap">自回归可建模性</span>。
-          </p>
-        </div>
-
-        <div class="tokenizer-selector" role="tablist" aria-label="Tokenizer 家族">
-          <button type="button" role="tab" id="tokenizer-tab-binning" class="is-active" data-tokenizer-target="binning"
-            aria-controls="tokenizer-panel" aria-selected="true">Binning</button>
-          <button type="button" role="tab" id="tokenizer-tab-fast" data-tokenizer-target="fast"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
-          <button type="button" role="tab" id="tokenizer-tab-latent" data-tokenizer-target="latent"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">普通 Latents</button>
-          <button type="button" role="tab" id="tokenizer-tab-oat" data-tokenizer-target="oat"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">OAT</button>
-        </div>
-
-        <div class="tokenizer-readout" id="tokenizer-panel" role="tabpanel" aria-labelledby="tokenizer-tab-binning"
-          aria-live="polite">
-          <div class="tokenizer-score-grid">
-            <div>
-              <span>压缩率</span>
-              <meter min="0" max="100" value="35" data-tokenizer-meter="compression"></meter>
-              <strong data-tokenizer-label="compression">低</strong>
-            </div>
-            <div>
-              <span>全域可解码性</span>
-              <meter min="0" max="100" value="100" data-tokenizer-meter="decodability"></meter>
-              <strong data-tokenizer-label="decodability">是</strong>
-            </div>
-            <div>
-              <span>自回归可建模性</span>
-              <meter min="0" max="100" value="20" data-tokenizer-meter="ordering"></meter>
-              <strong data-tokenizer-label="ordering">低</strong>
-            </div>
-          </div>
-          <p data-tokenizer-summary>
-            分箱方法可以全域解码，但会产生又长又扁平的 token 序列，难以让自回归策略高效建模。
-          </p>
-        </div>
-      </section>
-
-      <section class="blog-section" id="missing-tokenizers">
-        <h2>4. 现有动作 token 缺少什么？</h2>
-        <p>
-          每类现有 tokenizer 都以不同方式偏离目标。实际失败模式取决于它放弃了哪项设计要求。
-        </p>
-        <div class="blog-failure-grid" aria-label="动作 tokenizer 的实际失败模式">
-          <div>
-            <span>Binning</span>
-            <strong>有效但慢。</strong>
-            <p>每个生成 token 都能解码，但策略必须生成数百个扁平的维度-时间 token。</p>
-          </div>
-          <div>
-            <span>FAST</span>
-            <strong>紧凑但只部分可解码。</strong>
-            <p>频域结构有助于下一个 token 预测，但任意 BPE 序列可能无法解码。</p>
-          </div>
-          <div>
-            <span>Latents</span>
-            <strong>紧凑但可建模性低。</strong>
-            <p>神经解码器让输出有效，但 token 序列的自回归可建模性较弱。</p>
-          </div>
-          <div>
-            <span><span class="oat-name">OAT</span></span>
-            <strong>紧凑、有效、可建模性高。</strong>
-            <p>Token 被学习成渐进序列，因此早期预测携带粗粒度运动结构。</p>
-          </div>
-        </div>
-        <p>
-          <strong>Binning.</strong> 最常见的方案是按维度、按时间步分箱。它很简单，但扩展性差：长时域和高维动作可能让每个动作块产生数百个 token，
-          显著拖慢训练和推理并增加延迟。更重要的是，这类又长又扁平的序列在跨维度上可建模性较差：知道 a[t, 1...i]
-          对预测 a[t, i+1] 帮助很小，使分箱方法与自回归生成不够匹配。
-        </p>
-        <p>
-          <strong>频域变换。</strong> FAST 等基于频率的方法具有高信息密度 (P.1)，并引入从低频到高频的结构 (P.3)：
-          早期 token 捕捉全局轨迹结构，后期 token 细化细节。然而，FAST 违反了 P.2（全域可解码性）。因为
-          <a href="https://en.wikipedia.org/wiki/Byte-pair_encoding" target="_blank" rel="noopener">Byte Pair Encoding</a>
-          (BPE) 会产生可变长度序列，任意 token 序列未必能解码成有效的固定大小频域表示，从而导致未定义行为和运行时失败。
-          更多细节见论文附录以及
-          <a href="https://huggingface.co/physical-intelligence/fast/discussions/4" target="_blank" rel="noopener">Hugging Face 上的讨论</a>。
-        </p>
-        <p>
-          <strong>普通 Latents。</strong> 学习式 encoder-decoder latent tokenizer 可以获得较强压缩 (P.1)，神经解码器也能保证全域可解码 (P.2)。
-          但所得 token 空间通常自回归可建模性较弱：token 位置没有为下一个 token 预测提供稳定的从左到右结构。
-          这使其难以适配依赖有意义左到右结构 (P.3) 来稳定生成的策略。
-        </p>
-        <p>
-          总结来说，现有方法各自满足了部分设计要求，但没有同时实现压缩、全域可解码和高自回归可建模性。
-        </p>
-      </section>
-
-      <section class="blog-section" id="oat">
-        <h2>5. Ordered Action Tokenization</h2>
-        <p>
-          我们提出 <span class="oat-name">OAT</span>，一个学习式 autoencoder 框架，把动作块离散化为有序 token 序列。
-          <span class="oat-name">OAT</span> 使用基于 transformer 的 register token 编码动作，用 FSQ 离散化所得 latent，
-          再通过条件解码器重建动作。为提升自回归可建模性，我们在训练中结合 register token 上的因果注意力和 nested dropout。
-          这些设计共同鼓励形成高可建模性的 latent 表示：早期 token 捕捉粗粒度全局结构，后期 token 细化细节。
-        </p>
-        <ol class="blog-step-list">
-          <li>
-            <strong>概括动作块。</strong> Transformer encoder 读取连续动作序列，并把重要时间信息写入固定数量的 register token。
-          </li>
-          <li>
-            <strong>离散化 registers。</strong> Finite scalar quantization 把 register latents 转成自回归策略可以预测的离散 token。
-          </li>
-          <li>
-            <strong>强制从左到右结构。</strong> 因果注意力让后面的 register 依赖前面的 register，使表示与下一个 token 生成对齐。
-          </li>
-          <li>
-            <strong>用缺失尾部训练。</strong> Nested dropout 在 tokenizer 训练中随机遮蔽后续 token，因此早期 token 必须承载最高优先级信息。
-          </li>
-          <li>
-            <strong>解码回控制信号。</strong> 条件解码器把生成的 token 前缀映射回可执行的连续动作块。
-          </li>
-        </ol>
-      </section>
-
-      <figure class="blog-figure blog-figure-paper blog-figure-method">
-        <img src="../media/fig/method-white.png" alt="OAT 方法概览，包含 register token 和前缀解码"
-          width="7928" height="2354" loading="lazy">
-      </figure>
-
-      <section class="blog-section" id="info-theory">
-        <h2>6. 为什么顺序能提升可建模性？</h2>
-        <p>
-          <span class="oat-name">OAT</span> 引入的排序可以从信息论得到自然解释。
-          <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon 表明</a>，
-          一个事件的最优编码长度随其概率的负对数 - log p 缩放：常见模式需要更少 bit，而罕见事件需要更多表示容量。
-          动作块也有类似的偏斜分布：大多数轨迹共享常见的粗粒度结构，而细粒度偏差较少出现。
-        </p>
-        <p>
-          从这个角度看，<span class="oat-name">OAT</span> 学到了一种渐进编码。早期 token 捕捉高概率、全局共享的运动模式，
-          后期 token 编码越来越罕见的残差细节。这种顺序从 nested dropout 中自然出现：因为解码器必须从部分前缀重建动作，
-          tokenizer 被鼓励按频率和重要性递减的顺序分配信息。结果是，前缀越长，重建单调改善；token 顺序也与自回归下一个 token
-          预测紧密对齐，而无需手工把物理特征分配给特定 token 位置。
-        </p>
-      </section>
-
-      <section class="blog-section" id="prefix-decoding">
-        <h2>7. 一个副产品：基于前缀的解码。</h2>
-        <p>
-          基于 <span class="oat-name">OAT</span> 训练的自回归策略不必生成到完整长度。由于 <span class="oat-name">OAT</span> token
-          序列的任意前缀都可以 detokenize 成有效动作块，<span class="oat-name">OAT</span> 支持基于前缀的执行，
-          从而在计算量和性能之间提供 anytime 权衡。短前缀带来更快但更粗糙的预测；长前缀以更高计算成本产生更精细动作。
-          这种灵活性自然来自有序 tokenization，不需要修改策略架构或训练目标，也使 <span class="oat-name">OAT</span>
-          区别于依赖固定长度 detokenization 的先前 tokenizer。
-        </p>
-      </section>
-
-      <section class="blog-interactive blog-prefix-lab" id="prefix-lab" aria-labelledby="prefix-lab-title">
-        <div class="blog-interactive-header">
-          <span>前缀实验室</span>
-          <h2 id="prefix-lab-title">解码更少 token，动作仍然有效。</h2>
-          <p>
-            <span class="oat-name">OAT</span> 让每个前缀都可执行。更多 token 会细化轨迹，但在延迟重要时，策略可以提前停止。
-          </p>
-        </div>
-
-        <div class="prefix-lab-grid">
-          <div class="prefix-trajectory"
-            aria-label="前缀重建图，对比完整解码动作块和真实动作块。"
-            role="img">
-            <span class="prefix-plot-label prefix-label-recon">解码前缀</span>
-            <span class="prefix-plot-label prefix-label-gt">真实轨迹</span>
-            <svg class="prefix-plot" viewBox="0 0 640 240" aria-hidden="true">
-              <polyline class="prefix-gt-line"
-                points="70,180 135,166 205,105 285,156 360,118 435,62 515,96 590,45" />
-              <polyline class="prefix-decoded-line" data-prefix-decoded-line
-                points="96,205 170,190 244,174 318,159 392,144 466,128 540,113 612,98" />
-              <g class="prefix-gt-points">
-                <circle class="prefix-gt-dot" cx="70" cy="180" r="6" />
-                <circle class="prefix-gt-dot" cx="135" cy="166" r="6" />
-                <circle class="prefix-gt-dot" cx="205" cy="105" r="6" />
-                <circle class="prefix-gt-dot" cx="285" cy="156" r="6" />
-                <circle class="prefix-gt-dot" cx="360" cy="118" r="6" />
-                <circle class="prefix-gt-dot" cx="435" cy="62" r="6" />
-                <circle class="prefix-gt-dot" cx="515" cy="96" r="6" />
-                <circle class="prefix-gt-dot" cx="590" cy="45" r="6" />
-              </g>
-              <g class="prefix-decoded-points">
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="0" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="1" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="2" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="3" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="4" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="5" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="6" r="6" />
-                <circle class="prefix-decoded-dot" data-prefix-decoded-point="7" r="6" />
-              </g>
-            </svg>
-          </div>
-          <div class="prefix-readout">
-            <strong data-prefix-title>1 个前缀 token</strong>
-            <p data-prefix-copy>
-              1 个 token 可以解码出完整动作块，但重建较粗糙，且与真实轨迹有明显偏移。
-            </p>
-          </div>
-        </div>
-
-        <div class="prefix-stepper" role="group" aria-label="前缀 token 选择">
-          <button type="button" class="is-active" data-prefix-choice="1">1 个 token</button>
-          <button type="button" data-prefix-choice="2">2 个 token</button>
-          <button type="button" data-prefix-choice="4">4 个 token</button>
-          <button type="button" data-prefix-choice="8">8 个 token</button>
-        </div>
-
-        <p class="prefix-notation">
-          每个前缀都会解码成完整动作块。绿色点是真实路标；红色点是从所选前缀重建出的完整动作块。
-          更多前缀 token 会减少红绿误差，并提升细粒度保真度。
-        </p>
-
-        <div class="prefix-meshcat-panel" id="meshcat-vis">
-          <h3 class="title is-4 publication-title oat-heading">交互式 MeshCat 可视化</h3>
-          <p class="section-lead has-text-justified">
-            这里可视化使用不同数量解码 token 得到的动作块重建。早期 token 捕捉运动的粗粒度全局结构，
-            额外 token 会逐步细化细节，生成越来越接近真实轨迹的结果。所有轨迹都由同一个模型生成。
-          </p>
-
-          <div class="meshcat-global-controls">
-            <div class="meshcat-control-buttons">
-              <button id="meshcat-play-all" class="button">播放</button>
-              <button id="meshcat-pause-all" class="button">暂停</button>
-              <button id="meshcat-reset-all" class="button is-light">重置</button>
-              <button id="meshcat-reload-all" class="button">重新加载</button>
-            </div>
-            <div class="meshcat-control-slider">
-              <input id="meshcat-global-slider" type="range" min="0" max="100" step="1" value="0"
-                aria-label="MeshCat 可视化时间轴">
-            </div>
-          </div>
-
-          <div class="episode-tabs" role="tablist" aria-label="MeshCat 可视化片段">
-            <button class="button is-small is-dark" type="button" data-episode-target="idx254425" aria-selected="true">
-              片段 A
-            </button>
-            <button class="button is-small is-light" type="button" data-episode-target="idx5788" aria-selected="false">
-              片段 B
-            </button>
-          </div>
-
-          <div class="embed-row" data-episode="idx254425">
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">1 个 token</p>
-              <iframe data-src="../media/html/idx254425/reconst_k1.html" title="重建 K=1 (idx254425)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.592</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">2 个 token</p>
-              <iframe data-src="../media/html/idx254425/reconst_k2.html" title="重建 K=2 (idx254425)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.446</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">4 个 token</p>
-              <iframe data-src="../media/html/idx254425/reconst_k4.html" title="重建 K=4 (idx254425)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.038</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">8 个 token</p>
-              <iframe data-src="../media/html/idx254425/reconst_k8.html" title="重建 K=8 (idx254425)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.009</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">真实轨迹</p>
-              <iframe data-src="../media/html/idx254425/ground_truth.html" title="真实轨迹 (idx254425)"
-                loading="lazy"></iframe>
-            </div>
-
-          </div>
-
-          <div class="embed-row" data-episode="idx5788" hidden>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">1 个 token</p>
-              <iframe data-src="../media/html/idx5788/reconst_k1.html" title="重建 K=1 (idx5788)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.365</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">2 个 token</p>
-              <iframe data-src="../media/html/idx5788/reconst_k2.html" title="重建 K=2 (idx5788)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.082</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">4 个 token</p>
-              <iframe data-src="../media/html/idx5788/reconst_k4.html" title="重建 K=4 (idx5788)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.056</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">8 个 token</p>
-              <iframe data-src="../media/html/idx5788/reconst_k8.html" title="重建 K=8 (idx5788)"
-                loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.027</p>
-            </div>
-
-            <div class="embed-card">
-              <p class="meshcat-card-label">真实轨迹</p>
-              <iframe data-src="../media/html/idx5788/ground_truth.html" title="真实轨迹 (idx5788)"
-                loading="lazy"></iframe>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      <section class="blog-section experiments-section" id="experiments">
-        <h2>8. 实验</h2>
-        <p>
-          我们在 20 多个任务上评估 <span class="oat-name">OAT</span>，覆盖四个仿真 benchmark
-          (LIBERO, RoboMimic, MetaWorld 和 RoboCasa) 以及真实机器人执行。实验比较成功率、自回归深度和延迟、
-          可建模性消融，以及真实任务成功率，展示有序、高可建模性的前缀解码如何带来更强策略和更灵活推理。
-        </p>
-
-        <div class="blog-reading-guide" id="reading-results">
-          <span class="blog-section-kicker">如何阅读结果</span>
-          <ul>
-            <li>
-              <strong>关注单调性。</strong> <span class="oat-name">OAT</span><sub>1</sub>,
-              <span class="oat-name">OAT</span><sub>2</sub>, <span class="oat-name">OAT</span><sub>4</sub> 和
-              <span class="oat-name">OAT</span><sub>8</sub> 应该随着解码更多高可建模性 token 而提升。
-            </li>
-            <li>
-              <strong>比较同深度方法。</strong> <span class="oat-name">OAT</span><sub>8</sub> 和 QueST 都使用 8 个 token，
-              因此差异主要来自 token 结构，而不是 token 数量。
-            </li>
-            <li>
-              <strong>区分延迟和成功率。</strong> 更短前缀展示速度/性能权衡；消融实验检验可建模性目标是否真的起作用。
-            </li>
-          </ul>
-        </div>
-
-        <div class="project-section project-experiments">
-          <div class="result-stack">
-	      <article class="result-block">
-	        <div class="result-caption">
-		          <h3 class="title is-6"><span class="oat-name">OAT</span> 更优</h3>
-	          <p>
-		            <span class="oat-name">OAT</span> 稳定优于先前动作 tokenization 方案，并达到或超过最强 baseline；
-	            同时，它还支持现有方法不具备的基于前缀的解码。<span class="oat-name">OAT</span><sub>8</sub>
-	            在仿真和真实 benchmark 中取得最佳性能。
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table combined-result-table">
-	            <caption class="result-table-caption">操作 benchmark 上的仿真成功率，以及 20 次独立真实实验中的成功次数。</caption>
-            <thead>
-              <tr>
-                <th scope="col">策略</th>
-                <th scope="col">LIBERO</th>
-                <th scope="col">RoboMimic</th>
-                <th scope="col">MetaWorld</th>
-                <th scope="col">RoboCasa</th>
-                <th scope="col">PnP Ball</th>
-                <th scope="col">Stack Cups</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">DP</th><td><span class="aligned-num"><span class="num-int">36</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">67</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num aligned-frac"><span>14</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">Bin</th><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">27</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>4</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">FAST</th><td><span class="aligned-num"><span class="num-int">23</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">7</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">13</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>6</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>7</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>3</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>9</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>13</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>12</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-	      <article class="result-block">
-	        <div class="result-caption">
-	          <h3 class="title is-6">压缩率和推理延迟</h3>
-	          <p>
-		            <span class="oat-name">OAT</span> 在压缩率、推理延迟和策略性能之间提供平滑且可控的权衡。
-			            在完整解码时，<span class="oat-name">OAT</span> 和 QueST 每次推理的计算量相同。
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table latency-table">
-	            <caption class="result-table-caption">Token 数量和策略推理延迟，单位为毫秒。</caption>
-            <thead>
-              <tr>
-                <th scope="col" rowspan="2">策略</th>
-                <th scope="colgroup" colspan="2">LIBERO</th>
-                <th scope="colgroup" colspan="2">RoboMimic</th>
-                <th scope="colgroup" colspan="2">MetaWorld</th>
-                <th scope="colgroup" colspan="2">RoboCasa</th>
-              </tr>
-              <tr>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">DP</th><td>&times;</td><td>42.0</td><td>&times;</td><td>38.1</td><td>&times;</td><td>37.7</td><td>&times;</td><td>35.3</td></tr>
-              <tr><th scope="row">Bin</th><td>224</td><td>517.2</td><td>224</td><td>509.5</td><td>128</td><td>306.6</td><td>384</td><td>888.3</td></tr>
-              <tr><th scope="row">FAST</th><td>44.2</td><td>114.4</td><td>53.1</td><td>142.0</td><td>49.8</td><td>129.7</td><td>69.7</td><td>166.1</td></tr>
-              <tr><th scope="row">QueST</th><td>8</td><td>27.1</td><td>8</td><td>29.6</td><td>8</td><td>31.4</td><td>8</td><td>30.2</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td>1</td><td>10.5</td><td>1</td><td>11.3</td><td>1</td><td>15.5</td><td>1</td><td>13.5</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td>2</td><td>13.2</td><td>2</td><td>15.3</td><td>2</td><td>17.9</td><td>2</td><td>15.8</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td>4</td><td>17.4</td><td>4</td><td>18.4</td><td>4</td><td>22.1</td><td>4</td><td>19.8</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>8</sub></th><td>8</td><td>27.4</td><td>8</td><td>29.9</td><td>8</td><td>31.3</td><td>8</td><td>30.0</td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-	      <article class="result-block">
-	        <div class="result-caption">
-	          <h3 class="title is-6">Token 可建模性是成功关键</h3>
-	          <p>
-	            在所有 benchmark 上，移除诱导排序的目标都会导致性能稳定下降。
-			            <span class="oat-name">OAT</span><sub>&times;</sub> 的性能显著弱于 <span class="oat-name">OAT</span><sub>4</sub> 和
-                <span class="oat-name">OAT</span><sub>8</sub>，部分情况下甚至低于 QueST。
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table">
-	            <caption class="result-table-caption">排序消融成功率。</caption>
-            <thead>
-              <tr>
-                <th scope="col">策略</th>
-                <th scope="col">LIBERO</th>
-                <th scope="col">RoboMimic</th>
-                <th scope="col">MetaWorld</th>
-                <th scope="col">RoboCasa</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
-              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td></tr>
-              <tr class="ablation-row"><th scope="row">OAT<sub>&times;</sub></th><td><span class="aligned-num"><span class="num-int">35</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">61</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-          </div>
-        </div>
-	
-        <div class="project-section project-real-world" id="real-world">
-	  <div class="hero-body">
-	    <div class="container is-fullhd">
-      <div class="columns is-centered">
-        <div class="column is-full">
-          <div class="demo-video-box">
-            <h3 class="title is-4 publication-title experiments-subheading">真实机器人执行</h3>
-            <p class="section-lead has-text-justified">
-              90 多个真实机器人执行视频覆盖不同任务、方法和相机视角下的成功与失败尝试。重新加载会随机化初始配置。
-              FAST 执行中的停止主要由不可解码动作 token 引起。在这类情况下，出于安全原因，
-              策略被要求不输出任何动作并保持静止。
-            </p>
-            <div class="demo-video-controls">
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-task-select">任务</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-task-select" aria-label="选择真实机器人任务">
-                      <option value="pnp_ball">PnP Ball</option>
-                      <option value="stack_cups">Stack Cups</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-method-select">方法</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-method-select" aria-label="选择评测方法" data-initial-method="oat8">
-                      <option value="all">所有方法</option>
-                      <option value="dp">DP</option>
-                      <option value="bin">Bin</option>
-                      <option value="fast">FAST</option>
-                      <option value="quest">QueST</option>
-                      <option value="oat1">OAT1</option>
-                      <option value="oat2">OAT2</option>
-                      <option value="oat4">OAT4</option>
-                      <option value="oat8">OAT8</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-camera-select">相机</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-camera-select" aria-label="选择视频相机">
-                      <option value="iphone">iPhone</option>
-                      <option value="logi">Logitech</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" aria-hidden="true">&nbsp;</label>
-                <div class="control">
-                  <button id="demo-video-reload" class="button is-fullwidth">重新加载</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="demo-video-matrix" id="demo-video-matrix">
-
-              <div class="demo-method-card box" data-method-card="dp">
-                <h3>DP</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="bin">
-                <h3>Bin</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="fast">
-                <h3>FAST</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="quest">
-                <h3>QueST</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat1">
-                <h3><span class="oat-name">OAT</span><sub>1</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat2">
-                <h3><span class="oat-name">OAT</span><sub>2</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat4">
-                <h3><span class="oat-name">OAT</span><sub>4</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat8">
-                <h3><span class="oat-name">OAT</span><sub>8</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-	    </div>
-	  </div>
-	</div>
-      </section>
-
-      <section class="blog-section" id="open-directions">
-        <h2>9. 总结和开放方向。</h2>
-        <p>
-          这个项目中反复出现的一个问题是：在 flow 或 diffusion policy 等强连续模型存在时，动作 token 是否仍然必要？
-          我们的观点是，未来机器人系统很可能会结合离散和连续表示，而不是二选一。一个具体例子是 BEHAVIOR 2025 Challenge 的
-          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">获胜方案</a>，
-          它把离散动作 token 与连续动作 expert 集成在一起。
-        </p>
-        <p>
-          <span class="oat-name">OAT</span> 支持的一项关键能力是基于前缀的 detokenization：动作可以从可变长度 token 前缀解码出来，
-          从而在计算量和动作保真度之间实现 anytime 权衡。在本文中，自回归深度在部署时是固定的。
-          从信息论角度看，这并非最优。表示一个动作块所需的 token 数量应该取决于其内在复杂度，以及成功执行所需的精度。
-          简单、可预测的行为可以使用紧凑表示，而复杂、接触丰富的交互可能需要更深的自回归细化。
-          在线估计这种动作复杂度，并判断额外 token 何时能显著降低不确定性，仍然是开放问题。
-          我们认为，自适应自回归深度是未来工作的自然且重要方向，而这正是由 <span class="oat-name">OAT</span>
-          的有序、前缀可解码结构所支持的。最终，我们相信这个估计问题需要基于不确定性和信息的原则性解法，
-          而不是临时工程启发式。
-        </p>
-        <div class="blog-opportunity-grid" aria-label="OAT 支持的未来方向">
-          <div>
-            <span>自适应深度</span>
-            <strong>动作足够好时就停止。</strong>
-            <p>简单运动可以从短前缀执行，而接触丰富的步骤可以请求更多 token。</p>
-          </div>
-          <div>
-            <span>不确定性</span>
-            <strong>用置信度分配计算量。</strong>
-            <p>只有在不确定性仍高或精度很重要时，策略才生成额外 token。</p>
-          </div>
-          <div>
-            <span>VLA 系统</span>
-            <strong>暴露离散动作接口。</strong>
-            <p>有序动作 token 可以作为辅助监督信号或规划抽象。</p>
-          </div>
-          <div>
-            <span>混合控制</span>
-            <strong>结合 token 与连续 expert。</strong>
-            <p>离散动作推理和 diffusion 或 flow 解码器不必相互竞争。</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="blog-section blog-callout" id="appendix">
-        <h2>附录</h2>
-        <div class="appendix-stack">
-          <div class="appendix-actions">
-            <a class="appendix-link-button" href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">GitHub</a>
-          </div>
-          <div class="bibtex-block appendix-row">
-            <div class="bibtex-toolbar">
-              <strong>BibTeX</strong>
-              <button type="button" class="bibtex-copy" data-copy-target="bibtex-code">复制</button>
-            </div>
-            <pre><code id="bibtex-code">@inproceedings{liu2026orderedactiontokenization, 
-    title={OAT: Ordered Action Tokenization}, 
-    author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
-    booktitle={Proceedings of Robotics: Science and Systems}, 
-    year={2026}
-}</code></pre>
-          </div>
-        </div>
-      </section>
-    </article>
+    </section>
   </main>
 </body>
 
