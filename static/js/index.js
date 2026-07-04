@@ -88,7 +88,75 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBlogTokenizerLab();
   setupBlogPrefixLab();
   setupBibtexCopy();
+  setupInitialHashScroll();
 });
+
+function setupInitialHashScroll() {
+  if (!window.location.hash || window.location.hash === '#') {
+    return;
+  }
+
+  let userMoved = false;
+  const userMoveEvents = ['wheel', 'touchstart', 'pointerdown', 'keydown'];
+  const removeUserMoveListeners = () => {
+    userMoveEvents.forEach((eventName) => {
+      window.removeEventListener(eventName, stopOnUserMove);
+    });
+  };
+  const stopOnUserMove = () => {
+    userMoved = true;
+    removeUserMoveListeners();
+  };
+
+  userMoveEvents.forEach((eventName) => {
+    window.addEventListener(eventName, stopOnUserMove, { once: true, passive: true });
+  });
+
+  const getTarget = () => {
+    const rawId = window.location.hash.slice(1);
+    if (!rawId) {
+      return null;
+    }
+
+    try {
+      return document.getElementById(decodeURIComponent(rawId));
+    } catch (_error) {
+      return document.getElementById(rawId);
+    }
+  };
+
+  const alignTarget = () => {
+    if (userMoved) {
+      return;
+    }
+
+    const target = getTarget();
+    if (!target) {
+      return;
+    }
+
+    const targetStyle = window.getComputedStyle(target);
+    const expectedTop = Number.parseFloat(targetStyle.scrollMarginTop) || 0;
+    const actualTop = target.getBoundingClientRect().top;
+    if (Math.abs(actualTop - expectedTop) <= 3) {
+      return;
+    }
+
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    target.scrollIntoView({ block: 'start', inline: 'nearest' });
+    root.style.scrollBehavior = previousBehavior;
+  };
+
+  window.requestAnimationFrame(alignTarget);
+  [80, 240, 700, 1400].forEach((delay) => window.setTimeout(alignTarget, delay));
+  window.addEventListener('load', () => {
+    alignTarget();
+    [100, 400].forEach((delay) => window.setTimeout(alignTarget, delay));
+  }, { once: true });
+  window.setTimeout(removeUserMoveListeners, 1800);
+}
 
 function setupStickyHeader() {
   const stickyHeader = document.getElementById('site-sticky');
