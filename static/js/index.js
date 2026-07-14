@@ -185,7 +185,7 @@ function setupStickyHeader() {
 }
 
 function setupActiveNavigation() {
-  const navLinks = Array.from(document.querySelectorAll('.site-sticky-links a[href^="#"], .blog-side-nav a[href^="#"]'));
+  const navLinks = Array.from(document.querySelectorAll('.site-sticky-links a[href^="#"], .blog-side-nav a[href^="#"], .blog-mobile-toc a[href^="#"]'));
   if (navLinks.length === 0) {
     return;
   }
@@ -198,14 +198,30 @@ function setupActiveNavigation() {
     return;
   }
 
+  let activeHref = '';
   const setActiveLink = (activeLink) => {
+    const nextHref = activeLink.getAttribute('href');
+    if (!nextHref || nextHref === activeHref) {
+      return;
+    }
+    activeHref = nextHref;
+
     navLinks.forEach((link) => {
-      if (link === activeLink) {
+      if (link.getAttribute('href') === nextHref) {
         link.setAttribute('aria-current', 'true');
       } else {
         link.removeAttribute('aria-current');
       }
     });
+
+    const mobileLink = navLinks.find((link) =>
+      link.closest('.blog-mobile-toc') && link.getAttribute('href') === nextHref
+    );
+    const mobileToc = mobileLink?.closest('.blog-mobile-toc');
+    if (mobileLink && mobileToc) {
+      const centeredLeft = mobileLink.offsetLeft - (mobileToc.clientWidth - mobileLink.offsetWidth) / 2;
+      mobileToc.scrollLeft = Math.max(0, centeredLeft);
+    }
   };
 
   const updateActiveLink = () => {
@@ -770,20 +786,20 @@ function setupBlogPrefixLab() {
 
   const summaries = {
     1: localized(
-      'One token decodes a complete action chunk, but it is a broad, offset motion that misses the detailed route.',
-      '1 个 token 可以解码出完整动作块，但轨迹较粗糙，与真实细节有明显偏移。'
+      'At the one-token trained budget, the schematic shows a complete but coarse action chunk.',
+      '在 1-token 训练预算下，示意图展示了完整但较粗粒度的动作块。'
     ),
     2: localized(
-      'Two tokens keep the chunk executable while bending the trajectory toward the main ground-truth arc.',
-      '2 个 token 保持动作块可执行，并让轨迹开始贴近真实轨迹的主要弧线。'
+      'At the two-token trained budget, the schematic adds the main trajectory structure.',
+      '在 2-token 训练预算下，示意图加入了主要轨迹结构。'
     ),
     4: localized(
-      'Four tokens recover the local waypoint structure and follow the mid-trajectory correction.',
-      '4 个 token 恢复了局部路标结构，并跟随轨迹中段的修正。'
+      'At four tokens, the schematic adds local waypoint structure and mid-trajectory correction.',
+      '在 4-token 预算下，示意图加入局部路标结构和轨迹中段修正。'
     ),
     8: localized(
-      'Eight tokens nearly overlap the ground truth, leaving only small residual error.',
-      '8 个 token 几乎与真实轨迹重合，只留下很小的残差。'
+      'At eight tokens, the schematic illustrates a fine residual refinement.',
+      '在 8-token 预算下，示意图展示更细的 residual refinement。'
     ),
   };
   const groundTruth = [

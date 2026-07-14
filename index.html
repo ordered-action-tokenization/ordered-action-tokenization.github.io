@@ -5,11 +5,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
-    content="Ordered Action Tokenization is an ordered, prefix-decodable action representation for autoregressive robot policies, accepted to RSS 2026.">
-  <meta property="og:title" content="Ordered Action Tokenization">
+    content="Ordered Action Tokenization turns continuous robot actions into compact tokens that become more precise from left to right.">
+  <meta property="og:title"
+    content="Ordered Action Tokenization">
   <meta property="og:description"
-    content="OAT introduces ordered, prefix-decodable action tokens for autoregressive robot policies, with interactive explainers, MeshCat reconstructions, and policy results.">
-  <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser-white.png">
+    content="Compact action tokens that become more precise from left to right.">
+  <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser.png">
   <meta property="og:url" content="https://ordered-action-tokenization.github.io/">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
@@ -28,21 +29,15 @@
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/misc.css">
 
   <style>
-    body.token-paper-page {
-      overflow-x: visible;
+    :root {
+      --oat-toc-width: 176px;
+      --oat-layout-gap: 2.5rem;
     }
 
-    .token-paper-page .blog-side-nav {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      backdrop-filter: none;
-      padding: 0.25rem 0;
-    }
-
-    .token-paper-page .blog-side-nav a {
+    .blog-side-nav a {
       white-space: nowrap;
       font-size: 0.72rem;
       letter-spacing: 0;
@@ -50,13 +45,97 @@
       padding-right: 0.42rem;
     }
 
-    .token-paper-page .blog-side-nav a:hover,
-    .token-paper-page .blog-side-nav a[aria-current="true"] {
+    body.blog-page {
+      overflow-x: visible;
+    }
+
+    .blog-side-nav {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 0.25rem 0;
+    }
+
+    .blog-side-nav a:hover,
+    .blog-side-nav a[aria-current="true"] {
       background: transparent;
     }
 
-    .token-paper-page .blog-section-kicker,
-    .token-paper-page .blog-interactive-header > span {
+    .blog-mobile-toc {
+      display: none;
+    }
+
+    .blog-article {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-hero { order: 1; }
+    .blog-figure-teaser { order: 2; }
+    #paper-minute { order: 3; }
+    #tokenization { order: 4; }
+    #oat { order: 5; }
+    #prefix-lab { order: 6; }
+    #token-evidence { order: 7; }
+    #bar-experiments { order: 8; }
+    #tc-policies { order: 9; }
+    #tc-experiments { order: 10; }
+    #takeaway { order: 11; }
+    #appendix { order: 12; }
+
+    .prefix-lab-suite {
+      width: 100%;
+      margin-top: 3.25rem;
+      border-radius: 18px;
+      background: var(--oat-soft);
+      padding: 2rem;
+      scroll-margin-top: 5rem;
+    }
+
+    .blog-prefix-lab,
+    .prefix-meshcat-panel,
+    #takeaway.blog-editorial-panel {
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
+    }
+
+    .blog-prefix-lab {
+      margin-top: 0;
+    }
+
+    .prefix-meshcat-panel {
+      margin-top: 2rem;
+      border-top: 1px solid var(--oat-line-strong);
+      padding-top: 2rem;
+    }
+
+    #glossary,
+    #bar-schedule,
+    #schedule-lab,
+    #blockify-oat,
+    #mask-lab,
+    #prefix-budgets,
+    .blog-article > .vla-story-takeaways,
+    .blog-article > .vla-posthoc-panel {
+      display: none;
+    }
+
+    #tc-policies .vla-equation,
+    #tc-policies .vla-math-caption,
+    #tc-policies .vla-subheading,
+    #tc-policies .vla-subheading + p {
+      display: none;
+    }
+
+    .blog-dek strong {
+      color: var(--oat-ink);
+      font-weight: 650;
+    }
+
+    .blog-section-kicker,
+    .blog-interactive-header > span {
       display: block;
       width: max-content;
       border: 0;
@@ -67,771 +146,2034 @@
       padding: 0;
     }
 
-    .token-hero-title {
-      max-width: 1000px;
+    .vla-hero-title {
+      max-width: 1120px;
       overflow-wrap: anywhere;
       white-space: normal;
     }
 
-    .token-hero-title span {
+    .vla-title-line {
       display: block;
     }
 
-    .token-paper-page .x-symbol {
-      margin-right: 0;
+    .vla-mobile-break {
+      display: none;
     }
 
-    .token-paper-page .blog-project-links a[aria-label="X"] {
-      min-width: 2.1rem;
-      padding-left: 0.72rem;
-      padding-right: 0.72rem;
-    }
-
-    .blog-metric-strip.token-hero-metrics {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0;
-      margin: 1.35rem 0 3rem;
-      padding: 0.95rem 0;
-      border-top: 1px solid var(--oat-line);
-      border-bottom: 1px solid var(--oat-line);
-    }
-
-    .blog-metric-strip.token-hero-metrics > div {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 0 0.85rem;
-    }
-
-    .blog-metric-strip.token-hero-metrics > div + div {
-      border-left: 1px solid var(--oat-line);
-    }
-
-    .blog-metric-strip.token-hero-metrics span {
-      color: var(--oat-accent);
-      font-size: 0.98rem;
-      line-height: 1.1;
-    }
-
-    .blog-metric-strip.token-hero-metrics strong {
-      margin-top: 0.35rem;
-      color: var(--oat-muted);
-      font-size: 0.76rem;
-      font-weight: 500;
-      line-height: 1.25;
-    }
-
-    .token-paper-minute.blog-editorial-panel {
+    .vla-paper-minute.blog-editorial-panel {
       border-radius: 0;
       background: transparent;
       padding: 0;
     }
 
-    .token-paper-minute > p,
-    .token-paper-minute .blog-summary-list {
+    .vla-paper-minute > p,
+    .vla-paper-minute .blog-summary-list {
       max-width: 980px;
     }
 
-    .token-paper-minute .blog-summary-list {
+    .vla-paper-minute .blog-summary-list {
       gap: 0;
       border-top: 1px solid var(--oat-line);
       border-bottom: 1px solid var(--oat-line);
     }
 
-    .token-paper-minute .blog-summary-list li {
+    .vla-paper-minute .blog-summary-list li {
       border: 0;
       border-radius: 0;
       background: transparent;
       padding: 1rem 0 1rem 2.7rem;
     }
 
-    .token-paper-minute .blog-summary-list li + li {
+    .vla-paper-minute .blog-summary-list li + li {
       border-top: 1px solid var(--oat-line);
     }
 
-    .token-paper-minute .blog-summary-list li::before {
+    .vla-paper-minute .blog-summary-list li::before {
       left: 0;
       top: 1.1rem;
       background: var(--oat-ink);
     }
 
-    .token-story-takeaways,
-    .token-plot-cues {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
-      margin: 1.35rem 0;
+    .blog-interactive.vla-tokenizer-interactive,
+    .blog-interactive.vla-concept-lab {
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
     }
 
-    .token-story-takeaways > div,
-    .token-plot-cues > div {
-      border-top: 1px solid var(--oat-line);
-      padding-top: 0.9rem;
-    }
-
-    .token-story-takeaways strong,
-    .token-plot-cues strong,
-    .token-plot-cues > div > span {
-      display: block;
-    }
-
-    .token-story-takeaways strong,
-    .token-plot-cues strong {
-      color: var(--oat-ink);
-      font-size: 1rem;
-      font-weight: 650;
-      line-height: 1.25;
-    }
-
-    .token-story-takeaways p,
-    .token-plot-cues p {
-      margin-top: 0.4rem;
-      color: var(--oat-muted);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
-    .token-plot-cues > div > span {
-      margin-bottom: 0.35rem;
-      color: var(--oat-accent);
-      font-size: 0.75rem;
-      font-weight: 650;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .token-paper-page .blog-interactive {
-      border-radius: 18px;
-      background: var(--oat-soft);
-      padding: 2rem;
-    }
-
-    .token-paper-page .blog-interactive-header h2 {
+    .blog-interactive-header h2 {
       margin-top: 0;
       font-size: 1.55rem;
       font-weight: 650;
       line-height: 1.2;
     }
 
-    .token-paper-page .blog-interactive-header > span + h2 {
+    .blog-interactive-header > span + h2 {
       margin-top: 0.65rem;
     }
 
-    .token-paper-page .tokenizer-selector button,
-    .token-paper-page .prefix-stepper button {
-      border-color: rgba(0, 102, 204, 0.22);
-      background: rgba(0, 102, 204, 0.08);
+    .vla-tokenizer-interactive .tokenizer-selector button,
+    .vla-schedule-lab .tokenizer-selector button {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: var(--oat-muted);
+      padding-left: 0.7rem;
+      padding-right: 0.7rem;
+    }
+
+    .vla-tokenizer-interactive .tokenizer-selector button:hover,
+    .vla-tokenizer-interactive .tokenizer-selector button.is-active,
+    .vla-schedule-lab .tokenizer-selector button:hover,
+    .vla-schedule-lab .tokenizer-selector button.is-active {
+      border-bottom-color: var(--oat-accent);
+      background: transparent;
       color: var(--oat-accent);
     }
 
-    .token-paper-page .tokenizer-selector button:hover,
-    .token-paper-page .tokenizer-selector button.is-active,
-    .token-paper-page .prefix-stepper button:hover,
-    .token-paper-page .prefix-stepper button.is-active {
+    .vla-prefix-grid {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .vla-prefix-grid figure {
+      min-width: 0;
+      border: 1px solid var(--oat-line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 0.65rem;
+    }
+
+    .vla-prefix-grid img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: var(--oat-soft);
+    }
+
+    .vla-prefix-grid figcaption {
+      margin-top: 0.55rem;
+      color: var(--oat-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .vla-method-figure {
+      margin: 2rem auto;
+    }
+
+    .vla-result-figure {
+      margin: 1.8rem 0;
+      overflow-x: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .vla-result-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .vla-result-figure.is-wide img {
+      min-width: 860px;
+    }
+
+    .vla-result-figure figcaption {
+      margin-top: 0.75rem;
+      color: var(--oat-muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .vla-experiment-plot {
+      margin-top: 1.25rem;
+    }
+
+    .vla-tokenizer-readout {
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 0;
+      align-items: stretch;
+    }
+
+    .vla-tokenizer-interactive {
+      margin-top: 2.25rem;
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid {
+      width: 100%;
+      max-width: 100%;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid > div {
+      min-width: 0;
+      height: auto;
+      min-height: 8.2rem;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 1rem 1.05rem;
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid > div + div {
+      border-left: 1px solid var(--oat-line);
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid span {
+      min-height: 2.5em;
+      white-space: normal;
+      overflow-wrap: break-word;
+    }
+
+    .vla-tokenizer-summary {
+      display: block;
+      height: auto;
+      min-height: 8.2rem;
+      overflow: visible;
+      border: 0 !important;
+      border-left: 1px solid var(--oat-line) !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+    }
+
+    .vla-tokenizer-summary span {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: var(--oat-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .vla-tokenizer-summary em {
+      color: var(--oat-ink);
+      font-style: normal;
+      line-height: 1.45;
+    }
+
+    .vla-principle-list,
+    .vla-oat-step-list {
+      display: grid;
+      gap: 1.25rem;
+      margin: 1.25rem 0 1.35rem;
+    }
+
+    .vla-principle-list > div,
+    .vla-oat-step-list > div {
+      display: grid;
+      grid-template-columns: 5.4rem minmax(0, 1fr);
+      gap: 1rem;
+      padding: 0.82rem 0;
+    }
+
+    .vla-principle-list > div {
+      grid-template-columns: minmax(10.5rem, 0.42fr) minmax(0, 1fr);
+      padding: 1rem 0;
+    }
+
+    .vla-oat-step-list > div {
+      grid-template-columns: 10.5rem minmax(0, 1fr);
+    }
+
+    .vla-principle-list span,
+    .vla-oat-step-list span {
+      color: var(--oat-highlight);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .vla-oat-step-list span {
+      white-space: nowrap;
+    }
+
+    .vla-principle-list strong,
+    .vla-oat-step-list strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-principle-list p,
+    .vla-oat-step-list p {
+      margin-top: 0.35rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-block-property {
+      margin: 2rem 0 1.75rem;
+    }
+
+    .vla-block-property > span {
+      display: block;
+      color: var(--oat-highlight);
+      font-family: var(--oat-mono);
+      font-size: 0.7rem;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .vla-block-property h3 {
+      margin: 0.45rem 0 0.55rem;
+      color: var(--oat-ink);
+      font-size: 1.45rem;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .vla-block-property p {
+      max-width: 980px;
+      margin: 0;
+      color: var(--oat-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .vla-oat-reference {
+      margin: 1rem 0 1.3rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.96rem !important;
+      line-height: 1.55 !important;
+    }
+
+    .vla-info-allocation {
+      margin: 2rem 0 1.75rem;
+    }
+
+    .vla-info-allocation > span {
+      display: block;
+      color: var(--oat-highlight);
+      font-family: var(--oat-mono);
+      font-size: 0.7rem;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .vla-info-allocation h3 {
+      margin: 0.45rem 0 0.55rem;
+      color: var(--oat-ink);
+      font-size: 1.45rem;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .vla-info-allocation p {
+      max-width: 980px;
+      margin: 0;
+      color: var(--oat-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .vla-info-allocation p + p,
+    .vla-block-generation > p + p {
+      margin-top: 0.65rem;
+    }
+
+    .vla-info-allocation .vla-info-equation {
+      margin: 1rem 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .vla-technical-detail {
+      margin-top: 1rem;
+    }
+
+    .vla-technical-detail summary {
+      width: max-content;
+      max-width: 100%;
+      cursor: pointer;
+      color: var(--oat-accent);
+      font-size: 0.92rem;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .vla-technical-detail[open] summary {
+      margin-bottom: 0.8rem;
+    }
+
+    .vla-concept-lab {
+      margin-top: 1.6rem;
+    }
+
+    .vla-highlight {
+      color: var(--oat-highlight);
+      font-weight: 650;
+    }
+
+    .vla-story-takeaways {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0 1.35rem;
+      padding: 0.85rem 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-story-takeaways > div {
+      min-width: 0;
+    }
+
+    .vla-story-takeaways > div + div {
+      border-left: 1px solid var(--oat-line);
+      padding-left: 1rem;
+    }
+
+    .vla-story-takeaways strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-story-takeaways p {
+      margin-top: 0.45rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-concept-readout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+      gap: 1rem;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+
+    .vla-schedule-board {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--oat-line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .vla-schedule-board > span {
+      display: block;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .vla-token-timeline {
+      position: relative;
+      margin-top: 0.85rem;
+      height: 3.1rem;
+      overflow: hidden;
+      border: 1px solid var(--oat-line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .vla-schedule-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      display: block;
+      transition: width 180ms ease, left 180ms ease;
+    }
+
+    .vla-schedule-fill.is-realized {
+      background: rgba(0, 102, 204, 0.16);
+    }
+
+    .vla-schedule-fill.is-current {
+      background: var(--oat-accent);
+    }
+
+    .vla-schedule-progress-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--oat-accent);
+      font-family: var(--oat-mono);
+      font-size: 0.78rem;
+      font-weight: 650;
+      pointer-events: none;
+    }
+
+    .vla-schedule-progress-label.is-current {
+      color: #fff;
+    }
+
+    .vla-stage-stepper {
+      display: grid;
+      grid-template-columns: 2.4rem minmax(0, 1fr) 2.4rem;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+
+    .vla-stage-stepper button {
+      width: 2.4rem;
+      height: 2.4rem;
+      border: 1px solid var(--oat-line-strong);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--oat-muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .vla-stage-stepper button:hover,
+    .vla-stage-stepper button:focus-visible {
       border-color: var(--oat-accent);
       background: var(--oat-accent);
       color: #fff;
     }
 
-    .token-paper-page .blog-reading-guide {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 0;
+    .vla-stage-stepper button:disabled {
+      border-color: var(--oat-line);
+      background: var(--oat-soft-2);
+      color: rgba(29, 29, 31, 0.26);
+      cursor: not-allowed;
     }
 
-    .token-paper-page .result-table-wrap {
-      box-shadow: none;
+    .vla-stage-stepper button:disabled:hover {
+      border-color: var(--oat-line);
+      background: var(--oat-soft-2);
+      color: rgba(29, 29, 31, 0.26);
     }
 
-    .token-paper-page .result-caption {
-      border-left: 0;
-      border-top: 1px solid var(--oat-line);
-      padding: 0.95rem 0 0;
+    .vla-stage-count {
+      color: var(--oat-ink);
+      font-size: 0.95rem;
+      font-weight: 650;
+      line-height: 1.25;
+      text-align: center;
     }
 
-    .token-paper-page .result-caption h3.title {
+    .vla-schedule-stage {
+      margin-top: 0.9rem;
+      border: 1px solid var(--oat-line);
+      border-radius: 14px;
+      background: var(--oat-soft-2);
+      padding: 0.85rem;
+    }
+
+    .vla-schedule-stage strong,
+    .vla-readout-card strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-schedule-stage p,
+    .vla-readout-card p {
+      margin: 0.45rem 0 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.92rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-readout-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .vla-readout-card {
+      border: 1px solid var(--oat-line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .vla-mask-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .vla-mask-card {
+      min-width: 0;
+      border: 1px solid var(--oat-line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .vla-mask-card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: flex-start;
+    }
+
+    .vla-mask-card-kicker,
+    .vla-posthoc-kicker {
+      display: block;
+      color: var(--oat-highlight);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+    }
+
+    .vla-posthoc-kicker {
+      text-transform: uppercase;
+    }
+
+    .vla-mask-card h3 {
+      margin: 0.2rem 0 0;
+      color: var(--oat-ink);
       font-size: 1.05rem;
       font-weight: 650;
+      line-height: 1.25;
     }
 
-    .token-paper-page .blog-reading-guide .token-plot-cues {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .vla-mask-badge {
+      flex: 0 0 auto;
+      border: 1px solid rgba(0, 102, 204, 0.18);
+      border-radius: 999px;
+      background: rgba(0, 102, 204, 0.07);
+      color: var(--oat-accent);
+      padding: 0.28rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 650;
+      line-height: 1;
+      white-space: nowrap;
     }
 
-    .token-paper-page .token-meshcat-panel.prefix-meshcat-panel {
-      margin-top: 2.25rem;
-      border-top: 0;
-      padding-top: 2rem;
+    .vla-mask-card-copy {
+      margin-top: 0.8rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.92rem !important;
+      line-height: 1.48 !important;
     }
 
-    .token-paper-page .token-meshcat-panel .meshcat-global-controls {
-      margin-top: 1.35rem;
+    .vla-mask-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      width: min(100%, 230px);
+      gap: 0.18rem;
+      margin-top: 0.85rem;
     }
 
-    .token-paper-page .blog-property-list,
-    .token-paper-page .blog-failure-grid,
-    .token-paper-page .blog-step-list {
-      gap: 0;
-      border-top: 1px solid var(--oat-line);
-      border-bottom: 1px solid var(--oat-line);
+    .vla-mask-card .vla-mask-grid {
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .token-paper-page .blog-property-list li,
-    .token-paper-page .blog-step-list li {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 1rem 0 1rem 2.7rem;
+    .vla-mask-axis {
+      margin-top: 0.5rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
     }
 
-    .token-paper-page .blog-property-list li + li,
-    .token-paper-page .blog-step-list li + li {
-      border-top: 1px solid var(--oat-line);
+    .vla-mask-cell {
+      aspect-ratio: 1;
+      border: 1px solid var(--oat-line);
+      border-radius: 5px;
+      background: #fff;
     }
 
-    .token-paper-page .blog-property-list li::before,
-    .token-paper-page .blog-step-list li::before {
-      left: 0;
-      top: 1.1rem;
+    .vla-mask-cell.is-on {
+      border-color: rgba(0, 102, 204, 0.22);
+      background: rgba(0, 102, 204, 0.18);
+    }
+
+    .vla-mask-cell.is-self {
+      border-color: rgba(29, 29, 31, 0.24);
       background: var(--oat-ink);
     }
 
-    .token-paper-page .blog-property-list {
-      counter-reset: blog-step;
+    .vla-mask-cell.is-blocked {
+      background: repeating-linear-gradient(
+        -45deg,
+        #fff,
+        #fff 5px,
+        rgba(29, 29, 31, 0.045) 5px,
+        rgba(29, 29, 31, 0.045) 10px
+      );
     }
 
-    .token-paper-page .blog-property-list li {
-      counter-increment: blog-step;
-      position: relative;
+    .vla-mask-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.7rem;
+      margin-top: 0.75rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
     }
 
-    .token-paper-page .blog-property-list li::before {
-      content: counter(blog-step);
-      position: absolute;
-      display: inline-grid;
-      place-items: center;
-      width: 1.45rem;
-      height: 1.45rem;
-      border-radius: 50%;
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 600;
-      line-height: 1;
+    .vla-mask-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
     }
 
-    .token-paper-page .blog-property-list li {
-      padding-left: 0;
+    .vla-mask-legend i {
+      width: 0.72rem;
+      height: 0.72rem;
+      display: inline-block;
+      border: 1px solid var(--oat-line);
+      border-radius: 4px;
+      background: #fff;
     }
 
-    .token-paper-page .blog-property-list li::before {
-      content: none;
-      display: none;
+    .vla-mask-legend .is-on {
+      border-color: rgba(0, 102, 204, 0.22);
+      background: rgba(0, 102, 204, 0.18);
     }
 
-    .token-paper-page .blog-failure-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .vla-mask-legend .is-self {
+      border-color: rgba(29, 29, 31, 0.24);
+      background: var(--oat-ink);
+    }
+
+    .vla-posthoc-panel {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+      gap: 1.2rem;
+      align-items: start;
+      margin: 1.25rem 0 1.35rem;
+    }
+
+    .vla-posthoc-copy {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding-top: 0.1rem;
+    }
+
+    .vla-posthoc-copy h3 {
+      margin: 0.25rem 0 0;
+      color: var(--oat-ink);
+      font-size: 1.12rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-posthoc-copy p {
+      margin-top: 0.65rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.93rem !important;
+      line-height: 1.5 !important;
+    }
+
+    .vla-posthoc-list {
+      display: grid;
       gap: 0;
-      margin: 1.35rem 0;
+      min-width: 0;
     }
 
-    .token-paper-page .blog-failure-grid > div {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 0.9rem 0.85rem;
-    }
-
-    .token-paper-page .blog-failure-grid > div + div {
-      border-left: 1px solid var(--oat-line);
-    }
-
-    .token-paper-page .blog-axis-panel > div,
-    .token-paper-page .blog-insight-card {
-      border: 0;
+    .vla-posthoc-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.65rem 1rem;
+      align-items: center;
       border-top: 1px solid var(--oat-line);
-      border-radius: 0;
-      background: transparent;
-      padding: 1rem 0 0;
+      padding: 0.78rem 0;
     }
 
-    .token-paper-page .blog-axis-panel {
-      gap: 1rem;
-    }
-
-    .token-paper-page .blog-figure-method,
-    .token-paper-page .blog-figure-teaser {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .token-paper-page .blog-figure-method img,
-    .token-paper-page .blog-figure-teaser img {
-      min-width: 760px;
-    }
-
-    .token-paper-page .blog-opportunity-grid {
-      gap: 0;
-      border-top: 1px solid var(--oat-line);
+    .vla-posthoc-row:last-child {
       border-bottom: 1px solid var(--oat-line);
     }
 
-    .token-paper-page .blog-opportunity-grid > div {
-      border: 0;
-      border-radius: 0;
+    .vla-posthoc-row.is-best .vla-posthoc-score strong {
+      color: var(--oat-accent);
+    }
+
+    .vla-posthoc-method strong,
+    .vla-posthoc-score strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-posthoc-method span,
+    .vla-posthoc-score span {
+      display: block;
+      margin-top: 0.18rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    .vla-posthoc-score {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .vla-posthoc-meter {
+      grid-column: 1 / -1;
+      height: 0.38rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(29, 29, 31, 0.08);
+    }
+
+    .vla-posthoc-meter i {
+      display: block;
+      width: var(--score);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--oat-accent);
+    }
+
+    .vla-posthoc-row.is-posthoc .vla-posthoc-meter i {
+      background: rgba(29, 29, 31, 0.42);
+    }
+
+    .vla-section-lead {
+      color: var(--oat-muted) !important;
+      font-size: 1.18rem !important;
+      line-height: 1.55 !important;
+    }
+
+    .vla-subheading {
+      margin: 1.75rem 0 0.45rem;
+      color: var(--oat-ink);
+      font-size: 1.22rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-equation {
+      margin: 1.35rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--oat-line);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--oat-ink);
+      padding: 1rem 1.15rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .vla-equation mjx-container {
+      min-width: max-content;
+      padding: 0.15rem 0;
+    }
+
+    .vla-block-generation {
+      margin: 2rem 0 2.1rem;
+    }
+
+    .vla-block-generation > span {
+      display: block;
+      color: var(--oat-highlight);
+      font-family: var(--oat-mono);
+      font-size: 0.7rem;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .vla-block-generation h3 {
+      margin: 0.45rem 0 0.55rem;
+      color: var(--oat-ink);
+      font-size: 1.45rem;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .vla-block-generation > p {
+      max-width: 980px;
+      margin: 0;
+      color: var(--oat-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .vla-call-schedules {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin: 1rem 0;
+    }
+
+    .vla-call-schedules > div {
+      min-width: 0;
+      padding: 0.9rem 0;
+    }
+
+    .vla-call-schedules > div:first-child {
+      padding-right: 1rem;
+    }
+
+    .vla-call-schedules > div + div {
+      border-left: 1px solid var(--oat-line);
+      padding-left: 1rem;
+    }
+
+    .vla-call-schedule-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .vla-call-schedule-header strong {
+      color: var(--oat-ink);
+      font-size: 0.98rem;
+      font-weight: 650;
+    }
+
+    .vla-call-schedule-header span,
+    .vla-call-schedules small {
+      color: var(--oat-muted);
+      font-family: var(--oat-mono);
+      font-size: 0.72rem;
+    }
+
+    .vla-token-run {
+      display: flex;
+      gap: 0.2rem;
+      width: 100%;
+      height: 2rem;
+      margin: 0.7rem 0 0.45rem;
+    }
+
+    .vla-token-run span {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      background: rgba(0, 102, 204, 0.2);
+      color: #fff;
+      font-family: var(--oat-mono);
+      font-size: 0.72rem;
+      font-style: normal;
+      font-weight: 650;
+    }
+
+    .vla-token-run.is-serial span {
+      flex: 1 1 0;
+    }
+
+    .vla-token-run.is-blocked span {
+      flex: var(--tokens) 1 0;
+    }
+
+    .vla-token-run.is-blocked span:nth-child(1) { background: rgba(0, 102, 204, 0.24); }
+    .vla-token-run.is-blocked span:nth-child(2) { background: rgba(0, 102, 204, 0.36); }
+    .vla-token-run.is-blocked span:nth-child(3) { background: rgba(0, 102, 204, 0.5); }
+    .vla-token-run.is-blocked span:nth-child(4) { background: rgba(0, 102, 204, 0.68); }
+    .vla-token-run.is-blocked span:nth-child(5) { background: var(--oat-accent); }
+
+    .vla-math-caption {
+      margin-top: -0.65rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.92rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-evidence-intro {
+      max-width: 980px;
+      margin-bottom: 1.4rem;
+    }
+
+    .vla-evidence-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.8fr);
+      gap: 1.5rem;
+      align-items: start;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .vla-evidence-split figure {
+      min-width: 0;
+      margin: 0;
+    }
+
+    .vla-evidence-split img {
+      width: 100%;
+      height: auto;
+    }
+
+    .vla-evidence-split figcaption {
+      margin-top: 0.65rem;
+      color: var(--oat-muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .vla-evidence-notes {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .vla-evidence-notes > div {
+      padding: 0.25rem 0;
+    }
+
+    .vla-evidence-notes strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--oat-ink);
+      font-size: 0.96rem;
+      font-weight: 650;
+    }
+
+    .vla-evidence-notes p {
+      margin: 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.9rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-data-table-wrap {
+      margin: 1.35rem 0 1.75rem;
+      overflow-x: auto;
+      border-top: 1px solid var(--oat-line-strong);
+      border-bottom: 1px solid var(--oat-line-strong);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .vla-data-table {
+      width: 100%;
+      min-width: 830px;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .vla-data-table caption {
+      padding: 0.85rem 0;
+      color: var(--oat-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .vla-data-table th,
+    .vla-data-table td {
+      padding: 0.68rem 0.62rem;
+      border-bottom: 1px solid var(--oat-line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .vla-data-table th:first-child,
+    .vla-data-table td:first-child {
+      text-align: left;
+    }
+
+    .vla-data-table thead th {
+      color: var(--oat-muted);
+      font-size: 0.72rem;
+      font-weight: 650;
+    }
+
+    .vla-data-table tbody th {
+      color: var(--oat-ink);
+      font-weight: 600;
+    }
+
+    .vla-data-table tbody tr:last-child th,
+    .vla-data-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .vla-data-table .is-oat th {
+      color: var(--oat-highlight);
+    }
+
+    .vla-data-table .is-best {
+      background: rgba(0, 102, 204, 0.055);
+    }
+
+    .vla-data-table .is-best th,
+    .vla-data-table .is-best td {
+      font-weight: 700;
+    }
+
+    .vla-verdict {
+      margin: 1.5rem 0 0;
+      max-width: 900px;
       background: transparent;
-      padding: 1rem 0;
     }
 
-    .token-paper-page .blog-opportunity-grid > div:nth-child(n + 3) {
-      border-top: 1px solid var(--oat-line);
+    .vla-verdict strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--oat-ink);
+      font-weight: 650;
     }
 
-    @media (max-width: 900px) {
-      .blog-metric-strip.token-hero-metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        border-bottom: 0;
+    .vla-verdict p {
+      margin: 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.5 !important;
+    }
+
+    .vla-final-case {
+      display: grid;
+      gap: 1.15rem;
+      margin-top: 2rem;
+    }
+
+    .vla-final-case > div {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 1rem;
+      padding: 0;
+    }
+
+    .vla-final-case strong {
+      color: var(--oat-highlight);
+      font-family: var(--oat-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .vla-final-case p {
+      margin: 0 !important;
+      font-size: 0.96rem !important;
+      line-height: 1.5 !important;
+    }
+
+    #appendix .appendix-link-button {
+      border-color: rgba(0, 102, 204, 0.22);
+      background: rgba(0, 102, 204, 0.08);
+      color: var(--oat-accent) !important;
+      margin: 0 0.18rem;
+      vertical-align: baseline;
+    }
+
+    #appendix .appendix-link-button:hover {
+      border-color: rgba(0, 102, 204, 0.36);
+      background: rgba(0, 102, 204, 0.13);
+      color: var(--oat-accent) !important;
+    }
+
+    .blog-section > p,
+    .blog-interactive-header p {
+      max-width: 900px;
+    }
+
+    @media (max-width: 1180px) {
+      .vla-tokenizer-readout {
+        grid-template-columns: 1fr;
       }
 
-      .blog-metric-strip.token-hero-metrics > div {
+      .vla-tokenizer-readout .tokenizer-score-grid > div,
+      .vla-tokenizer-summary {
+        height: auto;
+        min-height: 8.2rem;
+        overflow: visible;
+      }
+
+      .vla-tokenizer-readout .vla-desiderata-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div:nth-child(odd) {
+        border-left: 0;
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div:nth-child(n + 3) {
+        border-top: 1px solid var(--oat-line);
+      }
+
+      .vla-tokenizer-summary {
+        border-top: 1px solid var(--oat-line) !important;
+        border-left: 0 !important;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .blog-mobile-toc {
+        position: sticky;
+        top: 44px;
+        z-index: 29;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        width: 100%;
+        overflow-x: auto;
         border-bottom: 1px solid var(--oat-line);
+        background: rgba(255, 255, 255, 0.96);
+        padding: 0.62rem 1rem;
+        scrollbar-width: none;
+        backdrop-filter: blur(14px);
+      }
+
+      .blog-mobile-toc::-webkit-scrollbar {
+        display: none;
+      }
+
+      .blog-mobile-toc strong,
+      .blog-mobile-toc a {
+        flex: 0 0 auto;
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+
+      .blog-mobile-toc strong {
+        color: var(--oat-ink);
+        font-family: var(--oat-mono);
+        font-weight: 600;
+      }
+
+      .blog-mobile-toc a {
+        color: var(--oat-muted);
+        text-decoration: none;
+      }
+
+      .blog-mobile-toc a[aria-current="true"] {
+        color: var(--oat-accent);
+        font-weight: 700;
+      }
+
+      .vla-evidence-split {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-story-takeaways {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .vla-concept-readout {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-call-schedules {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-call-schedules > div + div {
+        border-top: 1px solid var(--oat-line);
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .vla-call-schedules > div:first-child {
+        padding-right: 0;
+      }
+
+      .vla-posthoc-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-prefix-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      body.blog-page {
+        padding-top: 108px;
+      }
+
+      .blog-topbar {
+        position: fixed;
+      }
+
+      .blog-mobile-toc {
+        position: fixed;
+        top: 70px;
+      }
+
+      .blog-section[id],
+      .blog-interactive[id],
+      .prefix-lab-suite {
+        scroll-margin-top: 7.5rem;
+      }
+
+      .vla-final-case > div {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .blog-layout {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .blog-article {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible;
+      }
+
+      .blog-hero,
+      .blog-section,
+      .blog-editorial-panel,
+      .blog-dek,
+      .blog-authors,
+      .blog-affiliations,
+      .blog-project-links,
+      .blog-figure {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .blog-figure,
+      .blog-figure-paper,
+      .blog-figure-teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible;
+      }
+
+      .vla-hero-title {
+        max-width: 100%;
+        font-size: 2.05rem !important;
+        line-height: 1.13 !important;
+      }
+
+      .vla-mobile-break {
+        display: block;
+      }
+
+      .blog-dek,
+      .blog-authors,
+      .blog-affiliations {
+        width: min(100%, 21rem) !important;
+        max-width: 21rem !important;
+        margin-left: auto;
+        margin-right: auto;
+        overflow-wrap: anywhere;
+        white-space: normal !important;
+        text-align: center;
+      }
+
+      .blog-authors a,
+      .blog-affiliations a {
+        display: inline;
+        overflow-wrap: anywhere;
+        white-space: normal !important;
+      }
+
+      .blog-dek {
+        font-size: 1rem !important;
+      }
+
+      .blog-section h2 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+
+      .vla-story-takeaways {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-story-takeaways > div + div {
+        border-left: 0;
+        border-top: 1px solid var(--oat-line);
+        padding-top: 0.85rem;
+        padding-left: 0;
+      }
+
+      .vla-mask-pair {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-posthoc-row {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-posthoc-score {
+        text-align: left;
+      }
+
+      .vla-principle-list > div,
+      .vla-oat-step-list > div {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+      }
+
+      .blog-authors,
+      .blog-affiliations {
+        font-size: 0.82rem !important;
+      }
+
+      .blog-project-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .blog-project-links a {
+        width: 100%;
+        min-width: 0;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+        text-align: center;
+      }
+
+      .blog-figure img {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .blog-figure-paper img {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .blog-figure-teaser {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .blog-figure-teaser img {
+        width: 780px !important;
+        min-width: 780px !important;
+        max-width: none !important;
+      }
+
+      .vla-tokenizer-readout .vla-desiderata-grid,
+      .vla-prefix-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div + div {
+        border-top: 1px solid var(--oat-line);
+        border-left: 0;
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div {
+        min-height: 5.4rem;
+        padding: 0.85rem 0;
+      }
+
+      .vla-tokenizer-summary {
+        min-height: 0;
+        padding: 1rem 0;
+      }
+
+      .vla-result-figure {
+        padding: 0;
+      }
+
+      .vla-result-figure.is-wide img {
+        min-width: min(760px, 220vw);
+      }
+
+      .vla-evidence-split figure {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .vla-evidence-split figure img {
+        width: 760px;
+        max-width: none;
+      }
+
+      .token-meshcat-panel .embed-row {
+        grid-template-columns: repeat(5, 230px);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .token-meshcat-panel .embed-card {
+        scroll-snap-align: start;
+      }
+
+      .prefix-lab-suite {
+        border-radius: 12px;
+        padding: 1rem;
+      }
+
+      .vla-equation {
         padding: 0.85rem;
       }
-
-      .blog-metric-strip.token-hero-metrics > div:nth-child(odd) {
-        border-left: 0;
-      }
-
-      .token-story-takeaways,
-      .token-plot-cues,
-      .token-paper-page .blog-reading-guide .token-plot-cues,
-      .token-paper-page .blog-failure-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .token-paper-page .blog-failure-grid > div + div {
-        border-left: 0;
-        border-top: 1px solid var(--oat-line);
-      }
-
-      .token-paper-page .blog-opportunity-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .token-paper-page .blog-opportunity-grid > div + div {
-        border-top: 1px solid var(--oat-line);
-      }
     }
 
-    @media (max-width: 520px) {
-      .blog-metric-strip.token-hero-metrics {
-        grid-template-columns: 1fr;
-      }
-
-      .blog-metric-strip.token-hero-metrics > div,
-      .blog-metric-strip.token-hero-metrics > div:nth-child(odd) {
-        border-left: 0;
-      }
-
-      .token-paper-page .blog-figure-method img,
-      .token-paper-page .blog-figure-teaser img {
-        min-width: 680px;
-      }
-
-    }
   </style>
 
-  <script defer src="./static/js/index.js"></script>
+  <script defer src="./static/js/index.js?v=20260711b"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 
-<body class="blog-page token-paper-page" id="top">
+<body class="blog-page" id="top">
   <header class="blog-topbar">
     <a href="./" class="blog-home">Ordered Action Tokenization</a>
     <nav aria-label="Project links and language">
-      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
+      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">RSS arXiv</a>
+      <a href="./media/oat-visuomotor-policy-learning.pdf?v=20260714" target="_blank" rel="noopener">Full Paper PDF</a>
+      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">OAT Code</a>
+      <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">VLA Code</a>
       <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X"><span class="x-symbol" aria-hidden="true">𝕏</span></a>
       <a href="./" hreflang="en" lang="en" aria-current="page">English</a>
       <a href="./zh/" hreflang="zh-Hans" lang="zh-Hans">中文</a>
     </nav>
   </header>
 
+  <nav class="blog-mobile-toc" aria-label="Mobile page sections">
+    <strong>On this page</strong>
+    <a href="#paper-minute">Policy interface</a>
+    <a href="#tokenization">Design principles</a>
+    <a href="#oat">OAT</a>
+    <a href="#prefix-lab">Prefix Lab</a>
+    <a href="#token-evidence">Rate-distortion</a>
+    <a href="#bar-experiments">Generate OAT</a>
+    <a href="#tc-policies">Co-train with OAT</a>
+    <a href="#takeaway">Takeaway</a>
+  </nav>
+
   <main class="blog-layout">
     <aside class="blog-side-nav" aria-label="Page sections">
-      <a href="#paper-minute">One minute</a>
-      <a href="#why-tokenization">Prediction</a>
-      <a href="#modelability">Reconstruction</a>
-      <a href="#properties">Desiderata</a>
-      <a href="#missing-tokenizers">Gaps</a>
+      <a href="#paper-minute">Policy interface</a>
+      <a href="#tokenization">Design principles</a>
       <a href="#oat">OAT</a>
-      <a href="#info-theory">Progressive code</a>
-      <a href="#prefix-decoding">Prefix budgets</a>
-      <a href="#prefix-lab">Prefix lab</a>
-      <a href="#experiments">Experiments</a>
-      <a href="#real-world">Real demos</a>
-      <a href="#open-directions">Open questions</a>
-      <a href="#appendix">Appendix</a>
+      <a href="#prefix-lab">Prefix Lab</a>
+      <a href="#token-evidence">Rate-distortion</a>
+      <a href="#bar-experiments">Generate OAT</a>
+      <a href="#tc-policies">Co-train with OAT</a>
+      <a href="#takeaway">Takeaway</a>
     </aside>
 
     <article class="blog-article">
       <header class="blog-hero">
-        <h1 class="token-hero-title">
-          <span>Ordered Action Tokenization</span>
+        <h1 class="vla-hero-title">
+          <span class="vla-title-line">Ordered Action Tokenization</span>
         </h1>
         <p class="blog-dek">
-          Ordered action tokens for autoregressive robot policies: compact enough to generate, always decodable, and ordered so prefixes are useful.
-        </p>
-        <p class="blog-source">
-          <span class="blog-venue-pill">RSS 2026</span> accepted paper, expanded from the original
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X Article"><span class="x-symbol" aria-hidden="true">𝕏</span> Article</a>
-          with native web controls.
+          OAT turns continuous robot actions into compact tokens whose trained prefixes progress from coarse motion to finer detail.
         </p>
         <p class="blog-authors">
-          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
+          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1,2</sup>,
+          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
+          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1,2</sup>,
           <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
           <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
-          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
-          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup>, and
+          <a href="https://stanford.edu/~eadeli/" target="_blank" rel="noopener">Ehsan Adeli</a><sup>2</sup>, and
           <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
         </p>
-        <p class="blog-affiliations"><sup>1</sup>Harvard University · <sup>2</sup>Stanford University</p>
+        <p class="blog-affiliations">
+          <sup>1</sup>Harvard University · <sup>2</sup>Stanford University
+        </p>
         <div class="blog-project-links" aria-label="Project links">
-          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">Code</a>
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X"><span class="x-symbol" aria-hidden="true">𝕏</span></a>
+          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">RSS arXiv</a>
+          <a href="./media/oat-visuomotor-policy-learning.pdf?v=20260714" target="_blank" rel="noopener">Full Paper PDF</a>
+          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">OAT Code</a>
+          <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">VLA Code</a>
         </div>
       </header>
 
       <figure class="blog-figure blog-figure-paper blog-figure-teaser">
-        <img src="./media/fig/teaser-white.png" alt="OAT teaser summarizing tokenizer desiderata and policy performance"
-          width="8203" height="2665">
+        <img src="./media/fig/teaser.png" alt="Overview of OAT, action generation, token co-training, and VLA task coverage"
+          width="2400" height="1356">
+        <figcaption>
+          OAT connects three pieces: progressive action tokenization, generated OAT for control, and OAT supervision for continuous VLA policies.
+        </figcaption>
       </figure>
 
-      <div class="blog-metric-strip token-hero-metrics" aria-label="Article highlights">
-        <div>
-          <span>Compact</span>
-          <strong>short action-token sequences</strong>
-        </div>
-        <div>
-          <span>Total</span>
-          <strong>all supported prefixes decode</strong>
-        </div>
-        <div>
-          <span>Ordered</span>
-          <strong>prefixes carry coarse motion</strong>
-        </div>
-        <div>
-          <span>Anytime</span>
-          <strong>trade tokens for latency</strong>
-        </div>
-        <div>
-          <span>20+</span>
-          <strong>simulation and real tasks</strong>
-        </div>
-      </div>
-
-      <section class="blog-section blog-editorial-panel token-paper-minute" id="paper-minute">
-        <span class="blog-section-kicker">Paper in one minute</span>
-        <h2>Action tokenization defines the policy's prediction problem.</h2>
-        <p>
-          An autoregressive robot policy does not directly predict continuous control. It predicts tokens for a short
-          future sequence of robot actions, or action chunk, then trusts the detokenizer to recover executable
-          continuous control. That makes tokenization a learning problem: a representation can reconstruct well and
-          still be slow, invalid under sampling, or difficult to predict left-to-right.
-        </p>
-        <ol class="blog-summary-list">
-          <li>
-            <strong>The problem:</strong> existing tokenizers expose a three-way tension between compression, total
-            decodability, and autoregressive predictability.
-          </li>
-          <li>
-            <strong>The method:</strong> <span class="oat-name">OAT</span> learns ordered discrete register tokens and
-            trains every prefix to decode into a complete action chunk.
-          </li>
-          <li>
-            <strong>The result:</strong> token count becomes a runtime budget: fewer tokens for low-latency coarse
-            control, more tokens when the task needs precision.
-          </li>
-        </ol>
-      </section>
-
-      <section class="blog-section" id="why-tokenization">
-        <h2>1. The tokenizer defines what the policy has to predict.</h2>
-        <p>
-          Discrete action tokens are becoming an increasingly important design choice in modern robot learning systems:
-          <a href="https://rdt-robotics.github.io/rdt2/" target="_blank" rel="noopener">RDT-2</a> employs
-          vector-quantized (VQ) action tokens for its stage-1 training;
-          <a href="https://co-training-lbm.github.io/" target="_blank" rel="noopener">TRI's LBM/VLA</a> leverages FAST
-          and VQ-style tokenizations; and the
-          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">winning solution</a> of the
-          BEHAVIOR 2025 Challenge integrated FAST tokens in training and inference.
+      <section class="blog-section blog-editorial-panel vla-paper-minute" id="paper-minute">
+        <span class="blog-section-kicker">From actions to tokens</span>
+        <h2>What is an action token?</h2>
+        <p class="vla-section-lead">
+          A robot action chunk is a short future sequence of continuous commands: how the joints should move, how the gripper should change, and so on. An action tokenizer compresses that whole chunk into discrete symbols; a detokenizer maps the symbols back to continuous motion.
         </p>
         <p>
-          In all of these systems, the policy sees symbols before it sees control. The tokenizer determines sequence
-          length, the set of samples that can be decoded safely, and the left-to-right structure the model must learn.
-          It is not a preprocessing detail; it is the prediction problem.
+          In a vision-language-action (VLA) policy, a vision-language model (VLM) connects camera observations and language instructions to robot control. Action tokens can play two roles: the VLM can generate and decode them, or learn from them while a continuous action expert produces the motion. Either way, tokenization determines the policy's targets, their length, and the structure the model learns from.
+        </p>
+        <p>
+          OAT's central idea is simple: train even a short prefix to reconstruct the whole action chunk, then train larger prefix budgets to refine it. The method, Prefix Lab, and experiments below show how this ordering is learned and measured.
         </p>
       </section>
 
-      <section class="blog-section" id="modelability">
-        <h2>2. Reconstruction error is not enough.</h2>
-        <p>
-          Classical theories like the
-          <a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">rate-distortion
-            tradeoff</a> focus on balancing compression rate and reconstruction fidelity. For generative robot policies,
-          we argue that a third axis, modelability, is crucial and often overlooked: how difficult it is for a
-          generative model to capture the distribution of a representation. Poorly structured representations may be
-          compact and accurate, yet fundamentally hard to model.
-        </p>
-        <p>
-          This is the central distinction: a tokenizer can reconstruct actions well and still be poor for policy
-          learning. If the token stream has low autoregressive modelability, or is sparse and high-entropy, the model
-          pays that cost at every next-token prediction step.
-        </p>
-        <div class="blog-axis-panel" aria-label="Rate distortion modelability trade-off">
+      <section class="blog-section" id="glossary">
+        <span class="blog-section-kicker">Small glossary</span>
+        <h2>Five terms used throughout this page.</h2>
+        <dl class="blog-glossary-grid">
           <div>
-            <span>Rate</span>
-            <strong>How many tokens?</strong>
-            <p>Shorter action codes reduce autoregressive depth and latency.</p>
+            <dt>Action chunk</dt>
+            <dd>A short future sequence of continuous robot actions, written as \(a_{1:H_a}\in\mathbb{R}^{H_a\times D_a}\).</dd>
           </div>
           <div>
-            <span>Distortion</span>
-            <strong>How much action detail?</strong>
-            <p>Continuous robot control still needs enough precision for contact-rich execution.</p>
+            <dt>Action token</dt>
+            <dd>A discrete symbol \(T_i\in\mathcal{V}\) used as an AR prediction target or as token supervision for a VLM.</dd>
           </div>
           <div>
-            <span>Modelability</span>
-            <strong>How predictable is the sequence?</strong>
-            <p>Token order should make next-token prediction easier, not merely possible.</p>
+            <dt>Ordered prefix</dt>
+            <dd>A prefix \(T_{1:k}\) that can already decode to a complete coarse action chunk.</dd>
+          </div>
+          <div>
+            <dt>BAR</dt>
+            <dd>A block-wise autoregressive generation method that grows an action-token prefix in scheduled blocks.</dd>
+          </div>
+          <div>
+            <dt>TC</dt>
+            <dd>Token co-training: action tokens supervise the VLM, while a continuous expert controls the robot. Related work sometimes calls this knowledge insulation (KI).</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="blog-section" id="tokenization">
+        <span class="blog-section-kicker">Design principles</span>
+        <h2>What should action tokens guarantee?</h2>
+        <p class="vla-section-lead">
+          In the usual rate-distortion view, token count is a proxy for rate and expected reconstruction error is distortion. Exact code length also depends on vocabulary size. But a low-rate, low-distortion code is not yet a good policy interface. It needs three guarantees.
+        </p>
+
+        <div class="vla-principle-list" aria-label="Core action-token design principles">
+          <div>
+            <span>1 · High compression</span>
+            <div>
+              <strong>Keep the policy target short.</strong>
+              <p>An action chunk contains a command for every timestep and control dimension. Writing each value separately creates a long sequence. Compact tokens preserve control-relevant motion with fewer symbols, reducing the number of training targets and, when tokens are generated one at a time, VLA calls.</p>
+            </div>
+          </div>
+          <div>
+            <span>2 · Total decodability</span>
+            <div>
+              <strong>Give every policy sample a defined decode.</strong>
+              <p>A policy can sample any sequence in its output space, not only codes produced by the tokenizer's encoder. Every fixed-length sequence of vocabulary indices that the policy can emit should map to a defined continuous action chunk without rejection, padding, truncation, or constrained generation.</p>
+            </div>
+          </div>
+          <div>
+            <span>3 · Ordered structure</span>
+            <div>
+              <strong>Put broadly useful motion before residual detail.</strong>
+              <p>Low full-sequence reconstruction error says nothing about where information lives. A useful order lets early trained prefixes reconstruct coarse, high-impact motion, while later tokens refine what remains. That structure can help both generation and VLM supervision.</p>
+            </div>
           </div>
         </div>
-        <div class="blog-insight-card">
-          <strong>Reconstruction is not enough.</strong>
+
+        <div class="vla-block-property" aria-labelledby="block-property-title">
+          <span>For grouped generation</span>
+          <h3 id="block-property-title">Can several new tokens be predicted together?</h3>
           <p>
-            For robot control, the tokenizer is useful only if the downstream policy can reliably model its tokens.
-            Low reconstruction error matters, but it does not guarantee a token sequence with stable left-to-right
-            structure.
-          </p>
-        </div>
-      </section>
-
-      <section class="blog-section" id="properties">
-        <h2>3. A useful action tokenizer must be compact, total, and ordered.</h2>
-        <p>
-          The design target is not a single metric. An action tokenizer for autoregressive policies has to satisfy three
-          requirements at the same time:
-        </p>
-        <ul class="blog-property-list">
-          <li>
-            <strong>(P.1) Reasonable compression.</strong> The representation should compress action chunks enough to
-            enable efficient sequence modeling, but not so aggressively that too much information is lost.
-          </li>
-          <li>
-            <strong>(P.2) Total decodability.</strong> The detokenization mapping should be a well-defined
-            <a href="https://en.wikipedia.org/wiki/Partial_function" target="_blank" rel="noopener">total function</a>:
-            every token sequence in the discrete token space must decode to a valid action chunk. This is essential
-            because policies may generate arbitrary token sequences at inference time. If decoding is only partially
-            defined, invalid tokens can lead to undefined behavior or catastrophic failures during execution.
-          </li>
-          <li>
-            <strong>(P.3) Predictive ordering.</strong> Token sequences should admit a meaningful left-to-right causal
-            structure aligned with next-token prediction. This structure is critical for modelability, allowing
-            autoregressive models to learn stable, predictable token dynamics.
-          </li>
-        </ul>
-      </section>
-
-      <section class="blog-interactive" id="compare-tokenizers" aria-labelledby="compare-tokenizers-title">
-        <div class="blog-interactive-header">
-          <h2 id="compare-tokenizers-title">Where does each tokenizer give up?</h2>
-          <p>
-            Select a tokenizer family and read it against the three requirements: compression, total decodability,
-            and&nbsp;<span class="text-nowrap">autoregressive modelability</span>.
+            <strong>Block compatibility</strong> is a separate condition for reducing VLA calls. If several new tokens are predicted together, tokens in that block cannot rely on seeing one another first, and both the tokenizer and policy must be trained for that grouping.
           </p>
         </div>
 
-        <div class="tokenizer-selector" role="tablist" aria-label="Tokenizer families">
-          <button type="button" role="tab" id="tokenizer-tab-binning" class="is-active" data-tokenizer-target="binning"
-            aria-controls="tokenizer-panel" aria-selected="true">Binning</button>
-          <button type="button" role="tab" id="tokenizer-tab-fast" data-tokenizer-target="fast"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
-          <button type="button" role="tab" id="tokenizer-tab-latent" data-tokenizer-target="latent"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">Vanilla Latents</button>
-          <button type="button" role="tab" id="tokenizer-tab-oat" data-tokenizer-target="oat"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">OAT</button>
-        </div>
+        <div class="blog-interactive vla-tokenizer-interactive" aria-labelledby="vla-tokenizer-comparison-title">
+          <div class="blog-interactive-header">
+            <h2 id="vla-tokenizer-comparison-title">Where existing tokenizers fall short.</h2>
+            <p>
+              The first three columns evaluate the tokenizer itself. Block compatibility applies when one VLA call predicts several new tokens. Each existing format solves a different part of the interface.
+            </p>
+          </div>
 
-        <div class="tokenizer-readout" id="tokenizer-panel" role="tabpanel" aria-labelledby="tokenizer-tab-binning"
-          aria-live="polite">
-          <div class="tokenizer-score-grid">
-            <div>
-              <span>Compression</span>
-              <meter min="0" max="100" value="35" data-tokenizer-meter="compression"></meter>
-              <strong data-tokenizer-label="compression">Low</strong>
-            </div>
-            <div>
-              <span>Total decodability</span>
-              <meter min="0" max="100" value="100" data-tokenizer-meter="decodability"></meter>
-              <strong data-tokenizer-label="decodability">Yes</strong>
-            </div>
-            <div>
-              <span>Autoregressive modelability</span>
-              <meter min="0" max="100" value="20" data-tokenizer-meter="ordering"></meter>
-              <strong data-tokenizer-label="ordering">Low</strong>
-            </div>
+          <div class="tokenizer-selector vla-tokenizer-selector" role="tablist" aria-label="Action tokenizer comparison">
+            <button type="button" role="tab" id="vla-tokenizer-tab-bin" class="is-active" data-vla-tokenizer-target="bin"
+              aria-controls="vla-tokenizer-panel" aria-selected="true">Per-dimension bins</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-fast" data-vla-tokenizer-target="fast"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-quest" data-vla-tokenizer-target="quest"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">QueST</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-acodec" data-vla-tokenizer-target="acodec"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">ACodec</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-oat" data-vla-tokenizer-target="oat"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">OAT (token-wise)</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-oat-pow2" data-vla-tokenizer-target="oatpow2"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">OAT (power-of-two)</button>
           </div>
-          <p data-tokenizer-summary>
-            Binning is universally decodable but produces long, flat token sequences that are hard for autoregressive
-            policies to model efficiently.
-          </p>
-        </div>
-      </section>
 
-      <section class="blog-section" id="missing-tokenizers">
-        <h2>4. Prior tokenizers each give up one requirement.</h2>
-        <p>
-          Before <span class="oat-name">OAT</span>, each major tokenizer family misses the target in a different way.
-          The <span class="oat-name">OAT</span> row shows the design point we want: compact, total, and ordered.
-        </p>
-        <div class="blog-failure-grid" aria-label="Practical failure modes of action tokenizers">
-          <div>
-            <span>Binning</span>
-            <strong>Valid but slow.</strong>
-            <p>Every generated token decodes, but the policy must generate hundreds of flat dimension-time tokens.</p>
-          </div>
-          <div>
-            <span>FAST</span>
-            <strong>Compact but partial.</strong>
-            <p>The frequency structure helps next-token prediction, but arbitrary BPE sequences may not decode.</p>
-          </div>
-          <div>
-            <span>Latents</span>
-            <strong>Compact but low-modelability.</strong>
-            <p>A neural decoder makes outputs valid, but the token sequence has weak autoregressive modelability.</p>
-          </div>
-          <div>
-            <span><span class="oat-name">OAT</span></span>
-            <strong>Compact, valid, high-modelability.</strong>
-            <p>Tokens are learned as a progressive sequence, so early predictions carry coarse motion structure.</p>
+          <div class="tokenizer-readout vla-tokenizer-readout" id="vla-tokenizer-panel" role="tabpanel"
+            aria-labelledby="vla-tokenizer-tab-bin" aria-live="polite">
+            <div class="tokenizer-score-grid vla-desiderata-grid">
+              <div>
+                <span>High compression</span>
+                <strong data-vla-tokenizer-label="compact">No</strong>
+              </div>
+              <div>
+                <span>Total decodability</span>
+                <strong data-vla-tokenizer-label="decodable">Yes</strong>
+              </div>
+              <div>
+                <span>Ordered structure</span>
+                <strong data-vla-tokenizer-label="ordering">No</strong>
+              </div>
+              <div>
+                <span>Block compatibility</span>
+                <strong data-vla-tokenizer-label="block">Yes</strong>
+              </div>
+            </div>
+            <p class="vla-tokenizer-summary">
+              <span>How it works, and the cost</span>
+              <em data-vla-tokenizer-summary>Each coordinate at each timestep becomes a separate token. Every sequence decodes, but the target grows with the action and its coordinate order does not expose coarse trajectory structure.</em>
+            </p>
           </div>
         </div>
-        <p>
-          <strong>Binning.</strong> The most common scheme is per-dimension, per-timestamp binning. While simple, it
-          scales poorly: long horizons and high-dimensional actions can produce hundreds of tokens per chunk,
-          dramatically slowing training and inference and increasing latency. More importantly, such long, flat
-          sequences have poor modelability across dimensions: knowing the earlier coordinates at a timestep offers
-          little help in predicting the next one, making binning poorly aligned with autoregressive generation.
-        </p>
-        <p>
-          <strong>Frequency-domain transform.</strong> Frequency-based methods such as FAST achieve high information
-          density (P.1) and impose a low-to-high frequency structure (P.3), where early tokens capture global
-          trajectory structure and later tokens refine details. However, FAST violates P.2 (total decodability). Because
-          <a href="https://en.wikipedia.org/wiki/Byte-pair_encoding" target="_blank" rel="noopener">Byte Pair Encoding</a>
-          (BPE) produces variable-length sequences, arbitrary token sequences may not decode into a valid fixed-size
-          frequency representation, leading to undefined behavior and runtime failures. See the paper appendix and the
-          <a href="https://huggingface.co/physical-intelligence/fast/discussions/4" target="_blank" rel="noopener">discussion
-            on Hugging Face</a> for further details.
-        </p>
-        <p>
-          <strong>Vanilla Latents.</strong> Learned encoder-decoder latent tokenizers can achieve strong compression
-          (P.1), and neural decoders ensure total decodability (P.2). However, the resulting token spaces often have
-          weak autoregressive modelability: the token positions do not provide a stable left-to-right structure for
-          next-token prediction. This makes them poorly aligned with policies that rely on meaningful left-to-right
-          structure (P.3) for stable generation.
-        </p>
-        <p>
-          The gap is not that prior tokenizers are weak in every way. It is that none simultaneously make the sequence
-          short, make the whole token space executable, and give the policy an easy left-to-right prediction problem.
-        </p>
       </section>
 
       <section class="blog-section" id="oat">
-        <h2>5. OAT learns ordered registers that decode from any prefix.</h2>
-        <p>
-          <span class="oat-name">OAT</span> is a learned tokenizer for action chunks. It writes each chunk into a fixed
-          set of register latents, discretizes those registers with finite scalar quantization (FSQ), and decodes
-          generated tokens back into continuous control. The key design choice is order: register attention is causal,
-          and nested dropout trains the decoder to reconstruct from partial prefixes.
+        <span class="blog-section-kicker">Ordered Action Tokenization</span>
+        <h2>OAT builds the order through prefix training.</h2>
+        <p class="vla-section-lead">
+          OAT compresses an action chunk into registers and discretizes them with FSQ. Instead of training only the final token sequence, it repeatedly asks shorter prefixes to reconstruct the entire action.
         </p>
-        <ol class="blog-step-list">
-          <li>
-            <strong>Summarize the action chunk.</strong> A transformer encoder reads the continuous action sequence and
-            writes the important temporal information into a fixed set of register tokens.
-          </li>
-          <li>
-            <strong>Discretize the registers.</strong> Finite scalar quantization turns the register latents into
-            discrete tokens that an autoregressive policy can predict.
-          </li>
-          <li>
-            <strong>Force a left-to-right structure.</strong> Causal attention makes later registers depend on earlier
-            registers, aligning the representation with next-token generation.
-          </li>
-          <li>
-            <strong>Train with missing tails.</strong> Nested dropout randomly masks later tokens during tokenizer
-            training, so early tokens must carry the highest-priority information.
-          </li>
-          <li>
-            <strong>Decode back to control.</strong> A conditional decoder maps the generated token prefix back into a
-            continuous action chunk for execution.
-          </li>
-        </ol>
-      </section>
 
-      <figure class="blog-figure blog-figure-paper blog-figure-method">
-        <img src="./media/fig/method-white.png" alt="OAT method overview with register tokens and prefix decoding"
-          width="7928" height="2354" loading="lazy">
-      </figure>
+        <figure class="blog-figure blog-figure-paper vla-method-figure">
+          <img src="./media/fig/oat.png"
+            alt="OAT tokenizer with ordered registers, FSQ tokens, and prefix decoding"
+            width="2400" height="677">
+          <figcaption>
+            OAT encodes a continuous action chunk into registers, discretizes them with FSQ, and trains prefixes to reconstruct the whole action.
+          </figcaption>
+        </figure>
 
-      <section class="blog-section" id="info-theory">
-        <h2>6. Ordered tokens turn action coding into progressive refinement.</h2>
-        <p>
-          The ordering induced by <span class="oat-name">OAT</span> admits a natural interpretation through information theory.
-          <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon showed
-            that</a> the optimal code length for an event scales with the negative logarithm of its probability,
-          so frequent patterns require fewer bits, while rare events demand more representational capacity. Action
-          chunks follow a similarly skewed distribution: most trajectories share common coarse structure, whereas
-          fine-grained deviations occur infrequently.
-        </p>
-        <p>
-          From this perspective, <span class="oat-name">OAT</span> learns a progressive code. Early tokens capture
-          high-probability, globally shared motion patterns; later tokens encode increasingly rare residual details.
-          Nested dropout makes this pressure explicit: every short prefix has to reconstruct the action, so information
-          is allocated in decreasing order of usefulness.
-        </p>
-        <div class="token-story-takeaways" aria-label="Progressive coding takeaways">
+        <div class="vla-oat-step-list" aria-label="How OAT creates ordered prefixes">
           <div>
-            <strong>Order is a modeling signal.</strong>
-            <p>The first token is not an arbitrary latent slot; it is trained to carry the highest-priority control information.</p>
+            <span>Step 1</span>
+            <div>
+              <strong>Read the whole action.</strong>
+              <p>Transformer registers cross-attend to the complete action chunk, so each token position can summarize motion across time and control dimensions.</p>
+            </div>
           </div>
           <div>
-            <strong>Longer prefixes refine the same action.</strong>
-            <p>Additional tokens reduce residual error instead of replacing the action represented by the prefix.</p>
+            <span>Step 2</span>
+            <div>
+              <strong>Make the representation discrete.</strong>
+              <p>FSQ maps every register to a token from a fixed vocabulary. The learned decoder maps every fixed-length sequence from that vocabulary to a continuous action chunk, not only codes seen during encoding.</p>
+            </div>
+          </div>
+          <div>
+            <span>Step 3</span>
+            <div>
+              <strong>Train at different token budgets.</strong>
+              <p>Training samples a budget, keeps that prefix, masks the suffix, and reconstructs the complete action. Each trained budget is a reconstruction point, not a fragment of coordinates.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="vla-info-allocation" aria-labelledby="progressive-information-title">
+          <span>Progressive information allocation</span>
+          <h3 id="progressive-information-title">Why useful information moves left.</h3>
+          <p>
+            Token 1 is present in every nonempty training prefix. Token 8 appears only when the sampled budget reaches eight or more. Early positions therefore help reconstruct the action under more budgets, so they receive more pressure to carry information that is broadly useful.
+          </p>
+          <p>
+            This asymmetric training pressure favors coarse, broadly useful information early and residual refinements later. OAT learns the order from variable information budgets; it does not assign tokens to coordinates, timesteps, or frequencies by hand.
+          </p>
+          <details class="vla-technical-detail">
+            <summary>Information-allocation derivation</summary>
+            <p>
+              Let \(\varepsilon(K)\) be the expected reconstruction error with the first \(K\) tokens, and let \(\Delta_i=\varepsilon(i-1)-\varepsilon(i)\) be the average improvement contributed by token \(i\). Sampling a prefix budget \(B\) gives
+            </p>
+            <div class="vla-equation vla-info-equation" aria-label="Expected prefix reconstruction error">
+              \[
+                \mathbb{E}_{B}[\varepsilon(B)]
+                =
+                \varepsilon(0)
+                -
+                \sum_{i=1}^{H_l}\Pr(B\ge i)\,\Delta_i.
+              \]
+            </div>
+            <p>
+              Token \(i\) is weighted by its survival probability \(\Pr(B\ge i)\), which cannot increase as \(i\) moves right. Earlier marginal gains therefore improve more sampled reconstruction budgets.
+            </p>
+          </details>
+        </div>
+
+        <div class="vla-oat-step-list" aria-label="Two OAT training patterns">
+          <div>
+            <span>Token-wise OAT</span>
+            <div>
+              <strong>Train every prefix length.</strong>
+              <p>Causal register attention extends the sequence one token at a time, matching policies that predict one new OAT token per call.</p>
+            </div>
+          </div>
+          <div>
+            <span>Power-of-two OAT</span>
+            <div>
+              <strong>Train selected group boundaries.</strong>
+              <p>Budgets grow as 1, 2, 4, 8, and so on. Ordering is learned across these groups; tokens introduced within one group have no imposed priority over one another.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="vla-oat-reference">
+          Try the <a href="#prefix-lab">Prefix Lab</a> to see the action sharpen as tokens are added. The <a href="#meshcat-vis">MeshCat trajectories</a> show the same idea on measured robot motions.
+        </p>
+      </section>
+
+      <section class="blog-section" id="bar-schedule">
+        <span class="blog-section-kicker">Block-wise autoregression</span>
+        <h2>For VLM-scale AR, BAR makes the generation cost explicit.</h2>
+        <p class="vla-section-lead">
+          OAT makes ordered prefixes executable, but a length-\(K\) prefix still costs \(K\) sequential VLA calls. BAR targets that serial depth by introducing a <span class="vla-highlight">schedule</span> over prefix boundaries, unifying token-wise AR, block-wise AR, and parallel decoding.
+        </p>
+
+        <figure class="blog-figure blog-figure-paper vla-method-figure">
+          <img src="./media/fig/bar.png"
+            alt="BAR schedule diagram for block-wise autoregressive action-token generation"
+            width="2400" height="405">
+          <figcaption>
+            BAR makes the action-token generation schedule explicit: each policy call may append one token, a block of tokens, or the full action-token sequence.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="blog-interactive vla-concept-lab vla-schedule-lab" id="schedule-lab" aria-labelledby="vla-schedule-lab-title">
+        <div class="blog-interactive-header">
+          <h2 id="vla-schedule-lab-title">Choose how aggressively AR is blockified.</h2>
+          <p>
+            For a 16-token action-token sequence, the schedule determines sequential VLA calls and the largest joint prediction block.
+          </p>
+        </div>
+
+        <div class="tokenizer-selector" role="tablist" aria-label="BAR schedule choices">
+          <button type="button" role="tab" id="vla-schedule-tab-token" class="is-active" data-vla-schedule-target="token"
+            aria-controls="vla-schedule-panel" aria-selected="true">Token-wise</button>
+          <button type="button" role="tab" id="vla-schedule-tab-power" data-vla-schedule-target="power"
+            aria-controls="vla-schedule-panel" aria-selected="false" tabindex="-1">Power-of-two</button>
+          <button type="button" role="tab" id="vla-schedule-tab-two" data-vla-schedule-target="two"
+            aria-controls="vla-schedule-panel" aria-selected="false" tabindex="-1">Two-block</button>
+          <button type="button" role="tab" id="vla-schedule-tab-parallel" data-vla-schedule-target="parallel"
+            aria-controls="vla-schedule-panel" aria-selected="false" tabindex="-1">Parallel</button>
+        </div>
+
+        <div class="vla-concept-readout" id="vla-schedule-panel" role="tabpanel"
+          aria-labelledby="vla-schedule-tab-token" aria-live="polite">
+          <div class="vla-schedule-board">
+            <span>Action-token prefix</span>
+            <div class="vla-token-timeline" data-vla-schedule-timeline></div>
+            <div class="vla-stage-stepper" data-vla-schedule-stages aria-label="BAR generation stages"></div>
+            <div class="vla-schedule-stage">
+              <strong data-vla-schedule-stage-title>Stage 1 predicts one token.</strong>
+              <p data-vla-schedule-stage-copy>The bar shows the realized prefix and the current block produced by this stage.</p>
+            </div>
+          </div>
+          <div class="vla-readout-grid">
+            <div class="vla-readout-card">
+              <strong data-vla-schedule-name>Token-wise AR</strong>
+              <p data-vla-schedule-shape>One new token per stage.</p>
+            </div>
+            <div class="vla-readout-card">
+              <strong data-vla-schedule-cost>16 VLA calls · max block 1</strong>
+              <p data-vla-schedule-cost-copy>Maximum conditioning, maximum serial depth.</p>
+            </div>
+            <div class="vla-readout-card">
+              <strong>Policy implication</strong>
+              <p data-vla-schedule-summary>Every token gets all earlier tokens as context, but inference remains fully serial.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="blog-section" id="prefix-decoding">
-        <h2>7. Every prefix is an executable action budget.</h2>
-        <p>
-          Because <span class="oat-name">OAT</span> trains the decoder on masked suffixes, a policy does not have to
-          finish the token sequence before acting. A prefix can be padded, detokenized, and executed as a complete action
-          chunk. In practice, token count becomes a runtime budget: one or two tokens for fast coarse control, more
-          tokens when the task needs precision.
+      <div class="vla-story-takeaways" aria-label="BAR takeaways">
+        <div>
+          <strong>The schedule is the speed knob.</strong>
+          <p>It decides how many tokens are generated per VLA call, trading serial depth against prediction difficulty.</p>
+        </div>
+        <div>
+          <strong>The tokenizer has to agree.</strong>
+          <p>The BAR policy learns joint block targets with block-shifted teacher forcing; the tokenizer must separately expose matching reconstruction budgets and dependencies.</p>
+        </div>
+      </div>
+
+      <section class="blog-section" id="blockify-oat">
+        <span class="blog-section-kicker">Block-wise OAT</span>
+        <h2>Grouped generation must be matched across OAT and BAR training.</h2>
+        <p class="vla-section-lead">
+          The BAR policy jointly predicts each scheduled block with block-shifted teacher forcing. The tokenizer solves a different, matching problem: power-of-two OAT trains reconstruction at the same endpoints and blocks direct dependencies among registers introduced within one group. Encoder, FSQ bottleneck, prefix decoder, and nested-dropout objective otherwise remain unchanged.
         </p>
       </section>
 
-      <section class="blog-interactive blog-prefix-lab" id="prefix-lab" aria-labelledby="prefix-lab-title">
+      <section class="blog-interactive vla-concept-lab vla-mask-lab" id="mask-lab" aria-labelledby="vla-mask-lab-title">
         <div class="blog-interactive-header">
-          <h2 id="prefix-lab-title">Stop early, keep the action valid.</h2>
+          <h2 id="vla-mask-lab-title">OAT<sup>sing</sup> and OAT<sup>pow2</sup> train different dependency patterns.</h2>
           <p>
-            <span class="oat-name">OAT</span> makes every prefix executable. More tokens refine the trajectory, but the policy can stop early when
-            latency matters.
+            BAR groups later action-token positions into one prediction step. The key question is whether the new block can be jointly predicted from the realized prefix without relying on serial dependencies inside that same block.
+          </p>
+        </div>
+
+        <div class="vla-mask-pair" aria-label="OAT-sing and OAT-pow2 register masks">
+          <article class="vla-mask-card">
+            <div class="vla-mask-card-header">
+              <div>
+                <span class="vla-mask-card-kicker">OAT<sup>sing</sup></span>
+                <h3>Flat causal chain</h3>
+              </div>
+              <span class="vla-mask-badge">token-wise</span>
+            </div>
+            <div class="vla-mask-grid" data-vla-static-mask="oat" aria-hidden="true"></div>
+            <p class="vla-mask-axis">Rows are query registers; columns are key registers.</p>
+            <p class="vla-mask-card-copy">
+              Later registers can depend on all earlier registers. This matches token-wise AR, but post-hoc BAR can group tokens whose tokenizer representations were learned with serial within-block dependencies.
+            </p>
+          </article>
+
+          <article class="vla-mask-card">
+            <div class="vla-mask-card-header">
+              <div>
+                <span class="vla-mask-card-kicker">OAT<sup>pow2</sup></span>
+                <h3>Block-causal registers</h3>
+              </div>
+              <span class="vla-mask-badge">block-wise</span>
+            </div>
+            <div class="vla-mask-grid" data-vla-static-mask="oatpow2" aria-hidden="true"></div>
+            <p class="vla-mask-axis">Power-of-two blocks: [1] [2] [3-4] [5-8].</p>
+            <p class="vla-mask-card-copy">
+              Registers attend across earlier groups and to themselves, but not to other registers in the same group. The tokenizer therefore avoids direct within-group serial dependencies; the BAR policy separately learns to predict that block jointly.
+            </p>
+          </article>
+        </div>
+
+        <div class="vla-mask-legend" aria-label="Mask legend">
+          <span><i class="is-on"></i> dependency</span>
+          <span><i class="is-self"></i> self</span>
+          <span><i></i> blocked</span>
+        </div>
+      </section>
+
+      <div class="vla-posthoc-panel" aria-label="Post-hoc BAR with PaliGemma2 on LIBERO">
+        <div class="vla-posthoc-copy">
+          <span class="vla-posthoc-kicker">Preview diagnostic</span>
+          <h3>Schedule changes alone do not make OAT block-compatible.</h3>
+          <p>
+            With PaliGemma2 on LIBERO (mean success, 50 rollouts per task), post-hoc BAR reduces calls but loses success. Power-of-two OAT uses matched tokenizer endpoints and register dependencies, keeps the five-call schedule, and closes the gap.
+          </p>
+        </div>
+        <div class="vla-posthoc-list">
+          <article class="vla-posthoc-row">
+            <div class="vla-posthoc-method">
+              <strong>OAT<sup>sing</sup><sub>16</sub></strong>
+              <span>token-wise tokenizer + token-wise AR</span>
+            </div>
+            <div class="vla-posthoc-score">
+              <strong>79.7%</strong>
+              <span>16 calls</span>
+            </div>
+            <div class="vla-posthoc-meter" aria-hidden="true"><i style="--score: 79.7%;"></i></div>
+          </article>
+          <article class="vla-posthoc-row is-posthoc">
+            <div class="vla-posthoc-method">
+              <strong>OAT<sup>sing</sup><sub>16</sub> + post-hoc BAR</strong>
+              <span>token-wise tokenizer + power-of-two BAR</span>
+            </div>
+            <div class="vla-posthoc-score">
+              <strong>66.3%</strong>
+              <span>5 calls</span>
+            </div>
+            <div class="vla-posthoc-meter" aria-hidden="true"><i style="--score: 66.3%;"></i></div>
+          </article>
+          <article class="vla-posthoc-row is-best">
+            <div class="vla-posthoc-method">
+              <strong>OAT<sup>pow2</sup><sub>16</sub></strong>
+              <span>block-wise tokenizer + power-of-two BAR</span>
+            </div>
+            <div class="vla-posthoc-score">
+              <strong>80.8%</strong>
+              <span>5 calls</span>
+            </div>
+            <div class="vla-posthoc-meter" aria-hidden="true"><i style="--score: 80.8%;"></i></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="vla-story-takeaways" aria-label="OAT-pow2 takeaways">
+        <div>
+          <strong>Post-hoc BAR is not enough.</strong>
+          <p>It changes the decoding schedule, but the tokenizer was still trained with serial dependencies inside each scheduled block.</p>
+        </div>
+        <div>
+          <strong>OAT<sup>pow2</sup> trains block-compatible tokens.</strong>
+          <p>Its tokenizer budgets and register mask align with the blocks that the BAR policy is trained to predict jointly.</p>
+        </div>
+      </div>
+
+      <section class="blog-section" id="prefix-budgets">
+        <span class="blog-section-kicker">Prefix budgets</span>
+        <h2>First verify the representation: every trained prefix must remain executable.</h2>
+        <p>
+          Before training a VLA policy, we measure whether each retained prefix actually adds action information. A short prefix should already decode to a coarse action; later tokens should buy refinement rather than repeat information the prefix already carried.
+        </p>
+        <div class="vla-equation" aria-label="Prefix-budget distortion">
+          \[
+            \hat A^{(K)}
+            =
+            D_\theta\!\left(
+              T_{1:K}\oplus
+              \langle\mathtt{MASK}\rangle_{K+1:H_l}
+            \right),
+            \qquad
+            \varepsilon(K)
+            =
+            \mathbb{E}\!\left[
+              \left\lVert A-\hat A^{(K)}\right\rVert_2^2
+            \right].
+          \]
+        </div>
+        <p>
+          Nested dropout trains reconstruction across selected budgets, not only at \(\varepsilon(H_l)\). Token-wise OAT uses every token length; the separately trained power-of-two variant uses boundaries \(1,2,4,8,\ldots\). Both form progressive rate–distortion curves at their respective trained budgets.
+        </p>
+      </section>
+
+      <div class="prefix-lab-suite" id="prefix-lab">
+      <section class="blog-interactive blog-prefix-lab" aria-labelledby="prefix-lab-title">
+        <div class="blog-interactive-header">
+          <span>Prefix Lab</span>
+          <h2 id="prefix-lab-title">Every trained budget decodes a complete action.</h2>
+          <p>
+            Each trained prefix decodes into the whole action, not a fragment. The sketch shows how the path becomes more precise as you add tokens; measured robot trajectories appear in MeshCat below.
           </p>
         </div>
 
         <div class="prefix-lab-grid">
           <div class="prefix-trajectory"
-            aria-label="Prefix reconstruction plot comparing the full decoded action chunk against the full ground-truth action chunk."
+            aria-label="Conceptual prefix-reconstruction schematic comparing a decoded action chunk with a reference action chunk."
             role="img">
             <span class="prefix-plot-label prefix-label-recon">decoded prefix</span>
             <span class="prefix-plot-label prefix-label-gt">ground truth</span>
@@ -879,168 +2221,18 @@
         </div>
 
         <p class="prefix-notation">
-          Each prefix decodes to a complete action chunk. Green points are ground-truth waypoints; red points are the
-          full chunk reconstructed from the selected prefix. More prefix tokens reduce the red-green error and increase
-          fine-grained fidelity.
+          Conceptual schematic, not a measured rollout. Green points show a reference path; red points illustrate the
+          full chunk at a selected trained budget. The MeshCat panel below provides measured reconstructions.
         </p>
 
       </section>
 
-      <section class="blog-section experiments-section" id="experiments">
-        <h2>8. OAT improves success, latency, and real execution.</h2>
-        <p>
-          We evaluate <span class="oat-name">OAT</span> across more than 20 tasks spanning four simulation benchmarks
-          (LIBERO, RoboMimic, MetaWorld, and RoboCasa) and real-world robot execution. The experiments test whether
-          ordered prefixes are only a nice representation, or whether they produce better closed-loop policies.
-        </p>
-
-        <div class="blog-reading-guide" id="reading-results">
-          <span class="blog-section-kicker">Result map</span>
-          <div class="token-plot-cues" aria-label="How to read the OAT results">
-            <div>
-              <span>Success</span>
-              <strong>Does the full ordered representation beat existing tokenizers?</strong>
-              <p><span class="oat-name">OAT</span><sub>8</sub> is best in every reported success column.</p>
-            </div>
-            <div>
-              <span>Latency</span>
-              <strong>Can shorter prefixes buy speed while staying executable?</strong>
-              <p><span class="oat-name">OAT</span><sub>1</sub>, <span class="oat-name">OAT</span><sub>2</sub>, and
-                <span class="oat-name">OAT</span><sub>4</sub> reduce sequential depth while preserving valid decoding.</p>
-            </div>
-            <div>
-              <span>Ablation</span>
-              <strong>Is ordering the reason?</strong>
-              <p>The ordering ablation drops below <span class="oat-name">OAT</span><sub>4</sub> and
-                <span class="oat-name">OAT</span><sub>8</sub>, showing that causal registers and nested dropout do real policy work.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="project-section project-experiments">
-          <div class="result-stack">
-	      <article class="result-block">
-	        <div class="result-caption">
-			          <h3 class="title is-6">Full <span class="oat-name">OAT</span> wins across simulation and real tasks.</h3>
-	          <p>
-		            <span class="oat-name">OAT</span><sub>8</sub> achieves the best reported success in every simulation
-                benchmark and both real-world tasks, while preserving the prefix execution option unavailable to fixed
-                tokenizers.
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table combined-result-table">
-	            <caption class="result-table-caption">Simulation success rate across manipulation benchmarks, with real-world success over 20 independent trials.</caption>
-            <thead>
-              <tr>
-                <th scope="col">Policy</th>
-                <th scope="col">LIBERO</th>
-                <th scope="col">RoboMimic</th>
-                <th scope="col">MetaWorld</th>
-                <th scope="col">RoboCasa</th>
-                <th scope="col">PnP Ball</th>
-                <th scope="col">Stack Cups</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">DP</th><td><span class="aligned-num"><span class="num-int">36</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">67</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num aligned-frac"><span>14</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">Bin</th><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">27</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>4</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">FAST</th><td><span class="aligned-num"><span class="num-int">23</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">7</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">13</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>6</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>7</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>3</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>9</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>13</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>12</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-	      <article class="result-block">
-	        <div class="result-caption">
-		          <h3 class="title is-6">Full <span class="oat-name">OAT</span> matches QueST's eight-token latency, but shorter prefixes are much faster.</h3>
-	          <p>
-			            With full decoding, <span class="oat-name">OAT</span> and QueST have comparable autoregressive
-                depth. The difference is that <span class="oat-name">OAT</span> can stop at one, two, or four tokens
-                when latency matters.
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table latency-table">
-	            <caption class="result-table-caption">Token count and policy inference latency in milliseconds.</caption>
-            <thead>
-              <tr>
-                <th scope="col" rowspan="2">Policy</th>
-                <th scope="colgroup" colspan="2">LIBERO</th>
-                <th scope="colgroup" colspan="2">RoboMimic</th>
-                <th scope="colgroup" colspan="2">MetaWorld</th>
-                <th scope="colgroup" colspan="2">RoboCasa</th>
-              </tr>
-              <tr>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-                <th scope="col">#Tok.</th><th scope="col">Lat.</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">DP</th><td>&times;</td><td>42.0</td><td>&times;</td><td>38.1</td><td>&times;</td><td>37.7</td><td>&times;</td><td>35.3</td></tr>
-              <tr><th scope="row">Bin</th><td>224</td><td>517.2</td><td>224</td><td>509.5</td><td>128</td><td>306.6</td><td>384</td><td>888.3</td></tr>
-              <tr><th scope="row">FAST</th><td>44.2</td><td>114.4</td><td>53.1</td><td>142.0</td><td>49.8</td><td>129.7</td><td>69.7</td><td>166.1</td></tr>
-              <tr><th scope="row">QueST</th><td>8</td><td>27.1</td><td>8</td><td>29.6</td><td>8</td><td>31.4</td><td>8</td><td>30.2</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td>1</td><td>10.5</td><td>1</td><td>11.3</td><td>1</td><td>15.5</td><td>1</td><td>13.5</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td>2</td><td>13.2</td><td>2</td><td>15.3</td><td>2</td><td>17.9</td><td>2</td><td>15.8</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td>4</td><td>17.4</td><td>4</td><td>18.4</td><td>4</td><td>22.1</td><td>4</td><td>19.8</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>8</sub></th><td>8</td><td>27.4</td><td>8</td><td>29.9</td><td>8</td><td>31.3</td><td>8</td><td>30.0</td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-	      <article class="result-block">
-	        <div class="result-caption">
-		          <h3 class="title is-6">Ordering is doing the policy work.</h3>
-	          <p>
-	            Across the four simulation benchmarks, removing the ordering-inducing objective causes a consistent degradation.
-			            <span class="oat-name">OAT</span><sub>&times;</sub> is significantly worse than <span class="oat-name">OAT</span><sub>4</sub> and
-                <span class="oat-name">OAT</span><sub>8</sub>, and in some cases falls below QueST.
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table">
-	            <caption class="result-table-caption">Ordering ablation success rate.</caption>
-            <thead>
-              <tr>
-                <th scope="col">Policy</th>
-                <th scope="col">LIBERO</th>
-                <th scope="col">RoboMimic</th>
-                <th scope="col">MetaWorld</th>
-                <th scope="col">RoboCasa</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
-              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td></tr>
-              <tr class="ablation-row"><th scope="row">OAT<sub>&times;</sub></th><td><span class="aligned-num"><span class="num-int">35</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">61</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-          </div>
-        </div>
-
-        <section class="blog-section blog-interactive prefix-meshcat-panel token-meshcat-panel" id="meshcat-vis"
+      <section class="blog-section blog-interactive prefix-meshcat-panel token-meshcat-panel" id="meshcat-vis"
           aria-labelledby="meshcat-title">
           <div class="blog-interactive-header">
-            <h2 id="meshcat-title">The same action becomes sharper as the prefix grows.</h2>
+            <h2 id="meshcat-title">Measured prefix reconstructions.</h2>
             <p>
-              These MeshCat reconstructions show the mechanism behind the prefix budget: early tokens recover the coarse
-              motion, while additional tokens refine the residual details. All trajectories are generated by the same
-              tokenizer and decoder.
+              These MeshCat trajectories show decoder outputs at trained budgets of 1, 2, 4, and 8 tokens alongside the ground-truth action chunk.
             </p>
           </div>
 
@@ -1071,28 +2263,24 @@
               <p class="meshcat-card-label">1 token</p>
               <iframe data-src="./media/html/idx254425/reconst_k1.html" title="Reconstruction K=1 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.592</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">2 tokens</p>
               <iframe data-src="./media/html/idx254425/reconst_k2.html" title="Reconstruction K=2 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.446</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">4 tokens</p>
               <iframe data-src="./media/html/idx254425/reconst_k4.html" title="Reconstruction K=4 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.038</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">8 tokens</p>
               <iframe data-src="./media/html/idx254425/reconst_k8.html" title="Reconstruction K=8 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.009</p>
             </div>
 
             <div class="embed-card">
@@ -1107,28 +2295,24 @@
               <p class="meshcat-card-label">1 token</p>
               <iframe data-src="./media/html/idx5788/reconst_k1.html" title="Reconstruction K=1 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.365</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">2 tokens</p>
               <iframe data-src="./media/html/idx5788/reconst_k2.html" title="Reconstruction K=2 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.082</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">4 tokens</p>
               <iframe data-src="./media/html/idx5788/reconst_k4.html" title="Reconstruction K=4 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.056</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">8 tokens</p>
               <iframe data-src="./media/html/idx5788/reconst_k8.html" title="Reconstruction K=8 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.027</p>
             </div>
 
             <div class="embed-card">
@@ -1138,325 +2322,575 @@
             </div>
           </div>
         </section>
-      </section>
+      </div>
 
-      <section class="blog-section project-section project-real-world" id="real-world">
-        <div class="demo-video-box">
-            <h2>Real-world execution checks the same failure modes.</h2>
-            <p class="section-lead has-text-justified">
-              More than 90 real-world videos cover successful and failed attempts across tasks, tokenizers, and camera
-              views. Reloading randomizes the initial configurations. FAST failures often expose the decodability issue:
-              when sampled tokens cannot be decoded safely, the policy must halt instead of executing an undefined action.
-            </p>
-            <div class="demo-video-controls">
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-task-select">Task</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-task-select" aria-label="Choose real-world task">
-                      <option value="pnp_ball">PnP Ball</option>
-                      <option value="stack_cups">Stack Cups</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-method-select">Method</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-method-select" aria-label="Choose evaluation method" data-initial-method="oat8">
-                      <option value="all">Compare all</option>
-                      <option value="dp">DP</option>
-                      <option value="bin">Bin</option>
-                      <option value="fast">FAST</option>
-                      <option value="quest">QueST</option>
-                      <option value="oat1">OAT1</option>
-                      <option value="oat2">OAT2</option>
-                      <option value="oat4">OAT4</option>
-                      <option value="oat8">OAT8</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-camera-select">Camera</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-camera-select" aria-label="Choose video camera">
-                      <option value="iphone">iPhone</option>
-                      <option value="logi">Logitech</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" aria-hidden="true">&nbsp;</label>
-                <div class="control">
-                  <button id="demo-video-reload" class="button is-fullwidth" type="button">Reload</button>
-                </div>
-              </div>
+      <section class="blog-section experiments-section" id="token-evidence">
+        <span class="blog-section-kicker">Rate-distortion</span>
+        <h2>A curve, not just an endpoint.</h2>
+        <p class="vla-section-lead vla-evidence-intro">
+          These curves evaluate the rate-distortion tradeoff across prefix budgets. A better representation reaches low expected reconstruction error with fewer tokens. An autoencoder trained only on full sequences optimizes one endpoint; OAT trains reconstruction at multiple prefix budgets.
+        </p>
+
+        <div class="vla-evidence-split">
+          <figure>
+            <img src="./media/fig/tikz/rate_distortion_curves.png"
+              alt="Rate-distortion curves comparing OAT prefix budgets with action tokenizer baselines"
+              width="1933" height="548">
+            <figcaption>
+              Reconstruction quality across several action domains. Lower and farther left is better. OAT evaluates several trained prefix lengths; fixed-length baselines provide one full-length point. On narrow screens, scroll horizontally.
+            </figcaption>
+          </figure>
+          <div class="vla-evidence-notes" aria-label="Rate-distortion interpretation">
+            <div>
+              <strong>Short sequences</strong>
+              <p>At each configured horizon, OAT represents the action chunk with far fewer tokens than coordinate-by-coordinate serialization.</p>
             </div>
-
-            <div class="demo-video-matrix" id="demo-video-matrix">
-
-              <div class="demo-method-card box" data-method-card="dp">
-                <h3>DP</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="bin">
-                <h3>Bin</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="fast">
-                <h3>FAST</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="quest">
-                <h3>QueST</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat1">
-                <h3><span class="oat-name">OAT</span><sub>1</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat2">
-                <h3><span class="oat-name">OAT</span><sub>2</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat4">
-                <h3><span class="oat-name">OAT</span><sub>4</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat8">
-                <h3><span class="oat-name">OAT</span><sub>8</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
-                      data-status="success">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Success execution</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
-                      data-status="failure">
-                      <p>Your browser does not support this video.</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">Video unavailable for this task.
-                    </p>
-                    <figcaption>Failure execution</figcaption>
-                  </figure>
-                </div>
-              </div>
-
+            <div>
+              <strong>Smooth improvement</strong>
+              <p>Both versions reduce reconstruction error as more tokens are kept.</p>
+            </div>
+            <div>
+              <strong>Every point is a full reconstruction</strong>
+              <p>Each trained prefix decodes into a complete action chunk, not a fragment of coordinates or coefficients.</p>
             </div>
           </div>
+        </div>
+
+        <div class="vla-verdict">
+          <strong>What is different here</strong>
+          <p>OAT explicitly trains intermediate reconstruction budgets. The fixed-length baselines shown here are trained and evaluated at their full sequence lengths. These curves establish progressive reconstruction; the VLA experiments below evaluate OAT as a whole rather than isolating ordering alone.</p>
+        </div>
       </section>
 
-      <section class="blog-section" id="open-directions">
-        <h2>9. Token order turns representation design into a control decision.</h2>
+      <section class="blog-section experiments-section" id="bar-experiments">
+        <span class="blog-section-kicker">Policy role I · Action tokens as outputs</span>
+        <h2>Generate OAT. Execute the action.</h2>
         <p>
-          <span class="oat-name">OAT</span>'s central point is not that discrete tokens replace continuous controllers.
-          It is that when robot policies use action tokens, token order becomes part of the control problem. Compactness,
-          total decodability, and prefix modelability should be designed together; once they are, token count becomes a
-          runtime budget instead of a fixed preprocessing choice.
+          This is the strictest policy role: the VLM predicts the OAT sequence that is decoded into robot motion. Any failure in the generated token sequence now enters the control path directly.
         </p>
+
+        <div class="vla-block-generation" aria-labelledby="block-generation-title">
+          <span>Block-wise autoregression</span>
+          <h3 id="block-generation-title">Generate OAT in blocks.</h3>
+          <p>
+            This is where block compatibility matters. To predict several new tokens in one VLA call, every token in that block must be predictable from the observation and the realized prefix, without seeing the other new tokens first.
+          </p>
+          <p>
+            Block-wise autoregression chooses the block sizes. One VLA call means one sequential model prediction step for the current action chunk. One token per call provides the most serial conditioning; larger blocks reduce calls but create a harder joint prediction target.
+          </p>
+
+          <div class="vla-call-schedules" aria-label="Comparison of one-at-a-time and power-of-two OAT generation">
+            <div>
+              <div class="vla-call-schedule-header">
+                <strong>One token at a time</strong>
+                <span>16 VLA calls</span>
+              </div>
+              <div class="vla-token-run is-serial" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <small>One new token per call</small>
+            </div>
+            <div>
+              <div class="vla-call-schedule-header">
+                <strong>Power-of-two blocks</strong>
+                <span>5 VLA calls</span>
+              </div>
+              <div class="vla-token-run is-blocked" aria-hidden="true">
+                <span style="--tokens: 1;">1</span>
+                <span style="--tokens: 1;">1</span>
+                <span style="--tokens: 2;">2</span>
+                <span style="--tokens: 4;">4</span>
+                <span style="--tokens: 8;">8</span>
+              </div>
+              <small>Block sizes: 1 + 1 + 2 + 4 + 8</small>
+            </div>
+          </div>
+
+          <p>
+            For a 16-token action, the power-of-two schedule grows the prefix through 1, 2, 4, 8, and 16 tokens. Power-of-two OAT trains at those same boundaries and blocks direct register attention between tokens in the same new group. The VLM policy is separately trained to predict each block jointly from the context it will have during generation; a compatible tokenizer alone is not enough.
+          </p>
+        </div>
+
         <p>
-          This also changes the natural next question. In this work, autoregressive depth is fixed at deployment time.
-          Future policies could decide depth online: simple motions may execute from short prefixes, while contact-rich
-          steps may request more tokens before acting. That makes adaptive token budgets a concrete direction enabled by
-          ordered, prefix-decodable action representations.
+          We test PaliGemma2 and Qwen3VL as VLM policy backbones. Success rate is the fraction of closed-loop evaluation rollouts that complete the task; the summaries below balance results across four benchmark suites, and higher is better.
         </p>
+
+        <figure class="vla-result-figure is-wide vla-experiment-plot">
+          <img src="./media/fig/tikz/vlm_bar_success_grid.png"
+            alt="Closed-loop success rates when VLMs generate ordered action tokens across benchmarks"
+            width="1947" height="895">
+          <figcaption>
+            <strong>Closed-loop generation results.</strong> With PaliGemma2, grouped 16-token OAT reaches 63.8 versus 63.7 when tokens are generated one at a time, using five rather than sixteen model calls. With Qwen3VL, one-at-a-time generation remains stronger at the largest budget: 56.8 versus 50.6.
+          </figcaption>
+        </figure>
+        <div class="vla-verdict">
+          <strong>What we learned</strong>
+          <p>Two different VLM backbones can generate the ordered tokens well enough for closed-loop control. Grouping tokens can reduce model calls, but larger groups are harder to predict, and the best balance depends on the backbone.</p>
+        </div>
+      </section>
+
+      <section class="blog-section" id="tc-policies">
+        <span class="blog-section-kicker">Policy role II · OAT as supervision</span>
+        <h2>OAT teaches the VLM. The expert acts.</h2>
         <p>
-          The same design pressure carries into block-wise autoregressive generation, ordered-token supervision for VLA
-          cotraining, and hybrid control where a continuous expert executes the final action.
+          Why train action tokens if the robot never decodes them? In token co-training, OAT provides structured action supervision to the VLM before it passes context to a continuous action expert. The tokens teach during training; the expert controls the robot at deployment.
         </p>
-        <div class="blog-opportunity-grid" aria-label="Future directions enabled by OAT">
+        <figure class="blog-figure blog-figure-paper vla-method-figure">
+          <img src="./media/fig/tc.png"
+          alt="Token co-training with VLM token loss and a flow-matching action expert"
+            width="2400" height="669">
+          <figcaption>
+            On the left, OAT targets train the VLM from images, language, and robot state. On the right, a separate flow-matching loss trains the continuous action expert from stopped-gradient VLM context.
+          </figcaption>
+        </figure>
+
+        <div class="vla-oat-step-list" aria-label="Token co-training and deployment">
           <div>
-            <span>Adaptive depth</span>
-            <strong>Stop when the action is good enough.</strong>
-            <p>Simple motions could execute from short prefixes, while contact-rich steps could request more tokens.</p>
+            <span>Training</span>
+            <div>
+              <strong>Two losses follow separate paths.</strong>
+              <p>The OAT prediction loss updates the VLM. In parallel, the flow-matching loss trains the continuous expert from stopped-gradient VLM context, so the expert's loss does not rewrite the VLM.</p>
+            </div>
           </div>
           <div>
-            <span>Uncertainty</span>
-            <strong>Use confidence to allocate compute.</strong>
-            <p>The policy could generate additional tokens only when uncertainty remains high or precision matters.</p>
+            <span>Deployment</span>
+            <div>
+              <strong>The token branch is removed.</strong>
+              <p>For each policy query, the VLM encodes the image, language, and robot state. The continuous expert uses that cached context to produce the action chunk; no OAT sequence is generated or detokenized.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="blog-section experiments-section" id="tc-experiments">
+        <span class="blog-section-kicker">Controlled token co-training</span>
+        <h2>Change the tokenizer. Change the policy.</h2>
+        <p>
+          This comparison keeps the continuous controller architecture fixed and changes the tokenizer that supplies VLM training targets. We report closed-loop task success across the same four benchmark suites; higher is better.
+        </p>
+
+        <figure class="vla-result-figure is-wide vla-experiment-plot">
+          <img src="./media/fig/tikz/vlm_tc_success_grid.png"
+            alt="Closed-loop success rates after training VLMs with different action tokenizers"
+            width="1947" height="881">
+          <figcaption>
+            <strong>Token co-training results.</strong> OAT reaches 59.0 average success with PaliGemma2, numerically close to QueST and ACodec, and reaches the highest Qwen3VL average at 62.5. The best tokenizer still depends on the backbone and benchmark: QueST is stronger on PaliGemma2 Robomimic and Qwen3VL SIMPLER.
+          </figcaption>
+        </figure>
+        <div class="vla-verdict">
+          <strong>What we learned</strong>
+          <p>Tokenizer choice changes downstream closed-loop performance. OAT has the strongest Qwen3VL average and is numerically close to the strongest PaliGemma2 averages, though it is not best on every benchmark. This comparison changes the whole tokenizer, so it does not isolate ordering by itself.</p>
+        </div>
+      </section>
+
+      <section class="blog-section blog-editorial-panel" id="takeaway">
+        <span class="blog-section-kicker">The takeaway</span>
+        <h2>Design tokens for the policy.</h2>
+        <p class="vla-section-lead">
+          OAT represents an action with fewer symbols, maps every fixed-length vocabulary sequence to a defined continuous action chunk, and trains prefixes to organize information from coarse motion to residual detail. For grouped generation, its trained boundaries also match the prediction schedule.
+        </p>
+        <div class="vla-final-case">
+          <div>
+            <strong>Generate</strong>
+            <p>Generated OAT is decoded directly into control and is evaluated across two VLM backbones and four benchmark suites.</p>
           </div>
           <div>
-            <span>VLA systems</span>
-            <strong>Use ordered tokens as supervision.</strong>
-            <p>They can provide action-aware targets even when a continuous expert executes the final control.</p>
+            <strong>Use fewer model calls</strong>
+            <p>If tokens will be generated in groups, train the tokenizer with those same group boundaries. Regrouping only at deployment is not equivalent.</p>
           </div>
           <div>
-            <span>Hybrid control</span>
-            <strong>Combine tokens with continuous experts.</strong>
-            <p>Discrete action reasoning and diffusion or flow decoders do not need to be competing choices.</p>
+            <strong>Supervise</strong>
+            <p>Training-only tokens still shape the VLM context used by the continuous controller. Their structure is not disposable.</p>
+          </div>
+          <div>
+            <strong>Know the scope</strong>
+            <p>The visible VLA study covers two VLM backbones, four benchmark families, fixed controller designs, and token counts chosen before deployment. Adaptive stopping and broader robot coverage remain open questions.</p>
           </div>
         </div>
       </section>
 
       <section class="blog-section blog-callout" id="appendix">
-        <h2>Appendix</h2>
+        <h2>Papers, code, and citations</h2>
         <div class="appendix-stack">
+          <p>
+            Please cite OAT when using the tokenizer, and Praxis when using the controlled VLA research platform. A citation for the full paper will be added once its arXiv version is public.
+          </p>
+          <p>
+            Readers interested in controlled VLA experiments can use
+            <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-vla/" target="_blank" rel="noopener">praxis-vla</a>
+            for training and
+            <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener">praxis-eval</a>
+            for evaluation.
+          </p>
           <div class="bibtex-block appendix-row">
             <div class="bibtex-toolbar">
-              <strong>BibTeX</strong>
-              <button type="button" class="bibtex-copy" data-copy-target="bibtex-code">Copy</button>
+              <strong>RSS Version BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="oat-bibtex-code">Copy</button>
             </div>
-            <pre><code id="bibtex-code">@misc{liu2026oatorderedactiontokenization,
-      title={OAT: Ordered Action Tokenization},
-      author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
-      year={2026},
-      eprint={2602.04215},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2602.04215},
+            <pre><code id="oat-bibtex-code">@misc{liu2026oat,
+  title={OAT: Ordered Action Tokenization},
+  author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
+  year={2026},
+  eprint={2602.04215},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2602.04215},
+}</code></pre>
+          </div>
+          <div class="bibtex-block appendix-row">
+            <div class="bibtex-toolbar">
+              <strong>Codebase BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="praxis-bibtex-code">Copy</button>
+            </div>
+            <pre><code id="praxis-bibtex-code">@misc{liu2026praxis,
+  title={Praxis: A Controlled Laboratory for Vision-Language-Action Policy Research},
+  author={Liu, Chaoqi},
+  year={2026},
+  url={https://chaoqi-liu.com/praxis/}
 }</code></pre>
           </div>
         </div>
       </section>
     </article>
   </main>
+  <script>
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-vla-tokenizer-target]'));
+      const panel = document.getElementById('vla-tokenizer-panel');
+      const summary = document.querySelector('[data-vla-tokenizer-summary]');
+      const meters = {
+        compact: document.querySelector('[data-vla-tokenizer-meter="compact"]'),
+        decodable: document.querySelector('[data-vla-tokenizer-meter="decodable"]'),
+        ordering: document.querySelector('[data-vla-tokenizer-meter="ordering"]'),
+        block: document.querySelector('[data-vla-tokenizer-meter="block"]'),
+      };
+      const labels = {
+        compact: document.querySelector('[data-vla-tokenizer-label="compact"]'),
+        decodable: document.querySelector('[data-vla-tokenizer-label="decodable"]'),
+        ordering: document.querySelector('[data-vla-tokenizer-label="ordering"]'),
+        block: document.querySelector('[data-vla-tokenizer-label="block"]'),
+      };
+
+      if (!buttons.length || !panel || !summary) {
+        return;
+      }
+
+      const data = {
+        bin: {
+          compact: ['No', 0],
+          decodable: ['Yes', 100],
+          ordering: ['No', 0],
+          block: ['Yes', 100],
+          summary: 'Each coordinate at each timestep becomes a separate token. Every sequence has a defined decode, but the target grows with the action and its coordinate order does not expose coarse trajectory structure.',
+        },
+        fast: {
+          compact: ['Yes', 100],
+          decodable: ['No', 0],
+          ordering: ['Yes', 100],
+          block: ['No', 0],
+          summary: 'FAST orders frequency coefficients from low to high and compresses them with byte-pair encoding. It is short and frequency ordered, but an arbitrary compressed sample need not expand to the fixed coefficient layout required for decoding.',
+        },
+        quest: {
+          compact: ['Yes', 100],
+          decodable: ['Yes', 100],
+          ordering: ['No', 0],
+          block: ['No', 0],
+          summary: 'QueST learns a compact sequence of discrete latents. Its full-sequence reconstruction loss does not explicitly train early prefixes to carry coarse, control-relevant information.',
+        },
+        acodec: {
+          compact: ['Yes', 100],
+          decodable: ['Yes', 100],
+          ordering: ['Not applicable', 50],
+          block: ['Yes', 100],
+          summary: 'ACodec predicts a compact latent block in parallel. Serial ordering is not applicable, and the policy must predict the entire latent block as one joint target.',
+        },
+        oat: {
+          compact: ['Yes', 100],
+          decodable: ['Yes', 100],
+          ordering: ['Yes', 100],
+          block: ['No', 0],
+          summary: 'Token-wise OAT trains every prefix and satisfies the three core requirements. It is designed to add one realized token at a time, so grouped prediction needs separately matched training.',
+        },
+        oatpow2: {
+          compact: ['Yes', 100],
+          decodable: ['Yes', 100],
+          ordering: ['Yes', 100],
+          block: ['Yes', 100],
+          summary: 'Power-of-two OAT trains budgets at 1, 2, 4, 8, and so on. Each new group is trained as a joint target under the same boundaries used during generation.',
+        },
+      };
+
+      const setValue = (metric, value) => {
+        const label = labels[metric];
+        if (!label) {
+          return;
+        }
+        const [text, score] = value;
+        label.textContent = text;
+        const meter = meters[metric];
+        if (meter) {
+          meter.value = score;
+        }
+      };
+
+      const activate = (key) => {
+        const selected = data[key] || data.bin;
+        buttons.forEach((button) => {
+          const isActive = button.dataset.vlaTokenizerTarget === key;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+          button.tabIndex = isActive ? 0 : -1;
+          if (isActive && button.id) {
+            panel.setAttribute('aria-labelledby', button.id);
+          }
+        });
+
+        setValue('compact', selected.compact);
+        setValue('decodable', selected.decodable);
+        setValue('ordering', selected.ordering);
+        setValue('block', selected.block);
+
+        summary.innerHTML = selected.summary;
+        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+          window.MathJax.typesetPromise([summary]).catch(() => {});
+        }
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => activate(button.dataset.vlaTokenizerTarget));
+        button.addEventListener('keydown', (event) => {
+          const currentIndex = buttons.indexOf(button);
+          const lastIndex = buttons.length - 1;
+          let nextIndex = currentIndex;
+
+          if (event.key === 'ArrowRight') {
+            nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+          } else if (event.key === 'ArrowLeft') {
+            nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+          } else if (event.key === 'Home') {
+            nextIndex = 0;
+          } else if (event.key === 'End') {
+            nextIndex = lastIndex;
+          } else {
+            return;
+          }
+
+          event.preventDefault();
+          buttons[nextIndex].focus();
+          activate(buttons[nextIndex].dataset.vlaTokenizerTarget);
+        });
+      });
+
+      activate(buttons.find((button) => button.classList.contains('is-active'))?.dataset.vlaTokenizerTarget || 'bin');
+    })();
+
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-vla-schedule-target]'));
+      const panel = document.getElementById('vla-schedule-panel');
+      const timeline = document.querySelector('[data-vla-schedule-timeline]');
+      const stages = document.querySelector('[data-vla-schedule-stages]');
+      const name = document.querySelector('[data-vla-schedule-name]');
+      const shape = document.querySelector('[data-vla-schedule-shape]');
+      const cost = document.querySelector('[data-vla-schedule-cost]');
+      const costCopy = document.querySelector('[data-vla-schedule-cost-copy]');
+      const summary = document.querySelector('[data-vla-schedule-summary]');
+      const stageTitle = document.querySelector('[data-vla-schedule-stage-title]');
+      const stageCopy = document.querySelector('[data-vla-schedule-stage-copy]');
+
+      if (!buttons.length || !panel || !timeline || !stages) {
+        return;
+      }
+
+      const schedules = {
+        token: {
+          label: 'Token-wise AR',
+          boundaries: Array.from({ length: 16 }, (_, index) => index + 1),
+          shape: 'One new token per stage.',
+          costCopy: 'Maximum conditioning, maximum serial depth.',
+          summary: 'Every token gets all earlier tokens as context, but inference remains fully serial.',
+        },
+        power: {
+          label: 'Power-of-two BAR',
+          boundaries: [1, 2, 4, 8, 16],
+          shape: 'Prefix lengths grow as 1, 2, 4, 8, 16.',
+          costCopy: 'Short early blocks keep coarse decisions conditioned; later residuals are grouped.',
+          summary: 'Sequential depth drops from 16 calls to 5 calls while preserving progressive prefixes.',
+        },
+        two: {
+          label: 'Two-block BAR',
+          boundaries: [8, 16],
+          shape: 'Predict 8 tokens, then the next 8 tokens.',
+          costCopy: 'A very aggressive middle point: two calls, but each call predicts a large block.',
+          summary: 'Fast generation, higher joint-prediction pressure than the power-of-two schedule.',
+        },
+        parallel: {
+          label: 'One-shot parallel',
+          boundaries: [16],
+          shape: 'Predict all 16 tokens in one call.',
+          costCopy: 'Minimum serial depth, maximum parallel pressure.',
+          summary: 'The policy predicts coarse motion and residual detail in one joint step.',
+        },
+      };
+
+      let activeKey = 'token';
+      let activeStage = 1;
+
+      const maxBlock = (boundaries) => boundaries.reduce((best, boundary, index) => {
+        const prev = index === 0 ? 0 : boundaries[index - 1];
+        return Math.max(best, boundary - prev);
+      }, 0);
+
+      const renderTimeline = (selected) => {
+        const boundaries = selected.boundaries;
+        const current = boundaries[activeStage - 1];
+        const previous = activeStage === 1 ? 0 : boundaries[activeStage - 2];
+        const realizedWidth = `${(previous / 16) * 100}%`;
+        const currentLeft = `${(previous / 16) * 100}%`;
+        const currentWidth = `${((current - previous) / 16) * 100}%`;
+        timeline.innerHTML = '';
+        const realizedFill = document.createElement('span');
+        realizedFill.className = 'vla-schedule-fill is-realized';
+        realizedFill.style.width = realizedWidth;
+        const currentFill = document.createElement('span');
+        currentFill.className = 'vla-schedule-fill is-current';
+        currentFill.style.left = currentLeft;
+        currentFill.style.width = currentWidth;
+        const label = document.createElement('span');
+        label.className = `vla-schedule-progress-label${current >= 9 ? ' is-current' : ''}`;
+        label.textContent = `prefix length ${current} / 16`;
+        timeline.append(realizedFill, currentFill, label);
+        stageTitle.textContent = `Stage ${activeStage} predicts ${current - previous} token${current - previous === 1 ? '' : 's'}.`;
+        const blockSize = current - previous;
+        const tokenRange = blockSize === 1
+          ? `token ${current}`
+          : `tokens ${previous + 1}-${current}`;
+        const prefixCopy = previous === 0
+          ? 'The realized prefix starts empty'
+          : `The realized prefix starts at ${previous} token${previous === 1 ? '' : 's'}`;
+        stageCopy.textContent = `${prefixCopy} and grows to ${current} token${current === 1 ? '' : 's'}. This stage predicts ${tokenRange}.`;
+      };
+
+      const renderStages = (selected) => {
+        stages.innerHTML = '';
+        const previous = document.createElement('button');
+        previous.type = 'button';
+        previous.textContent = '‹';
+        previous.setAttribute('aria-label', 'Previous BAR stage');
+        previous.disabled = activeStage === 1;
+        previous.addEventListener('click', () => activate(activeKey, activeStage - 1));
+
+        const label = document.createElement('span');
+        label.className = 'vla-stage-count';
+        label.textContent = `Stage ${activeStage} / ${selected.boundaries.length}`;
+
+        const next = document.createElement('button');
+        next.type = 'button';
+        next.textContent = '›';
+        next.setAttribute('aria-label', 'Next BAR stage');
+        next.disabled = activeStage === selected.boundaries.length;
+        next.addEventListener('click', () => activate(activeKey, activeStage + 1));
+
+        stages.append(previous, label, next);
+      };
+
+      const typeset = (...nodes) => {
+        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+          window.MathJax.typesetPromise(nodes.filter(Boolean)).catch(() => {});
+        }
+      };
+
+      const activate = (key, stage = 1) => {
+        activeKey = schedules[key] ? key : 'token';
+        const selected = schedules[activeKey];
+        activeStage = Math.min(Math.max(stage, 1), selected.boundaries.length);
+        buttons.forEach((button) => {
+          const isActive = button.dataset.vlaScheduleTarget === activeKey;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+          button.tabIndex = isActive ? 0 : -1;
+          if (isActive && button.id) {
+            panel.setAttribute('aria-labelledby', button.id);
+          }
+        });
+        renderStages(selected);
+        renderTimeline(selected);
+        name.textContent = selected.label;
+        shape.textContent = selected.shape;
+        cost.textContent = `${selected.boundaries.length} VLA call${selected.boundaries.length === 1 ? '' : 's'} · max block ${maxBlock(selected.boundaries)}`;
+        costCopy.textContent = selected.costCopy;
+        summary.textContent = selected.summary;
+        typeset();
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => activate(button.dataset.vlaScheduleTarget));
+        button.addEventListener('keydown', (event) => {
+          const currentIndex = buttons.indexOf(button);
+          const lastIndex = buttons.length - 1;
+          let nextIndex = currentIndex;
+          if (event.key === 'ArrowRight') nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+          else if (event.key === 'ArrowLeft') nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+          else if (event.key === 'Home') nextIndex = 0;
+          else if (event.key === 'End') nextIndex = lastIndex;
+          else return;
+          event.preventDefault();
+          buttons[nextIndex].focus();
+          activate(buttons[nextIndex].dataset.vlaScheduleTarget);
+        });
+      });
+
+      activate(activeKey);
+    })();
+
+    (() => {
+      const grids = Array.from(document.querySelectorAll('[data-vla-static-mask]'));
+
+      if (!grids.length) {
+        return;
+      }
+
+      const blockOf = (index) => {
+        if (index <= 1) return 1;
+        if (index <= 2) return 2;
+        if (index <= 4) return 3;
+        return 4;
+      };
+
+      const data = {
+        oat: {
+          allowed: (row, col) => col <= row,
+        },
+        oatpow2: {
+          allowed: (row, col) => col === row || blockOf(col) < blockOf(row),
+        },
+      };
+
+      const renderMask = (grid, selected) => {
+        grid.innerHTML = '';
+        for (let row = 1; row <= 8; row += 1) {
+          for (let col = 1; col <= 8; col += 1) {
+            const cell = document.createElement('span');
+            cell.className = 'vla-mask-cell';
+            if (row === col) {
+              cell.classList.add('is-self');
+            } else if (selected.allowed(row, col)) {
+              cell.classList.add('is-on');
+            } else {
+              cell.classList.add('is-blocked');
+            }
+            grid.append(cell);
+          }
+        }
+      };
+
+      grids.forEach((grid) => {
+        renderMask(grid, data[grid.dataset.vlaStaticMask] || data.oat);
+      });
+    })();
+  </script>
 </body>
 
 </html>

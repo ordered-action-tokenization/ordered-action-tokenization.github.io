@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-Hans" data-asset-base="..">
+<html lang="zh-Hans">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
-    content="Ordered Action Tokenization 是一种面向自回归机器人策略的有序、前缀可解码动作表示，论文已被 RSS 2026 接收。">
-  <meta property="og:title" content="Ordered Action Tokenization | 中文">
+    content="OAT 把连续的机器人动作变成一串紧凑的 token，并让它们从左到右逐步变得更精确。">
+  <meta property="og:title"
+    content="Ordered Action Tokenization">
   <meta property="og:description"
-    content="OAT 为自回归机器人策略引入有序、前缀可解码的动作 token，并提供交互式解释、MeshCat 重建和策略结果。">
-  <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser-white.png">
+    content="一串紧凑的动作 token，从左到右逐步变得更精确。">
+  <meta property="og:image" content="https://ordered-action-tokenization.github.io/media/fig/teaser.png">
   <meta property="og:url" content="https://ordered-action-tokenization.github.io/zh/">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
@@ -18,7 +19,7 @@
   <link rel="alternate" hreflang="zh-Hans" href="https://ordered-action-tokenization.github.io/zh/">
   <link rel="alternate" hreflang="x-default" href="https://ordered-action-tokenization.github.io/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <title>Ordered Action Tokenization | 中文</title>
+  <title>Ordered Action Tokenization</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,21 +29,15 @@
 
   <link rel="stylesheet" href="../static/css/bulma.min.css">
   <link rel="stylesheet" href="../static/css/index.css">
+  <link rel="stylesheet" href="../static/css/misc.css">
 
   <style>
-    body.token-paper-page {
-      overflow-x: visible;
+    :root {
+      --oat-toc-width: 176px;
+      --oat-layout-gap: 2.5rem;
     }
 
-    .token-paper-page .blog-side-nav {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      backdrop-filter: none;
-      padding: 0.25rem 0;
-    }
-
-    .token-paper-page .blog-side-nav a {
+    .blog-side-nav a {
       white-space: nowrap;
       font-size: 0.72rem;
       letter-spacing: 0;
@@ -50,13 +45,120 @@
       padding-right: 0.42rem;
     }
 
-    .token-paper-page .blog-side-nav a:hover,
-    .token-paper-page .blog-side-nav a[aria-current="true"] {
+    body.blog-page {
+      overflow-x: visible;
+    }
+
+    .blog-side-nav {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 0.25rem 0;
+    }
+
+    .blog-side-nav a:hover,
+    .blog-side-nav a[aria-current="true"] {
       background: transparent;
     }
 
-    .token-paper-page .blog-section-kicker,
-    .token-paper-page .blog-interactive-header > span {
+    .blog-mobile-toc {
+      display: none;
+    }
+
+    .blog-article {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-hero { order: 1; }
+    .blog-figure-teaser { order: 2; }
+    #paper-minute { order: 4; }
+    #tokenization { order: 5; }
+    #oat { order: 6; }
+    #token-evidence { order: 7; }
+    #bar-experiments { order: 8; }
+    #tc-policies { order: 9; }
+    #tc-experiments { order: 10; }
+    #prefix-lab { order: 11; }
+    #meshcat-vis { order: 12; }
+    #takeaway { order: 13; }
+    #appendix { order: 14; }
+
+    .prefix-lab-suite {
+      width: 100%;
+      scroll-margin-top: 5rem;
+    }
+
+    #glossary,
+    #bar-schedule,
+    #schedule-lab,
+    #blockify-oat,
+    #mask-lab,
+    #prefix-budgets,
+    .blog-article > .vla-story-takeaways,
+    .blog-article > .vla-posthoc-panel {
+      display: none;
+    }
+
+    #tc-policies .vla-equation,
+    #tc-policies .vla-math-caption,
+    #tc-policies .vla-subheading,
+    #tc-policies .vla-subheading + p {
+      display: none;
+    }
+
+    .blog-dek strong {
+      color: var(--oat-ink);
+      font-weight: 650;
+    }
+
+    .vla-story-beats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 1.75rem 0 0;
+      border-top: 1px solid var(--oat-line-strong);
+      border-bottom: 1px solid var(--oat-line-strong);
+    }
+
+    .vla-story-beats > div {
+      padding: 1.15rem 1.1rem 1.2rem;
+    }
+
+    .vla-story-beats > div + div {
+      border-left: 1px solid var(--oat-line);
+    }
+
+    .vla-story-beats span,
+    .vla-story-beats strong,
+    .vla-story-beats p {
+      display: block;
+    }
+
+    .vla-story-beats span {
+      color: var(--oat-highlight);
+      font-family: var(--oat-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .vla-story-beats strong {
+      margin-top: 0.55rem;
+      color: var(--oat-ink);
+      font-size: 1.08rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-story-beats p {
+      margin: 0.45rem 0 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.88rem !important;
+      line-height: 1.48 !important;
+    }
+
+    .blog-section-kicker,
+    .blog-interactive-header > span {
       display: block;
       width: max-content;
       border: 0;
@@ -67,678 +169,1990 @@
       padding: 0;
     }
 
-    .token-hero-title {
-      max-width: 1000px;
+    .vla-hero-title {
+      max-width: 1120px;
       overflow-wrap: anywhere;
       white-space: normal;
     }
 
-    .token-hero-title span {
+    .vla-title-line {
       display: block;
     }
 
-    .token-paper-page .x-symbol {
-      margin-right: 0;
+    .vla-mobile-break {
+      display: none;
     }
 
-    .token-paper-page .blog-project-links a[aria-label="X"] {
-      min-width: 2.1rem;
-      padding-left: 0.72rem;
-      padding-right: 0.72rem;
-    }
-
-    .blog-metric-strip.token-hero-metrics {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0;
-      margin: 1.35rem 0 3rem;
-      padding: 0.95rem 0;
-      border-top: 1px solid var(--oat-line);
-      border-bottom: 1px solid var(--oat-line);
-    }
-
-    .blog-metric-strip.token-hero-metrics > div {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 0 0.85rem;
-    }
-
-    .blog-metric-strip.token-hero-metrics > div + div {
-      border-left: 1px solid var(--oat-line);
-    }
-
-    .blog-metric-strip.token-hero-metrics span {
-      color: var(--oat-accent);
-      font-size: 0.98rem;
-      line-height: 1.1;
-    }
-
-    .blog-metric-strip.token-hero-metrics strong {
-      margin-top: 0.35rem;
-      color: var(--oat-muted);
-      font-size: 0.76rem;
-      font-weight: 500;
-      line-height: 1.25;
-    }
-
-    .token-paper-minute.blog-editorial-panel {
+    .vla-paper-minute.blog-editorial-panel {
       border-radius: 0;
       background: transparent;
       padding: 0;
     }
 
-    .token-paper-minute > p,
-    .token-paper-minute .blog-summary-list {
+    .vla-paper-minute > p,
+    .vla-paper-minute .blog-summary-list {
       max-width: 980px;
     }
 
-    .token-paper-minute .blog-summary-list,
-    .token-paper-page .blog-property-list,
-    .token-paper-page .blog-failure-grid,
-    .token-paper-page .blog-step-list,
-    .token-paper-page .blog-opportunity-grid {
+    .vla-paper-minute .blog-summary-list {
       gap: 0;
       border-top: 1px solid var(--oat-line);
       border-bottom: 1px solid var(--oat-line);
     }
 
-    .token-paper-minute .blog-summary-list li,
-    .token-paper-page .blog-property-list li,
-    .token-paper-page .blog-step-list li {
+    .vla-paper-minute .blog-summary-list li {
       border: 0;
       border-radius: 0;
       background: transparent;
       padding: 1rem 0 1rem 2.7rem;
     }
 
-    .token-paper-minute .blog-summary-list li + li,
-    .token-paper-page .blog-property-list li + li,
-    .token-paper-page .blog-step-list li + li {
+    .vla-paper-minute .blog-summary-list li + li {
       border-top: 1px solid var(--oat-line);
     }
 
-    .token-paper-minute .blog-summary-list li::before,
-    .token-paper-page .blog-step-list li::before {
+    .vla-paper-minute .blog-summary-list li::before {
       left: 0;
       top: 1.1rem;
       background: var(--oat-ink);
     }
 
-    .token-paper-page .blog-property-list li {
-      padding-left: 0;
-    }
-
-    .token-paper-page .blog-property-list li::before {
-      content: none;
-      display: none;
-    }
-
-    .token-story-takeaways,
-    .token-plot-cues {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
-      margin: 1.35rem 0;
-    }
-
-    .token-story-takeaways > div,
-    .token-plot-cues > div,
-    .token-paper-page .blog-axis-panel > div,
-    .token-paper-page .blog-insight-card {
-      border: 0;
-      border-top: 1px solid var(--oat-line);
-      border-radius: 0;
-      background: transparent;
-      padding: 1rem 0 0;
-    }
-
-    .token-story-takeaways strong,
-    .token-plot-cues strong,
-    .token-plot-cues > div > span {
-      display: block;
-    }
-
-    .token-story-takeaways strong,
-    .token-plot-cues strong {
-      color: var(--oat-ink);
-      font-size: 1rem;
-      font-weight: 650;
-      line-height: 1.25;
-    }
-
-    .token-story-takeaways p,
-    .token-plot-cues p {
-      margin-top: 0.4rem;
-      color: var(--oat-muted);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
-    .token-plot-cues > div > span {
-      margin-bottom: 0.35rem;
-      color: var(--oat-accent);
-      font-size: 0.75rem;
-      font-weight: 650;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .token-paper-page .blog-interactive,
-    .token-paper-page .project-real-world {
+    .blog-interactive.vla-tokenizer-interactive,
+    .blog-interactive.vla-concept-lab {
       border-radius: 18px;
       background: var(--oat-soft);
       padding: 2rem;
     }
 
-    .token-paper-page .blog-interactive-header h2 {
+    .blog-interactive-header h2 {
       margin-top: 0;
       font-size: 1.55rem;
       font-weight: 650;
       line-height: 1.2;
     }
 
-    .token-paper-page .tokenizer-selector button,
-    .token-paper-page .prefix-stepper button {
+    .blog-interactive-header > span + h2 {
+      margin-top: 0.65rem;
+    }
+
+    .vla-tokenizer-interactive .tokenizer-selector button,
+    .vla-schedule-lab .tokenizer-selector button {
       border-color: rgba(0, 102, 204, 0.22);
       background: rgba(0, 102, 204, 0.08);
       color: var(--oat-accent);
     }
 
-    .token-paper-page .tokenizer-selector button:hover,
-    .token-paper-page .tokenizer-selector button.is-active,
-    .token-paper-page .prefix-stepper button:hover,
-    .token-paper-page .prefix-stepper button.is-active {
+    .vla-tokenizer-interactive .tokenizer-selector button:hover,
+    .vla-tokenizer-interactive .tokenizer-selector button.is-active,
+    .vla-schedule-lab .tokenizer-selector button:hover,
+    .vla-schedule-lab .tokenizer-selector button.is-active {
       border-color: var(--oat-accent);
       background: var(--oat-accent);
       color: #fff;
     }
 
-    .token-paper-page .blog-reading-guide {
+    .vla-prefix-grid {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .vla-prefix-grid figure {
+      min-width: 0;
+      border: 1px solid var(--oat-line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 0.65rem;
+    }
+
+    .vla-prefix-grid img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: var(--oat-soft);
+    }
+
+    .vla-prefix-grid figcaption {
+      margin-top: 0.55rem;
+      color: var(--oat-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .vla-method-figure {
+      margin: 2rem auto;
+    }
+
+    .vla-result-figure {
+      margin: 1.8rem 0;
+      overflow-x: auto;
       border: 0;
       border-radius: 0;
       background: transparent;
       padding: 0;
-    }
-
-    .token-paper-page .result-table-wrap {
-      box-shadow: none;
-    }
-
-    .token-paper-page .result-caption {
-      border-left: 0;
-      border-top: 1px solid var(--oat-line);
-      padding: 0.95rem 0 0;
-    }
-
-    .token-paper-page .result-caption h3.title {
-      font-size: 1.05rem;
-      font-weight: 650;
-    }
-
-    .token-paper-page .blog-reading-guide .token-plot-cues {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .token-paper-page .token-meshcat-panel.prefix-meshcat-panel {
-      margin-top: 2.25rem;
-      border-top: 0;
-      padding-top: 2rem;
-    }
-
-    .token-paper-page .token-meshcat-panel .meshcat-global-controls {
-      margin-top: 1.35rem;
-    }
-
-    .token-paper-page .blog-failure-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0;
-      margin: 1.35rem 0;
-    }
-
-    .token-paper-page .blog-failure-grid > div {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 0.9rem 0.85rem;
-    }
-
-    .token-paper-page .blog-failure-grid > div + div {
-      border-left: 1px solid var(--oat-line);
-    }
-
-    .token-paper-page .blog-axis-panel {
-      gap: 1rem;
-    }
-
-    .token-paper-page .blog-figure-method,
-    .token-paper-page .blog-figure-teaser {
-      overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    .token-paper-page .blog-figure-method img,
-    .token-paper-page .blog-figure-teaser img {
-      min-width: 760px;
+    .vla-result-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background: #fff;
     }
 
-    .token-paper-page .blog-opportunity-grid > div {
+    .vla-result-figure.is-wide img {
+      min-width: 860px;
+    }
+
+    .vla-result-figure figcaption {
+      margin-top: 0.75rem;
+      color: var(--oat-muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .vla-plot-cues {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0 1.35rem;
+      padding: 0.85rem 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-plot-cues > div {
+      min-width: 0;
+    }
+
+    .vla-plot-cues > div + div {
+      border-left: 1px solid var(--oat-line);
+      padding-left: 1rem;
+    }
+
+    .vla-plot-cues span {
+      display: block;
+      color: var(--oat-highlight);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .vla-plot-cues strong {
+      display: block;
+      margin-top: 0.22rem;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-plot-cues p {
+      margin-top: 0.35rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-experiment-plot {
+      margin-top: 1.25rem;
+    }
+
+    .vla-tokenizer-readout {
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 0;
+      align-items: stretch;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-tokenizer-interactive {
+      margin-top: 1.6rem;
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid {
+      width: 100%;
+      max-width: 100%;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid > div {
+      min-width: 0;
+      height: auto;
+      min-height: 8.2rem;
       border: 0;
       border-radius: 0;
       background: transparent;
-      padding: 1rem 0;
+      padding: 1rem 1.05rem;
     }
 
-    .token-paper-page .blog-opportunity-grid > div:nth-child(n + 3) {
+    .vla-tokenizer-readout .tokenizer-score-grid > div + div {
+      border-left: 1px solid var(--oat-line);
+    }
+
+    .vla-tokenizer-readout .tokenizer-score-grid span {
+      min-height: 2.5em;
+      white-space: normal;
+      overflow-wrap: break-word;
+    }
+
+    .vla-tokenizer-summary {
+      display: block;
+      height: auto;
+      min-height: 8.2rem;
+      overflow: visible;
+      border: 0 !important;
+      border-left: 1px solid var(--oat-line) !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+    }
+
+    .vla-tokenizer-summary span {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: var(--oat-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .vla-tokenizer-summary em {
+      color: var(--oat-ink);
+      font-style: normal;
+      line-height: 1.45;
+    }
+
+    .vla-token-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 0.65rem;
+      align-items: center;
+      margin: 1.35rem 0;
+      padding: 0.9rem 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-token-flow span {
+      min-width: 0;
+      color: var(--oat-ink);
+      font-size: 0.95rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-token-flow i {
+      width: 1.4rem;
+      height: 1px;
+      background: var(--oat-line);
+      position: relative;
+    }
+
+    .vla-token-flow i::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 0.42rem;
+      height: 0.42rem;
+      border-top: 1px solid var(--oat-line);
+      border-right: 1px solid var(--oat-line);
+      transform: translateY(-50%) rotate(45deg);
+      transform-origin: center;
+    }
+
+    .vla-requirement-list,
+    .vla-oat-step-list {
+      display: grid;
+      gap: 0;
+      margin: 1.25rem 0 1.35rem;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-requirement-list > div,
+    .vla-oat-step-list > div {
+      display: grid;
+      grid-template-columns: 5.4rem minmax(0, 1fr);
+      gap: 1rem;
+      padding: 0.82rem 0;
+    }
+
+    .vla-requirement-list > div + div,
+    .vla-oat-step-list > div + div {
       border-top: 1px solid var(--oat-line);
     }
 
-    @media (max-width: 900px) {
-      .blog-metric-strip.token-hero-metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        border-bottom: 0;
-      }
+    .vla-requirement-list span,
+    .vla-oat-step-list span {
+      color: var(--oat-highlight);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
 
-      .blog-metric-strip.token-hero-metrics > div {
-        border-bottom: 1px solid var(--oat-line);
-        padding: 0.85rem;
-      }
+    .vla-requirement-list strong,
+    .vla-oat-step-list strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
 
-      .blog-metric-strip.token-hero-metrics > div:nth-child(odd) {
-        border-left: 0;
-      }
+    .vla-requirement-list p,
+    .vla-oat-step-list p {
+      margin-top: 0.35rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.45 !important;
+    }
 
-      .token-story-takeaways,
-      .token-plot-cues,
-      .token-paper-page .blog-reading-guide .token-plot-cues,
-      .token-paper-page .blog-failure-grid,
-      .token-paper-page .blog-opportunity-grid {
+    .vla-oat-reference {
+      margin: 1rem 0 1.3rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.96rem !important;
+      line-height: 1.55 !important;
+    }
+
+    .vla-concept-lab {
+      margin-top: 1.6rem;
+    }
+
+    .vla-highlight {
+      color: var(--oat-highlight);
+      font-weight: 650;
+    }
+
+    .vla-story-takeaways {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0 1.35rem;
+      padding: 0.85rem 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-story-takeaways > div {
+      min-width: 0;
+    }
+
+    .vla-story-takeaways > div + div {
+      border-left: 1px solid var(--oat-line);
+      padding-left: 1rem;
+    }
+
+    .vla-story-takeaways strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-story-takeaways p {
+      margin-top: 0.45rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-concept-readout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+      gap: 1rem;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+
+    .vla-schedule-board {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--oat-line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .vla-schedule-board > span {
+      display: block;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .vla-token-timeline {
+      position: relative;
+      margin-top: 0.85rem;
+      height: 3.1rem;
+      overflow: hidden;
+      border: 1px solid var(--oat-line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .vla-schedule-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      display: block;
+      transition: width 180ms ease, left 180ms ease;
+    }
+
+    .vla-schedule-fill.is-realized {
+      background: rgba(0, 102, 204, 0.16);
+    }
+
+    .vla-schedule-fill.is-current {
+      background: var(--oat-accent);
+    }
+
+    .vla-schedule-progress-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--oat-accent);
+      font-family: var(--oat-mono);
+      font-size: 0.78rem;
+      font-weight: 650;
+      pointer-events: none;
+    }
+
+    .vla-schedule-progress-label.is-current {
+      color: #fff;
+    }
+
+    .vla-stage-stepper {
+      display: grid;
+      grid-template-columns: 2.4rem minmax(0, 1fr) 2.4rem;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+
+    .vla-stage-stepper button {
+      width: 2.4rem;
+      height: 2.4rem;
+      border: 1px solid var(--oat-line-strong);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--oat-muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .vla-stage-stepper button:hover,
+    .vla-stage-stepper button:focus-visible {
+      border-color: var(--oat-accent);
+      background: var(--oat-accent);
+      color: #fff;
+    }
+
+    .vla-stage-stepper button:disabled {
+      border-color: var(--oat-line);
+      background: var(--oat-soft-2);
+      color: rgba(29, 29, 31, 0.26);
+      cursor: not-allowed;
+    }
+
+    .vla-stage-stepper button:disabled:hover {
+      border-color: var(--oat-line);
+      background: var(--oat-soft-2);
+      color: rgba(29, 29, 31, 0.26);
+    }
+
+    .vla-stage-count {
+      color: var(--oat-ink);
+      font-size: 0.95rem;
+      font-weight: 650;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .vla-schedule-stage {
+      margin-top: 0.9rem;
+      border: 1px solid var(--oat-line);
+      border-radius: 14px;
+      background: var(--oat-soft-2);
+      padding: 0.85rem;
+    }
+
+    .vla-schedule-stage strong,
+    .vla-readout-card strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-schedule-stage p,
+    .vla-readout-card p {
+      margin: 0.45rem 0 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.92rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-readout-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .vla-readout-card {
+      border: 1px solid var(--oat-line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .vla-mask-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .vla-mask-card {
+      min-width: 0;
+      border: 1px solid var(--oat-line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .vla-mask-card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: flex-start;
+    }
+
+    .vla-mask-card-kicker,
+    .vla-posthoc-kicker {
+      display: block;
+      color: var(--oat-highlight);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+    }
+
+    .vla-posthoc-kicker {
+      text-transform: uppercase;
+    }
+
+    .vla-mask-card h3 {
+      margin: 0.2rem 0 0;
+      color: var(--oat-ink);
+      font-size: 1.05rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-mask-badge {
+      flex: 0 0 auto;
+      border: 1px solid rgba(0, 102, 204, 0.18);
+      border-radius: 999px;
+      background: rgba(0, 102, 204, 0.07);
+      color: var(--oat-accent);
+      padding: 0.28rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 650;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .vla-mask-card-copy {
+      margin-top: 0.8rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.92rem !important;
+      line-height: 1.48 !important;
+    }
+
+    .vla-mask-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      width: min(100%, 230px);
+      gap: 0.18rem;
+      margin-top: 0.85rem;
+    }
+
+    .vla-mask-card .vla-mask-grid {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .vla-mask-axis {
+      margin-top: 0.5rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .vla-mask-cell {
+      aspect-ratio: 1;
+      border: 1px solid var(--oat-line);
+      border-radius: 5px;
+      background: #fff;
+    }
+
+    .vla-mask-cell.is-on {
+      border-color: rgba(0, 102, 204, 0.22);
+      background: rgba(0, 102, 204, 0.18);
+    }
+
+    .vla-mask-cell.is-self {
+      border-color: rgba(29, 29, 31, 0.24);
+      background: var(--oat-ink);
+    }
+
+    .vla-mask-cell.is-blocked {
+      background: repeating-linear-gradient(
+        -45deg,
+        #fff,
+        #fff 5px,
+        rgba(29, 29, 31, 0.045) 5px,
+        rgba(29, 29, 31, 0.045) 10px
+      );
+    }
+
+    .vla-mask-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.7rem;
+      margin-top: 0.75rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    .vla-mask-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .vla-mask-legend i {
+      width: 0.72rem;
+      height: 0.72rem;
+      display: inline-block;
+      border: 1px solid var(--oat-line);
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .vla-mask-legend .is-on {
+      border-color: rgba(0, 102, 204, 0.22);
+      background: rgba(0, 102, 204, 0.18);
+    }
+
+    .vla-mask-legend .is-self {
+      border-color: rgba(29, 29, 31, 0.24);
+      background: var(--oat-ink);
+    }
+
+    .vla-posthoc-panel {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+      gap: 1.2rem;
+      align-items: start;
+      margin: 1.25rem 0 1.35rem;
+    }
+
+    .vla-posthoc-copy {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding-top: 0.1rem;
+    }
+
+    .vla-posthoc-copy h3 {
+      margin: 0.25rem 0 0;
+      color: var(--oat-ink);
+      font-size: 1.12rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-posthoc-copy p {
+      margin-top: 0.65rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.93rem !important;
+      line-height: 1.5 !important;
+    }
+
+    .vla-posthoc-list {
+      display: grid;
+      gap: 0;
+      min-width: 0;
+    }
+
+    .vla-posthoc-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.65rem 1rem;
+      align-items: center;
+      border-top: 1px solid var(--oat-line);
+      padding: 0.78rem 0;
+    }
+
+    .vla-posthoc-row:last-child {
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-posthoc-row.is-best .vla-posthoc-score strong {
+      color: var(--oat-accent);
+    }
+
+    .vla-posthoc-method strong,
+    .vla-posthoc-score strong {
+      display: block;
+      color: var(--oat-ink);
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-posthoc-method span,
+    .vla-posthoc-score span {
+      display: block;
+      margin-top: 0.18rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    .vla-posthoc-score {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .vla-posthoc-meter {
+      grid-column: 1 / -1;
+      height: 0.38rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(29, 29, 31, 0.08);
+    }
+
+    .vla-posthoc-meter i {
+      display: block;
+      width: var(--score);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--oat-accent);
+    }
+
+    .vla-posthoc-row.is-posthoc .vla-posthoc-meter i {
+      background: rgba(29, 29, 31, 0.42);
+    }
+
+    .vla-section-lead {
+      color: var(--oat-muted) !important;
+      font-size: 1.18rem !important;
+      line-height: 1.55 !important;
+    }
+
+    .vla-subheading {
+      margin: 1.75rem 0 0.45rem;
+      color: var(--oat-ink);
+      font-size: 1.22rem;
+      font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .vla-equation {
+      margin: 1.35rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--oat-line);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--oat-ink);
+      padding: 1rem 1.15rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .vla-equation mjx-container {
+      min-width: max-content;
+      padding: 0.15rem 0;
+    }
+
+    .vla-math-caption {
+      margin-top: -0.65rem !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.92rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-evidence-intro {
+      max-width: 980px;
+      margin-bottom: 1.4rem;
+    }
+
+    .vla-proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 1.5rem 0;
+      border-top: 1px solid var(--oat-line);
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-proof-grid > div {
+      min-width: 0;
+      padding: 1rem 1.05rem;
+    }
+
+    .vla-proof-grid > div + div {
+      border-left: 1px solid var(--oat-line);
+    }
+
+    .vla-proof-grid span,
+    .vla-proof-grid strong,
+    .vla-proof-grid small {
+      display: block;
+    }
+
+    .vla-proof-grid span {
+      color: var(--oat-muted);
+      font-family: var(--oat-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .vla-proof-grid strong {
+      margin-top: 0.35rem;
+      color: var(--oat-highlight);
+      font-size: 1.45rem;
+      font-weight: 650;
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .vla-proof-grid small {
+      margin-top: 0.35rem;
+      color: var(--oat-muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .vla-evidence-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.8fr);
+      gap: 1.5rem;
+      align-items: start;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .vla-evidence-split figure {
+      min-width: 0;
+      margin: 0;
+    }
+
+    .vla-evidence-split img {
+      width: 100%;
+      height: auto;
+    }
+
+    .vla-evidence-split figcaption {
+      margin-top: 0.65rem;
+      color: var(--oat-muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .vla-evidence-notes {
+      border-top: 1px solid var(--oat-line);
+    }
+
+    .vla-evidence-notes > div {
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--oat-line);
+    }
+
+    .vla-evidence-notes strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--oat-ink);
+      font-size: 0.96rem;
+      font-weight: 650;
+    }
+
+    .vla-evidence-notes p {
+      margin: 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.9rem !important;
+      line-height: 1.45 !important;
+    }
+
+    .vla-data-table-wrap {
+      margin: 1.35rem 0 1.75rem;
+      overflow-x: auto;
+      border-top: 1px solid var(--oat-line-strong);
+      border-bottom: 1px solid var(--oat-line-strong);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .vla-data-table {
+      width: 100%;
+      min-width: 830px;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .vla-data-table caption {
+      padding: 0.85rem 0;
+      color: var(--oat-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .vla-data-table th,
+    .vla-data-table td {
+      padding: 0.68rem 0.62rem;
+      border-bottom: 1px solid var(--oat-line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .vla-data-table th:first-child,
+    .vla-data-table td:first-child {
+      text-align: left;
+    }
+
+    .vla-data-table thead th {
+      color: var(--oat-muted);
+      font-size: 0.72rem;
+      font-weight: 650;
+    }
+
+    .vla-data-table tbody th {
+      color: var(--oat-ink);
+      font-weight: 600;
+    }
+
+    .vla-data-table tbody tr:last-child th,
+    .vla-data-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .vla-data-table .is-oat th {
+      color: var(--oat-highlight);
+    }
+
+    .vla-data-table .is-best {
+      background: rgba(0, 102, 204, 0.055);
+    }
+
+    .vla-data-table .is-best th,
+    .vla-data-table .is-best td {
+      font-weight: 700;
+    }
+
+    .vla-verdict {
+      margin: 1.5rem 0 0;
+      border-left: 3px solid var(--oat-highlight);
+      background: rgba(191, 72, 0, 0.055);
+      padding: 1rem 1.15rem;
+    }
+
+    .vla-verdict strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--oat-ink);
+      font-weight: 650;
+    }
+
+    .vla-verdict p {
+      margin: 0 !important;
+      color: var(--oat-muted) !important;
+      font-size: 0.94rem !important;
+      line-height: 1.5 !important;
+    }
+
+    .vla-final-case {
+      margin-top: 2rem;
+      border-top: 1px solid var(--oat-line-strong);
+      border-bottom: 1px solid var(--oat-line-strong);
+    }
+
+    .vla-final-case > div {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .vla-final-case > div + div {
+      border-top: 1px solid var(--oat-line);
+    }
+
+    .vla-final-case strong {
+      color: var(--oat-highlight);
+      font-family: var(--oat-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .vla-final-case p {
+      margin: 0 !important;
+      font-size: 0.96rem !important;
+      line-height: 1.5 !important;
+    }
+
+    #appendix .appendix-link-button {
+      border-color: rgba(0, 102, 204, 0.22);
+      background: rgba(0, 102, 204, 0.08);
+      color: var(--oat-accent) !important;
+      margin: 0 0.18rem;
+      vertical-align: baseline;
+    }
+
+    #appendix .appendix-link-button:hover {
+      border-color: rgba(0, 102, 204, 0.36);
+      background: rgba(0, 102, 204, 0.13);
+      color: var(--oat-accent) !important;
+    }
+
+    @media (max-width: 1180px) {
+      .vla-tokenizer-readout {
         grid-template-columns: 1fr;
       }
 
-      .token-paper-page .blog-failure-grid > div + div,
-      .token-paper-page .blog-opportunity-grid > div + div {
+      .vla-tokenizer-readout .tokenizer-score-grid > div,
+      .vla-tokenizer-summary {
+        height: auto;
+        min-height: 8.2rem;
+        overflow: visible;
+      }
+
+      .vla-tokenizer-readout .vla-desiderata-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div:nth-child(odd) {
+        border-left: 0;
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div:nth-child(n + 3) {
+        border-top: 1px solid var(--oat-line);
+      }
+
+      .vla-tokenizer-summary {
+        border-top: 1px solid var(--oat-line) !important;
+        border-left: 0 !important;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .vla-story-beats {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-story-beats > div + div {
         border-left: 0;
         border-top: 1px solid var(--oat-line);
       }
-    }
 
-    @media (max-width: 520px) {
-      .blog-metric-strip.token-hero-metrics {
+      .blog-mobile-toc {
+        position: sticky;
+        top: 44px;
+        z-index: 29;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        width: 100%;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--oat-line);
+        background: rgba(255, 255, 255, 0.96);
+        padding: 0.62rem 1rem;
+        scrollbar-width: none;
+        backdrop-filter: blur(14px);
+      }
+
+      .blog-mobile-toc::-webkit-scrollbar {
+        display: none;
+      }
+
+      .blog-mobile-toc strong,
+      .blog-mobile-toc a {
+        flex: 0 0 auto;
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+
+      .blog-mobile-toc strong {
+        color: var(--oat-ink);
+        font-family: var(--oat-mono);
+        font-weight: 600;
+      }
+
+      .blog-mobile-toc a {
+        color: var(--oat-muted);
+        text-decoration: none;
+      }
+
+      .blog-mobile-toc a[aria-current="true"] {
+        color: var(--oat-accent);
+        font-weight: 700;
+      }
+
+      .vla-proof-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .vla-proof-grid > div:nth-child(3) {
+        border-left: 0;
+        border-top: 1px solid var(--oat-line);
+      }
+
+      .vla-proof-grid > div:nth-child(4) {
+        border-top: 1px solid var(--oat-line);
+      }
+
+      .vla-evidence-split {
         grid-template-columns: 1fr;
       }
 
-      .blog-metric-strip.token-hero-metrics > div,
-      .blog-metric-strip.token-hero-metrics > div:nth-child(odd) {
+      .vla-story-takeaways {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .vla-token-flow {
+        grid-template-columns: 1fr;
+        gap: 0.45rem;
+      }
+
+      .vla-token-flow i {
+        width: 1px;
+        height: 1rem;
+        margin-left: 0.45rem;
+      }
+
+      .vla-token-flow i::after {
+        top: auto;
+        right: auto;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%) rotate(135deg);
+      }
+
+      .vla-concept-readout {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-posthoc-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-prefix-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      body.blog-page {
+        padding-top: 108px;
+      }
+
+      .blog-topbar {
+        position: fixed;
+      }
+
+      .blog-mobile-toc {
+        position: fixed;
+        top: 70px;
+      }
+
+      .blog-section[id],
+      .blog-interactive[id],
+      .prefix-lab-suite {
+        scroll-margin-top: 7.5rem;
+      }
+
+      .vla-final-case > div {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .blog-layout {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .blog-article {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible;
+      }
+
+      .blog-hero,
+      .blog-section,
+      .blog-editorial-panel,
+      .blog-dek,
+      .blog-authors,
+      .blog-affiliations,
+      .blog-project-links,
+      .blog-figure {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .blog-figure,
+      .blog-figure-paper,
+      .blog-figure-teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible;
+      }
+
+      .vla-hero-title {
+        max-width: 100%;
+        font-size: 2.05rem !important;
+        line-height: 1.13 !important;
+      }
+
+      .vla-mobile-break {
+        display: block;
+      }
+
+      .blog-dek,
+      .blog-authors,
+      .blog-affiliations {
+        width: min(100%, 21rem) !important;
+        max-width: 21rem !important;
+        margin-left: auto;
+        margin-right: auto;
+        overflow-wrap: anywhere;
+        white-space: normal !important;
+        text-align: center;
+      }
+
+      .blog-authors a,
+      .blog-affiliations a {
+        display: inline;
+        overflow-wrap: anywhere;
+        white-space: normal !important;
+      }
+
+      .blog-dek {
+        font-size: 1rem !important;
+      }
+
+      .blog-section h2 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+
+      .vla-story-takeaways {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-story-takeaways > div + div {
+        border-left: 0;
+        border-top: 1px solid var(--oat-line);
+        padding-top: 0.85rem;
+        padding-left: 0;
+      }
+
+      .vla-plot-cues {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-plot-cues > div + div {
+        border-left: 0;
+        border-top: 1px solid var(--oat-line);
+        padding-top: 0.85rem;
+        padding-left: 0;
+      }
+
+      .vla-mask-pair {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-posthoc-row {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-posthoc-score {
+        text-align: left;
+      }
+
+      .vla-requirement-list > div,
+      .vla-oat-step-list > div {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+      }
+
+      .blog-authors,
+      .blog-affiliations {
+        font-size: 0.82rem !important;
+      }
+
+      .blog-project-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .blog-project-links a {
+        width: 100%;
+        min-width: 0;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+        text-align: center;
+      }
+
+      .blog-figure img {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .blog-figure-paper img {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .blog-figure-teaser {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .blog-figure-teaser img {
+        width: 780px !important;
+        min-width: 780px !important;
+        max-width: none !important;
+      }
+
+      .vla-tokenizer-readout .vla-desiderata-grid,
+      .vla-prefix-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vla-tokenizer-readout .tokenizer-score-grid > div + div {
+        border-top: 1px solid var(--oat-line);
         border-left: 0;
       }
 
-      .token-paper-page .blog-figure-method img,
-      .token-paper-page .blog-figure-teaser img {
-        min-width: 680px;
+      .vla-tokenizer-readout .tokenizer-score-grid > div {
+        min-height: 5.4rem;
+        padding: 0.85rem 0;
+      }
+
+      .vla-tokenizer-summary {
+        min-height: 0;
+        padding: 1rem 0;
+      }
+
+      .vla-result-figure {
+        padding: 0;
+      }
+
+      .vla-result-figure.is-wide img {
+        min-width: min(760px, 220vw);
+      }
+
+      .vla-evidence-split figure {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .vla-evidence-split figure img {
+        width: 760px;
+        max-width: none;
+      }
+
+      .token-meshcat-panel .embed-row {
+        grid-template-columns: repeat(5, 230px);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .token-meshcat-panel .embed-card {
+        scroll-snap-align: start;
+      }
+
+      .vla-equation {
+        padding: 0.85rem;
       }
     }
+
   </style>
 
-  <script defer src="../static/js/index.js"></script>
+  <script defer src="../static/js/index.js?v=20260711b"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 
-<body class="blog-page token-paper-page" id="top">
+<body class="blog-page" id="top">
   <header class="blog-topbar">
-    <a href="./" class="blog-home">Ordered Action Tokenization</a>
+    <a href="../" class="blog-home">Ordered Action Tokenization</a>
     <nav aria-label="项目链接和语言">
-      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">代码</a>
+      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">RSS arXiv</a>
+      <a href="../media/oat-visuomotor-policy-learning.pdf" target="_blank" rel="noopener">Full Paper PDF</a>
+      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">OAT 代码</a>
+      <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">VLA 代码</a>
       <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X"><span class="x-symbol" aria-hidden="true">𝕏</span></a>
       <a href="../" hreflang="en" lang="en">English</a>
       <a href="./" hreflang="zh-Hans" lang="zh-Hans" aria-current="page">中文</a>
     </nav>
   </header>
 
+  <nav class="blog-mobile-toc" aria-label="移动端页面章节">
+    <strong>页面目录</strong>
+    <a href="#paper-minute">问题是什么</a>
+    <a href="#tokenization">设计原则</a>
+    <a href="#oat">OAT 怎么做</a>
+    <a href="#token-evidence">排序有用吗</a>
+    <a href="#bar-experiments">直接生成动作</a>
+    <a href="#tc-policies">用 token 辅助训练</a>
+    <a href="#prefix-lab">Prefix Lab</a>
+    <a href="#takeaway">结论</a>
+  </nav>
+
   <main class="blog-layout">
     <aside class="blog-side-nav" aria-label="页面章节">
-      <a href="#paper-minute">一分钟读懂</a>
-      <a href="#why-tokenization">预测问题</a>
-      <a href="#modelability">重建不够</a>
-      <a href="#properties">三项要求</a>
-      <a href="#missing-tokenizers">缺口</a>
-      <a href="#oat">OAT</a>
-      <a href="#info-theory">渐进编码</a>
-      <a href="#prefix-decoding">前缀预算</a>
-      <a href="#prefix-lab">前缀实验</a>
-      <a href="#experiments">实验</a>
-      <a href="#real-world">真实演示</a>
-      <a href="#open-directions">开放问题</a>
-      <a href="#appendix">附录</a>
+      <a href="#paper-minute">问题是什么</a>
+      <a href="#tokenization">设计原则</a>
+      <a href="#oat">OAT 怎么做</a>
+      <a href="#token-evidence">排序有用吗</a>
+      <a href="#bar-experiments">直接生成动作</a>
+      <a href="#tc-policies">用 token 辅助训练</a>
+      <a href="#prefix-lab">Prefix Lab</a>
+      <a href="#takeaway">结论</a>
     </aside>
 
     <article class="blog-article">
       <header class="blog-hero">
-        <h1 class="token-hero-title">
-          <span>Ordered Action Tokenization</span>
+        <h1 class="vla-hero-title">
+          <span class="vla-title-line">Ordered Action Tokenization</span>
         </h1>
         <p class="blog-dek">
-          面向自回归机器人策略的有序动作 token：序列短、始终可解码，并让每个前缀都承载有效动作信息。
-        </p>
-        <p class="blog-source">
-          <span class="blog-venue-pill">RSS 2026</span> 录用论文，扩展自原始
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X 文章"><span class="x-symbol" aria-hidden="true">𝕏</span> 文章</a>，
-          并加入原生网页交互控件。
+          OAT 把连续的机器人动作变成一串紧凑的 token，并让它们从左到右逐步变得更精确。
         </p>
         <p class="blog-authors">
-          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
+          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1,2</sup>,
+          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
+          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1,2</sup>,
           <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
           <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
-          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
-          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup> 和
+          <a href="https://stanford.edu/~eadeli/" target="_blank" rel="noopener">Ehsan Adeli</a><sup>2</sup> 和
           <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
         </p>
-        <p class="blog-affiliations"><sup>1</sup>Harvard University · <sup>2</sup>Stanford University</p>
+        <p class="blog-affiliations">
+          <sup>1</sup>Harvard University · <sup>2</sup>Stanford University
+        </p>
         <div class="blog-project-links" aria-label="项目链接">
-          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">arXiv</a>
-          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">代码</a>
-          <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X"><span class="x-symbol" aria-hidden="true">𝕏</span></a>
+          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">RSS arXiv</a>
+          <a href="../media/oat-visuomotor-policy-learning.pdf" target="_blank" rel="noopener">Full Paper PDF</a>
+          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">OAT 代码</a>
+          <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">VLA 代码</a>
         </div>
       </header>
 
       <figure class="blog-figure blog-figure-paper blog-figure-teaser">
-        <img src="../media/fig/teaser-white.png" alt="OAT teaser，总结 tokenizer 设计要求和策略性能"
-          width="8203" height="2665">
+        <img src="../media/fig/teaser.png" alt="OAT、动作生成、token co-training 和 VLA 任务覆盖总览"
+          width="2400" height="1356">
       </figure>
 
-      <div class="blog-metric-strip token-hero-metrics" aria-label="文章亮点">
-        <div>
-          <span>紧凑</span>
-          <strong>短动作 token 序列</strong>
-        </div>
-        <div>
-          <span>全域</span>
-          <strong>支持的前缀都可解码</strong>
-        </div>
-        <div>
-          <span>有序</span>
-          <strong>前缀携带粗粒度运动</strong>
-        </div>
-        <div>
-          <span>Anytime</span>
-          <strong>用 token 数换延迟</strong>
-        </div>
-        <div>
-          <span>20+</span>
-          <strong>仿真和真实任务</strong>
-        </div>
-      </div>
-
-      <section class="blog-section blog-editorial-panel token-paper-minute" id="paper-minute">
-        <span class="blog-section-kicker">一分钟读懂论文</span>
-        <h2>动作 tokenizer 定义了策略要预测什么。</h2>
-        <p>
-          自回归机器人策略并不是直接预测连续控制信号。它先为一小段未来动作，也就是动作块，预测离散 token，
-          再依赖 detokenizer 把这些 token 还原成可执行的连续控制。因此，tokenizer 设计本身就是学习问题的一部分：
-          一种表示可以重建得很好，却仍然生成得慢、采样后不可解码，或者很难从左到右预测。
+      <section class="blog-section blog-editorial-panel vla-paper-minute" id="paper-minute">
+        <span class="blog-section-kicker">为什么这件事重要</span>
+        <h2>模型学习动作之前，我们得先决定怎么把动作写下来。</h2>
+        <p class="vla-section-lead">
+          这个选择会决定预测序列有多长、每次预测能不能变成有效动作，以及前几个 token 是否已经包含有用信息。
         </p>
-        <ol class="blog-summary-list">
-          <li>
-            <strong>问题：</strong>现有 tokenizer 暴露出三重张力：压缩、全域可解码性，以及自回归可预测性很难同时满足。
-          </li>
-          <li>
-            <strong>方法：</strong><span class="oat-name">OAT</span> 学习一组有序的离散 register token，并训练每个前缀都能解码成完整动作块。
-          </li>
-          <li>
-            <strong>结果：</strong>token 数变成运行时预算：简单动作可以用短前缀快速执行，复杂动作再生成更多 token 换取精度。
-          </li>
-        </ol>
-      </section>
-
-      <section class="blog-section" id="why-tokenization">
-        <h2>1. 动作 tokenizer 决定策略要预测什么。</h2>
-        <p>
-          离散动作 token 正在成为现代机器人学习系统中越来越重要的设计选择：
-          <a href="https://rdt-robotics.github.io/rdt2/" target="_blank" rel="noopener">RDT-2</a> 在第一阶段训练中使用
-          vector-quantized (VQ) 动作 token；
-          <a href="https://co-training-lbm.github.io/" target="_blank" rel="noopener">TRI 的 LBM/VLA</a> 使用 FAST
-          和 VQ 风格的动作 token；而 BEHAVIOR 2025 Challenge 的
-          <a href="https://arxiv.org/abs/2512.06951" target="_blank" rel="noopener">获胜方案</a>
-          在训练和推理中集成了 FAST token。
-        </p>
-        <p>
-          在这些系统里，策略先看到符号，再看到控制。动作 tokenizer 决定序列有多长、采样出来的 token 是否能安全解码，
-          以及模型需要学习什么样的从左到右结构。它不是预处理细节，而是策略真正面对的预测问题。
-        </p>
-      </section>
-
-      <section class="blog-section" id="modelability">
-        <h2>2. 只看重建误差是不够的。</h2>
-        <p>
-          经典理论如
-          <a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">率失真权衡</a>
-          关注压缩率和重建精度之间的平衡。对生成式机器人策略来说，还需要看第三个维度：可建模性，
-          也就是生成模型捕捉这种表示分布的难度。结构不好的表示可能既紧凑又准确，但从根本上很难建模。
-        </p>
-        <p>
-          核心区别就在这里：一个 tokenizer 可以很好地重建动作，却仍然不适合策略学习。如果 token 流很难被自回归模型预测，
-          或者稀疏且高熵，模型会在每一次下一个 token 预测中付出代价。
-        </p>
-        <div class="blog-axis-panel" aria-label="率失真可建模性权衡">
+        <div class="vla-story-beats" aria-label="OAT 的三步主线">
           <div>
-            <span>Rate</span>
-            <strong>需要多少 token？</strong>
-            <p>更短的动作编码可以降低自回归深度和延迟。</p>
+            <span>常见的取舍</span>
+            <strong>很多动作表示解决一个问题，又带来另一个问题。</strong>
+            <p>有的太长，有的可能产生无效动作，还有的压缩得不错，却没有好用的先后顺序。</p>
           </div>
           <div>
-            <span>Distortion</span>
-            <strong>保留多少动作细节？</strong>
-            <p>连续机器人控制仍然需要足够精度，尤其是接触丰富的执行场景。</p>
+            <span>OAT 的思路</span>
+            <strong>先写最重要的运动，再补细节。</strong>
+            <p>第一个 token 已经给出粗略但完整的动作，后面的 token 只负责把它变得更精确。</p>
           </div>
           <div>
-            <span>可建模性</span>
-            <strong>序列有多可预测？</strong>
-            <p>token 顺序应该让下一个 token 预测更容易，而不只是让它可行。</p>
+            <span>为什么有用</span>
+            <strong>同一串 token 可以有两种用法。</strong>
+            <p>VLM 可以直接生成它来控制机器人，也可以只在训练时学习它，再由连续控制器输出最终动作。</p>
           </div>
         </div>
-        <div class="blog-insight-card">
-          <strong>仅有重建还不够。</strong>
-          <p>
-            对机器人控制而言，只有下游策略能可靠建模这些 token，tokenizer 才真正有用。
-            低重建误差当然重要，但它并不保证 token 序列具有稳定的从左到右结构。
-          </p>
-        </div>
       </section>
 
-      <section class="blog-section" id="properties">
-        <h2>3. 好的动作 tokenizer 必须紧凑、全域可解码，并且有序。</h2>
-        <p>
-          目标不是单个指标。面向自回归策略的动作 tokenizer，必须同时满足三项要求：
+      <section class="blog-section" id="glossary">
+        <span class="blog-section-kicker">简短术语表</span>
+        <h2>本文会反复用到的五个术语。</h2>
+        <dl class="blog-glossary-grid">
+          <div>
+            <dt>动作块</dt>
+            <dd>一小段未来连续机器人动作序列，记作 \(a_{1:H_a}\in\mathbb{R}^{H_a\times D_a}\)。</dd>
+          </div>
+          <div>
+            <dt>Action token</dt>
+            <dd>离散符号 \(T_i\in\mathcal{V}\)，既可以作为 AR 预测目标，也可以作为 VLM 的 token 监督。</dd>
+          </div>
+          <div>
+            <dt>有序前缀</dt>
+            <dd>一个已经可以解码成完整粗粒度动作块的前缀 \(T_{1:k}\)。</dd>
+          </div>
+          <div>
+            <dt>BAR</dt>
+            <dd>一种分块式自回归生成方法，按 schedule 逐步增长 action-token 前缀。</dd>
+          </div>
+          <div>
+            <dt>TC</dt>
+            <dd>Token co-training：action token 监督 VLM，但机器人由连续 expert 控制；相关工作有时也称为 knowledge insulation (KI)。</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="blog-section" id="tokenization">
+        <span class="blog-section-kicker">设计原则</span>
+        <h2>Action tokenization 的三条设计原则。</h2>
+        <p class="vla-section-lead">
+          <strong>高压缩率</strong>让序列保持简短；<strong>全域可解码</strong>保证 policy 的任意输出都能变成可执行动作；<strong>有序 token 结构</strong>把控制相关运动放在前面，把 residual 细节留到后面。
         </p>
-        <ul class="blog-property-list">
-          <li>
-            <strong>(P.1) 合理压缩。</strong> 该表示应足够压缩动作块，以支持高效序列建模，但不能过度压缩到丢失太多信息。
-          </li>
-          <li>
-            <strong>(P.2) 全域可解码。</strong> detokenization 映射应当是定义良好的
-            <a href="https://en.wikipedia.org/wiki/Partial_function" target="_blank" rel="noopener">全函数</a>：
-            离散 token 空间中的每个 token 序列都必须解码成有效动作块。这一点很关键，因为策略在推理时可能生成任意 token 序列。
-            如果解码只在部分输入上有定义，无效 token 就可能导致未定义行为或执行中的灾难性失败。
-          </li>
-          <li>
-            <strong>(P.3) 可预测排序。</strong> token 序列应该具有有意义的从左到右因果结构，并与下一个 token 预测对齐。
-            这种结构对可建模性至关重要，使自回归模型能够学习稳定、可预测的 token 动态。
-          </li>
-        </ul>
-      </section>
 
-      <section class="blog-interactive" id="compare-tokenizers" aria-labelledby="compare-tokenizers-title">
-        <div class="blog-interactive-header">
-          <h2 id="compare-tokenizers-title">每类 tokenizer 放弃了什么？</h2>
-          <p>
-            选择一个 tokenizer 家族，把它放回三项要求里看：压缩、全域可解码，以及&nbsp;<span
-              class="text-nowrap">自回归可建模性</span>。
-          </p>
+        <div class="vla-token-flow" aria-label="Action tokenizer 流程">
+          <span>连续的机器人运动</span>
+          <i aria-hidden="true"></i>
+          <span>离散 action tokens</span>
+          <i aria-hidden="true"></i>
+          <span>直接生成或作为训练信号</span>
+          <i aria-hidden="true"></i>
+          <span>机器人控制</span>
         </div>
 
-        <div class="tokenizer-selector" role="tablist" aria-label="Tokenizer 家族">
-          <button type="button" role="tab" id="tokenizer-tab-binning" class="is-active" data-tokenizer-target="binning"
-            aria-controls="tokenizer-panel" aria-selected="true">Binning</button>
-          <button type="button" role="tab" id="tokenizer-tab-fast" data-tokenizer-target="fast"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
-          <button type="button" role="tab" id="tokenizer-tab-latent" data-tokenizer-target="latent"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">普通 latent</button>
-          <button type="button" role="tab" id="tokenizer-tab-oat" data-tokenizer-target="oat"
-            aria-controls="tokenizer-panel" aria-selected="false" tabindex="-1">OAT</button>
-        </div>
+        <p>
+          因此，tokenization 是 policy interface 问题，而不只是压缩问题。一个 tokenizer 即使重建动作很好，也未必适合策略：序列可能太长，采样得到的 token 可能无法解码，从左到右的排列可能不给策略提供有用结构，或者监督信号只是任意 latent serialization。
+        </p>
 
-        <div class="tokenizer-readout" id="tokenizer-panel" role="tabpanel" aria-labelledby="tokenizer-tab-binning"
-          aria-live="polite">
-          <div class="tokenizer-score-grid">
+        <div class="vla-requirement-list" aria-label="Action-token 要求">
+          <div>
+            <span>1</span>
             <div>
-              <span>压缩率</span>
-              <meter min="0" max="100" value="35" data-tokenizer-meter="compression"></meter>
-              <strong data-tokenizer-label="compression">低</strong>
-            </div>
-            <div>
-              <span>全域可解码性</span>
-              <meter min="0" max="100" value="100" data-tokenizer-meter="decodability"></meter>
-              <strong data-tokenizer-label="decodability">是</strong>
-            </div>
-            <div>
-              <span>自回归可建模性</span>
-              <meter min="0" max="100" value="20" data-tokenizer-meter="ordering"></meter>
-              <strong data-tokenizer-label="ordering">低</strong>
+              <strong>紧凑。</strong>
+              <p>Token 序列应显著短于原始动作坐标，同时保留控制相关结构。</p>
             </div>
           </div>
-          <p data-tokenizer-summary>
-            分箱方法全域可解码，但会产生又长又扁平的 token 序列，难以让自回归策略高效建模。
-          </p>
+          <div>
+            <span>2</span>
+            <div>
+              <strong>全域可解码。</strong>
+              <p>在固定 token horizon 和支持的 action vocabulary 上，任意离散输出序列都应映射到定义明确的连续动作块，而不只限于 encoder 产生的 code。</p>
+            </div>
+          </div>
+          <div>
+            <span>3</span>
+            <div>
+              <strong>有序。</strong>
+              <p>最重要的运动应该先出现，后面的 token 只补充更细的变化。</p>
+            </div>
+          </div>
         </div>
-      </section>
 
-      <section class="blog-section" id="missing-tokenizers">
-        <h2>4. 在 OAT 之前，每类 tokenizer 都会放弃一项要求。</h2>
-        <p>
-          在 <span class="oat-name">OAT</span> 之前，主流 tokenizer 家族各自都会牺牲其中一项要求。
-          <span class="oat-name">OAT</span> 的目标正是同时满足这三点：紧凑、全域可解码，并且有序。
-        </p>
-        <div class="blog-failure-grid" aria-label="动作 tokenizer 的实际失败模式">
+        <div class="vla-evidence-notes" aria-label="现有 tokenizer 的不足">
           <div>
-            <span>Binning</span>
-            <strong>可解码但慢。</strong>
-            <p>每个生成 token 都能解码，但策略必须生成数百个扁平的维度-时间 token。</p>
+            <strong>逐维分桶：全域可解码，但序列很长。</strong>
+            <p>序列会随着动作维度和时间步一起增长，模型要预测的内容也越来越多。</p>
           </div>
           <div>
-            <span>FAST</span>
-            <strong>紧凑但只部分可解码。</strong>
-            <p>频域结构有助于下一个 token 预测，但任意 BPE 序列可能无法解码。</p>
+            <strong>FAST：紧凑且有频率顺序，但不是全域可解码。</strong>
+            <p>不受约束的 BPE 采样不保证展开成 inverse DCT 所需的固定系数拓扑。</p>
           </div>
           <div>
-            <span>普通 latent</span>
-            <strong>紧凑但可建模性低。</strong>
-            <p>神经解码器让输出可执行，但 token 序列的自回归可建模性较弱。</p>
-          </div>
-          <div>
-            <span><span class="oat-name">OAT</span></span>
-            <strong>紧凑、可执行、易建模。</strong>
-            <p>这些 token 被学习成渐进序列，因此早期预测携带粗粒度运动结构。</p>
+            <strong>学习式 latent：紧凑，但不一定适合策略学习。</strong>
+            <p>只优化完整 code 的重建，并不会显式训练早期 token 携带连贯、高影响力的控制结构。</p>
           </div>
         </div>
-        <p>
-          <strong>Binning.</strong> 最常见的方案是按维度、按时间步分箱。它很简单，但扩展性差：长时域和高维动作可能让每个动作块产生数百个 token，
-          显著拖慢训练和推理并增加延迟。更重要的是，这类又长又扁平的序列在跨维度上可建模性较差：
-          已经知道一个时间步里的前几个坐标，对预测下一个坐标帮助很小，因此不太适合自回归生成。
+
+        <p class="vla-oat-reference">
+          分组自回归生成还有一个额外要求：tokenizer 和生成 schedule 必须使用相同的前缀边界。这会影响速度，但不是第四条核心标准。
         </p>
-        <p>
-          <strong>频域变换。</strong> FAST 等基于频率的方法具有高信息密度 (P.1)，并引入从低频到高频的结构 (P.3)：
-          早期 token 捕捉全局轨迹结构，后期 token 细化细节。然而，FAST 违反了 P.2（全域可解码性）。因为
-          <a href="https://en.wikipedia.org/wiki/Byte-pair_encoding" target="_blank" rel="noopener">Byte Pair Encoding</a>
-          (BPE) 会产生可变长度序列，任意 token 序列未必能解码成有效的固定大小频域表示，从而导致未定义行为和运行时失败。
-          更多细节见论文附录以及
-          <a href="https://huggingface.co/physical-intelligence/fast/discussions/4" target="_blank" rel="noopener">Hugging Face 上的讨论</a>。
-        </p>
-        <p>
-          <strong>普通 latent 表示。</strong> 学习式 encoder-decoder latent tokenizer 可以获得较强压缩 (P.1)，神经解码器也能保证全域可解码 (P.2)。
-          但所得 token 空间通常自回归可建模性较弱：token 位置没有为下一个 token 预测提供稳定的从左到右结构。
-          这使其难以适配依赖有意义左到右结构 (P.3) 来稳定生成的策略。
-        </p>
-        <p>
-          问题并不是先前 tokenizer 在所有方面都弱，而是没有一种方法同时做到：序列短、整个 token 空间都可执行，
-          并且给策略一个容易从左到右预测的问题。
-        </p>
+
+        <div class="blog-interactive vla-tokenizer-interactive" aria-labelledby="vla-tokenizer-comparison-title">
+          <div class="blog-interactive-header">
+            <h2 id="vla-tokenizer-comparison-title">现有 action tokenizer 分别满足哪些条件？</h2>
+            <p>
+              前三项是论文定义的核心要求。分块兼容性是额外属性，用于一次联合预测多个 token 的情况。
+            </p>
+          </div>
+
+          <div class="tokenizer-selector vla-tokenizer-selector" role="tablist" aria-label="Action tokenizer 对比">
+            <button type="button" role="tab" id="vla-tokenizer-tab-bin" class="is-active" data-vla-tokenizer-target="bin"
+              aria-controls="vla-tokenizer-panel" aria-selected="true">Bin</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-fast" data-vla-tokenizer-target="fast"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">FAST</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-quest" data-vla-tokenizer-target="quest"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">QueST</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-acodec" data-vla-tokenizer-target="acodec"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">ACodec</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-oat" data-vla-tokenizer-target="oat"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">OAT（token-wise）</button>
+            <button type="button" role="tab" id="vla-tokenizer-tab-oat-pow2" data-vla-tokenizer-target="oatpow2"
+              aria-controls="vla-tokenizer-panel" aria-selected="false" tabindex="-1">OAT（power-of-two）</button>
+          </div>
+
+          <div class="tokenizer-readout vla-tokenizer-readout" id="vla-tokenizer-panel" role="tabpanel"
+            aria-labelledby="vla-tokenizer-tab-bin" aria-live="polite">
+            <div class="tokenizer-score-grid vla-desiderata-grid">
+              <div>
+                <span>高压缩率</span>
+                <strong data-vla-tokenizer-label="compact">否</strong>
+              </div>
+              <div>
+                <span>全域可解码</span>
+                <strong data-vla-tokenizer-label="decodable">是</strong>
+              </div>
+              <div>
+                <span>有序 token 结构</span>
+                <strong data-vla-tokenizer-label="ordering">否</strong>
+              </div>
+              <div>
+                <span>分块兼容性</span>
+                <strong data-vla-tokenizer-label="block">是</strong>
+              </div>
+            </div>
+            <p class="vla-tokenizer-summary">
+              <span>对 policy 的影响</span>
+              <em data-vla-tokenizer-summary>长坐标序列会增加推理成本，也无法提供有力的 conditioning structure。</em>
+            </p>
+          </div>
+        </div>
       </section>
 
       <section class="blog-section" id="oat">
-        <h2>5. OAT 学习有序 register token，并让任意前缀都能解码。</h2>
-        <p>
-          <span class="oat-name">OAT</span> 是一个学习式动作 tokenizer。它把每个动作块写入固定数量的 register token，
-          用 finite scalar quantization (FSQ) 将这些 token 离散化，再把生成的 token 解码回连续控制。
-          关键设计是“顺序”：register token 之间的注意力是因果的，nested dropout 则训练解码器从部分前缀重建动作。
+        <span class="blog-section-kicker">OAT 怎么做</span>
+        <h2>第一个 token 给出完整动作，后面的 token 把它变得更精确。</h2>
+        <p class="vla-section-lead">
+          模型不需要等到最后一个 token 才拿到可用动作。短前缀先给出主要运动，更长的前缀再把细节补齐。
         </p>
-        <ol class="blog-step-list">
-          <li>
-            <strong>概括动作块。</strong> Transformer encoder 读取连续动作序列，并把重要时间信息写入固定数量的 register token。
-          </li>
-          <li>
-            <strong>离散化 register token。</strong> Finite scalar quantization 把 register token 转成自回归策略可以预测的离散 token。
-          </li>
-          <li>
-            <strong>强制从左到右结构。</strong> 因果注意力让后面的 register token 依赖前面的 register token，使表示与下一个 token 生成对齐。
-          </li>
-          <li>
-            <strong>用缺失尾部训练。</strong> Nested dropout 在 tokenizer 训练中随机遮蔽后续 token，因此早期 token 必须承载最高优先级信息。
-          </li>
-          <li>
-            <strong>解码回控制信号。</strong> 条件解码器把生成的 token 前缀映射回可执行的连续动作块。
-          </li>
-        </ol>
-      </section>
 
-      <figure class="blog-figure blog-figure-paper blog-figure-method">
-        <img src="../media/fig/method-white.png" alt="OAT 方法概览，包含 register token 和前缀解码"
-          width="7928" height="2354" loading="lazy">
-      </figure>
+        <figure class="blog-figure blog-figure-paper vla-method-figure">
+          <img src="../media/fig/oat.png"
+            alt="带有序 registers、FSQ tokens 和 prefix decoding 的 OAT tokenizer"
+            width="2400" height="677">
+          <figcaption>
+            OAT 把连续动作写成有序序列，用 FSQ 将它离散化，并训练短前缀重建完整动作。一个版本逐个生成 token，另一个版本按越来越大的组来生成。
+          </figcaption>
+        </figure>
 
-      <section class="blog-section" id="info-theory">
-        <h2>6. 有序 token 把动作编码变成渐进细化。</h2>
-        <p>
-          <span class="oat-name">OAT</span> 引入的排序可以从信息论得到自然解释。
-          <a href="https://en.wikipedia.org/wiki/Information_content" target="_blank" rel="noopener">Shannon 表明</a>，
-          一个事件越常见，编码它所需的容量越少；越罕见，就需要更多表示容量。
-          动作块也有类似的偏斜分布：大多数轨迹共享常见的粗粒度结构，而细粒度偏差较少出现。
-        </p>
-        <p>
-          从这个角度看，<span class="oat-name">OAT</span> 学到了一种渐进编码。早期 token 捕捉高概率、全局共享的运动模式，
-          后期 token 编码越来越少见的残差细节。Nested dropout 把这种压力显式写进训练过程：每个短前缀都必须重建动作，
-          因此信息会按有用程度递减的顺序被分配。
-        </p>
-        <div class="token-story-takeaways" aria-label="渐进编码要点">
+        <div class="vla-oat-step-list" aria-label="OAT 如何产生有序前缀">
           <div>
-            <strong>顺序本身就是建模信号。</strong>
-            <p>第一个 token 不是任意 latent 位置；它被训练成携带最高优先级的控制信息。</p>
+            <span>步骤 1</span>
+            <div>
+              <strong>把完整运动写进一串有序的位置。</strong>
+              <p>Encoder 看到完整动作，并把最有用的信息放在最前面。</p>
+            </div>
           </div>
           <div>
-            <strong>更长前缀是在细化同一个动作。</strong>
-            <p>额外 token 降低残差误差，而不是替换掉前缀已经表示的动作。</p>
+            <span>步骤 2</span>
+            <div>
+              <strong>把每个位置变成离散 token。</strong>
+              <p>FSQ 得到一段短序列，让 VLA 更容易稳定地预测。</p>
+            </div>
+          </div>
+          <div>
+            <span>步骤 3</span>
+            <div>
+              <strong>让短前缀也能独立工作。</strong>
+              <p>训练时隐藏后面的 token，迫使前面的 token 先承担主要动作，后面的 token 再补细节。</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="vla-oat-reference">
+          在 <a href="#prefix-lab">Prefix Lab</a> 里点选不同 token 数量，可以直接看到动作如何逐步变精确。<a href="#meshcat-vis">MeshCat 轨迹</a>展示同一个现象在实测机器人运动中的样子。
+        </p>
+
+        <div class="vla-story-takeaways" aria-label="OAT 要点">
+          <div>
+            <strong>OAT 面向完整策略接口而设计。</strong>
+            <p>它同时追求紧凑、全域可解码和有序，并让训练过的前缀预算具有明确语义。</p>
+          </div>
+          <div>
+            <strong>Token-wise generation 仍然是串行的。</strong>
+            <p>当策略每次只生成一个 token 时，长度为 \(K\) 的前缀仍需要 \(K\) 次顺序 VLA 调用。</p>
           </div>
         </div>
       </section>
 
-      <section class="blog-section" id="prefix-decoding">
-        <h2>7. 每个前缀都是可执行的动作预算。</h2>
-        <p>
-          因为 <span class="oat-name">OAT</span> 在训练时让解码器见过被遮蔽的后缀，策略不必等完整 token 序列生成完才行动。
-          一个前缀可以先补齐，再交给 detokenizer 解码成完整动作块并执行。实践中，token 数就变成运行时预算：
-          一两个 token 用来快速产生粗粒度控制，需要精度时再生成更多 token。
+      <section class="blog-section" id="bar-schedule">
+        <span class="blog-section-kicker">分块自回归</span>
+        <h2>在 VLM-scale AR 中，BAR 将生成代价显式化。</h2>
+        <p class="vla-section-lead">
+          OAT 让有序前缀可执行，但长度为 \(K\) 的前缀仍需要 \(K\) 次顺序 VLA 调用。BAR 通过在前缀边界上引入 <span class="vla-highlight">schedule</span> 来降低这种串行深度，并统一 token-wise AR、block-wise AR 和 parallel decoding。
+        </p>
+
+        <figure class="blog-figure blog-figure-paper vla-method-figure">
+          <img src="../media/fig/bar.png"
+            alt="用于 block-wise autoregressive action-token generation 的 BAR schedule 图"
+            width="2400" height="405">
+          <figcaption>
+            BAR 将 action-token 的生成 schedule 显式化：每次 policy 调用可以追加一个 token、一个 token block，或完整的 action-token 序列。
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="blog-interactive vla-concept-lab vla-schedule-lab" id="schedule-lab" aria-labelledby="vla-schedule-lab-title">
+        <div class="blog-interactive-header">
+          <h2 id="vla-schedule-lab-title">选择 AR 的分块粒度。</h2>
+          <p>
+            对一段 16-token 的 action-token 序列来说，schedule 决定顺序 VLA 调用次数，以及每次调用需要联合预测的最大块。
+          </p>
+        </div>
+
+        <div class="tokenizer-selector" role="tablist" aria-label="BAR schedule 选项">
+          <button type="button" role="tab" id="vla-schedule-tab-token" class="is-active" data-vla-schedule-target="token"
+            aria-controls="vla-schedule-panel" aria-selected="true">Token-wise</button>
+          <button type="button" role="tab" id="vla-schedule-tab-power" data-vla-schedule-target="power"
+            aria-controls="vla-schedule-panel" aria-selected="false" tabindex="-1">2^n</button>
+          <button type="button" role="tab" id="vla-schedule-tab-two" data-vla-schedule-target="two"
+            aria-controls="vla-schedule-panel" aria-selected="false" tabindex="-1">两块</button>
+          <button type="button" role="tab" id="vla-schedule-tab-parallel" data-vla-schedule-target="parallel"
+            aria-controls="vla-schedule-panel" aria-selected="false" tabindex="-1">并行</button>
+        </div>
+
+        <div class="vla-concept-readout" id="vla-schedule-panel" role="tabpanel"
+          aria-labelledby="vla-schedule-tab-token" aria-live="polite">
+          <div class="vla-schedule-board">
+            <span>Action-token 前缀</span>
+            <div class="vla-token-timeline" data-vla-schedule-timeline></div>
+            <div class="vla-stage-stepper" data-vla-schedule-stages aria-label="BAR generation stages"></div>
+            <div class="vla-schedule-stage">
+              <strong data-vla-schedule-stage-title>阶段 1 预测 1 个 token。</strong>
+              <p data-vla-schedule-stage-copy>进度条显示已经生成的前缀，以及当前阶段正在生成的 block。</p>
+            </div>
+          </div>
+          <div class="vla-readout-grid">
+            <div class="vla-readout-card">
+              <strong data-vla-schedule-name>Token-wise AR</strong>
+              <p data-vla-schedule-shape>每个阶段生成一个新 token。</p>
+            </div>
+            <div class="vla-readout-card">
+              <strong data-vla-schedule-cost>16 次调用 · 最大块 1</strong>
+              <p data-vla-schedule-cost-copy>上下文最充分，但串行深度也最大。</p>
+            </div>
+            <div class="vla-readout-card">
+              <strong>策略含义</strong>
+              <p data-vla-schedule-summary>每个 token 都能看到所有更早 token 作为上下文，但推理仍然完全串行。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="vla-story-takeaways" aria-label="BAR 要点">
+        <div>
+          <strong>Schedule 控制生成速度。</strong>
+          <p>它决定每次 VLA 调用生成多少 token，也就决定了串行深度和预测难度之间的取舍。</p>
+        </div>
+        <div>
+          <strong>Tokenizer 必须配合。</strong>
+          <p>BAR policy 通过 block-shifted teacher forcing 学习联合 block targets；tokenizer 则必须单独提供与之匹配的重建预算和依赖结构。</p>
+        </div>
+      </div>
+
+      <section class="blog-section" id="blockify-oat">
+        <span class="blog-section-kicker">分块式 OAT</span>
+        <h2>分块生成必须同时对齐 OAT 与 BAR 的训练。</h2>
+        <p class="vla-section-lead">
+          BAR policy 通过 block-shifted teacher forcing 联合预测每个 schedule block。Tokenizer 解决的是另一个与之匹配的问题：power-of-two OAT 在相同 endpoints 上训练重建，并阻断同一新 group 内 registers 之间的直接依赖；其 encoder、FSQ bottleneck、prefix decoder 和 nested-dropout 目标保持不变。
         </p>
       </section>
 
-      <section class="blog-interactive blog-prefix-lab" id="prefix-lab" aria-labelledby="prefix-lab-title">
+      <section class="blog-interactive vla-concept-lab vla-mask-lab" id="mask-lab" aria-labelledby="vla-mask-lab-title">
         <div class="blog-interactive-header">
-          <h2 id="prefix-lab-title">提前停止，动作仍然有效。</h2>
+          <h2 id="vla-mask-lab-title">OAT<sup>sing</sup> 和 OAT<sup>pow2</sup> 训练不同的依赖模式。</h2>
           <p>
-            <span class="oat-name">OAT</span> 让每个前缀都可执行。更多 token 会细化轨迹，但在延迟重要时，策略可以提前停止。
+            BAR 会把后续 action-token positions 合并到同一个预测步骤里。关键问题是：新的 block 能否只依赖已实现前缀来联合预测，而不依赖同一 block 内部的串行依赖。
+          </p>
+        </div>
+
+        <div class="vla-mask-pair" aria-label="OAT-sing 与 OAT-pow2 register masks">
+          <article class="vla-mask-card">
+            <div class="vla-mask-card-header">
+              <div>
+                <span class="vla-mask-card-kicker">OAT<sup>sing</sup></span>
+                <h3>平坦因果链</h3>
+              </div>
+              <span class="vla-mask-badge">token-wise</span>
+            </div>
+            <div class="vla-mask-grid" data-vla-static-mask="oat" aria-hidden="true"></div>
+            <p class="vla-mask-axis">行表示 query，列表示 key。</p>
+            <p class="vla-mask-card-copy">
+              后续 registers 可以依赖所有更早的 registers。这适合 token-wise AR，但 post-hoc BAR 可能把一组已经在训练中学到块内串行依赖的 token 合并到同一个 block。
+            </p>
+          </article>
+
+          <article class="vla-mask-card">
+            <div class="vla-mask-card-header">
+              <div>
+                <span class="vla-mask-card-kicker">OAT<sup>pow2</sup></span>
+                <h3>块因果 registers</h3>
+              </div>
+              <span class="vla-mask-badge">block-wise</span>
+            </div>
+            <div class="vla-mask-grid" data-vla-static-mask="oatpow2" aria-hidden="true"></div>
+            <p class="vla-mask-axis">2^n 块：[1] [2] [3-4] [5-8]</p>
+            <p class="vla-mask-card-copy">
+              Registers 可以 attend 到更早 groups 和自身，但不能 attend 到同一 group 内的其他 registers。Tokenizer 因而避免直接的 group 内串行依赖；BAR policy 再单独学习联合预测该 block。
+            </p>
+          </article>
+        </div>
+
+        <div class="vla-mask-legend" aria-label="Mask 图例">
+          <span><i class="is-on"></i> 依赖</span>
+          <span><i class="is-self"></i> 自身</span>
+          <span><i></i> 阻断</span>
+        </div>
+      </section>
+
+      <div class="vla-posthoc-panel" aria-label="PaliGemma2 在 LIBERO 上的 post-hoc BAR">
+        <div class="vla-posthoc-copy">
+          <span class="vla-posthoc-kicker">预览诊断</span>
+          <h3>只改 schedule 不会让 OAT 变成 block-compatible。</h3>
+          <p>
+            在 PaliGemma2 的 LIBERO 实验中（每个任务 50 次 rollout 的平均成功率），post-hoc BAR 减少调用但损失成功率。Power-of-two OAT 使用匹配的 tokenizer endpoints 和 register dependencies，保留五次调用并弥合差距。
+          </p>
+        </div>
+        <div class="vla-posthoc-list">
+          <article class="vla-posthoc-row">
+            <div class="vla-posthoc-method">
+              <strong>OAT<sup>sing</sup><sub>16</sub></strong>
+              <span>token-wise tokenizer + token-wise AR</span>
+            </div>
+            <div class="vla-posthoc-score">
+              <strong>79.7%</strong>
+              <span>16 次调用</span>
+            </div>
+            <div class="vla-posthoc-meter" aria-hidden="true"><i style="--score: 79.7%;"></i></div>
+          </article>
+          <article class="vla-posthoc-row is-posthoc">
+            <div class="vla-posthoc-method">
+              <strong>OAT<sup>sing</sup><sub>16</sub> + post-hoc BAR</strong>
+              <span>token-wise tokenizer + power-of-two BAR</span>
+            </div>
+            <div class="vla-posthoc-score">
+              <strong>66.3%</strong>
+              <span>5 次调用</span>
+            </div>
+            <div class="vla-posthoc-meter" aria-hidden="true"><i style="--score: 66.3%;"></i></div>
+          </article>
+          <article class="vla-posthoc-row is-best">
+            <div class="vla-posthoc-method">
+              <strong>OAT<sup>pow2</sup><sub>16</sub></strong>
+              <span>block-wise tokenizer + power-of-two BAR</span>
+            </div>
+            <div class="vla-posthoc-score">
+              <strong>80.8%</strong>
+              <span>5 次调用</span>
+            </div>
+            <div class="vla-posthoc-meter" aria-hidden="true"><i style="--score: 80.8%;"></i></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="vla-story-takeaways" aria-label="OAT-pow2 要点">
+        <div>
+          <strong>Post-hoc BAR 还不够。</strong>
+          <p>它改变了生成 schedule，但 tokenizer 训练时仍在每个 schedule block 内保留串行依赖。</p>
+        </div>
+        <div>
+          <strong>OAT<sup>pow2</sup> 训练 block-compatible tokens。</strong>
+          <p>它让 tokenizer budget 和 register mask 与 BAR policy 联合预测的 block 对齐。</p>
+        </div>
+      </div>
+
+      <section class="blog-section" id="prefix-budgets">
+        <span class="blog-section-kicker">前缀预算</span>
+        <h2>先验证表示本身：每个训练过的前缀都必须可执行。</h2>
+        <p>
+          在训练 VLA policy 之前，我们先测量每个保留前缀是否真的增加了动作信息。短前缀应当已经能解码出粗粒度动作；后续 token 应该带来 refinement，而不是重复前缀已经携带的信息。
+        </p>
+        <div class="vla-equation" aria-label="前缀预算 distortion">
+          \[
+            \hat A^{(K)}
+            =
+            D_\theta\!\left(
+              T_{1:K}\oplus
+              \langle\mathtt{MASK}\rangle_{K+1:H_l}
+            \right),
+            \qquad
+            \varepsilon(K)
+            =
+            \mathbb{E}\!\left[
+              \left\lVert A-\hat A^{(K)}\right\rVert_2^2
+            \right].
+          \]
+        </div>
+        <p>
+          Nested dropout 在多个所选预算上训练重建，而不仅是端点 \(\varepsilon(H_l)\)。Token-wise OAT 使用每个 token 长度；单独训练的 power-of-two 变体使用边界 \(1,2,4,8,\ldots\)。二者分别在各自训练预算上形成渐进式 rate–distortion 曲线。
+        </p>
+      </section>
+
+      <div class="prefix-lab-suite" id="prefix-lab">
+      <section class="blog-interactive blog-prefix-lab" aria-labelledby="prefix-lab-title">
+        <div class="blog-interactive-header">
+          <span>自己试试看</span>
+          <h2 id="prefix-lab-title">选择 1、2、4 或 8 个 token，每次都能得到完整动作。</h2>
+          <p>
+            OAT 的每个训练前缀都会解码成完整动作，而不是一个片段。这里可以看到 token 增加时路径如何变精确；下方 MeshCat 展示实测机器人轨迹。
           </p>
         </div>
 
         <div class="prefix-lab-grid">
           <div class="prefix-trajectory"
-            aria-label="前缀重建图，对比完整解码动作块和真实动作块。"
+            aria-label="概念性前缀重建示意图，对比解码动作块和参考动作块。"
             role="img">
             <span class="prefix-plot-label prefix-label-recon">解码前缀</span>
             <span class="prefix-plot-label prefix-label-gt">真实轨迹</span>
@@ -785,164 +2199,18 @@
         </div>
 
         <p class="prefix-notation">
-          每个前缀都会解码成完整动作块。绿色点是真实路标；红色点是从所选前缀重建出的完整动作块。
-          更多前缀 token 会减少红绿误差，并提升细粒度保真度。
+          这是概念示意，不是实测 rollout。绿色点表示参考路径；红色点示意所选训练预算下的完整动作块。
+          下方 MeshCat 面板提供实测重建。
         </p>
 
       </section>
 
-      <section class="blog-section experiments-section" id="experiments">
-        <h2>8. OAT 同时改善成功率、延迟和真实执行。</h2>
-        <p>
-          我们在 20 多个任务上评估 <span class="oat-name">OAT</span>，覆盖四个仿真基准
-          (LIBERO, RoboMimic, MetaWorld 和 RoboCasa) 以及真实机器人执行。实验要回答的是：
-          有序前缀是否只是好看的表示，还是确实能带来更强的闭环策略？
-        </p>
-
-        <div class="blog-reading-guide" id="reading-results">
-          <span class="blog-section-kicker">结果地图</span>
-          <div class="token-plot-cues" aria-label="如何阅读 OAT 实验结果">
-            <div>
-              <span>成功率</span>
-              <strong>完整的有序表示是否优于现有 tokenizer？</strong>
-              <p><span class="oat-name">OAT</span><sub>8</sub> 在所有报告的成功率列中都是最好结果。</p>
-            </div>
-            <div>
-              <span>延迟</span>
-              <strong>短前缀能否换来速度，同时保持可执行？</strong>
-              <p><span class="oat-name">OAT</span><sub>1</sub>、<span class="oat-name">OAT</span><sub>2</sub> 和
-                <span class="oat-name">OAT</span><sub>4</sub> 降低了自回归深度，同时仍然能解码成有效动作。</p>
-            </div>
-            <div>
-              <span>消融</span>
-              <strong>顺序本身是否真的起作用？</strong>
-              <p>去掉排序目标后，结果低于 <span class="oat-name">OAT</span><sub>4</sub> 和
-                <span class="oat-name">OAT</span><sub>8</sub>，说明因果注意力和 nested dropout 确实在帮助策略学习。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="project-section project-experiments">
-          <div class="result-stack">
-	      <article class="result-block">
-	        <div class="result-caption">
-		          <h3 class="title is-6">完整 <span class="oat-name">OAT</span> 在仿真和真实任务上都取得最好结果。</h3>
-	          <p>
-			            <span class="oat-name">OAT</span><sub>8</sub> 在每个仿真基准和两个真实任务中都取得最好成功率，
-                同时保留了固定长度 tokenizer 不具备的前缀执行能力。
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table combined-result-table">
-            <caption class="result-table-caption">机器人操作基准上的仿真成功率，以及真实机器人 20 次独立实验中的成功次数。</caption>
-            <thead>
-              <tr>
-                <th scope="col">策略</th>
-                <th scope="col">LIBERO</th>
-                <th scope="col">RoboMimic</th>
-                <th scope="col">MetaWorld</th>
-                <th scope="col">RoboCasa</th>
-                <th scope="col">PnP Ball</th>
-                <th scope="col">Stack Cups</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">DP</th><td><span class="aligned-num"><span class="num-int">36</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">67</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num aligned-frac"><span>14</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">Bin</th><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">14</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">27</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>4</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">FAST</th><td><span class="aligned-num"><span class="num-int">23</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">0</span></span></td><td><span class="aligned-num"><span class="num-int">7</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">13</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>6</span><span>/</span><span>20</span></span></td></tr>
-              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>8</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>7</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>3</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num aligned-frac"><span>11</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>9</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num aligned-frac"><span>13</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>12</span><span>/</span><span>20</span></span></td></tr>
-              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td><td><span class="aligned-num aligned-frac"><span>16</span><span>/</span><span>20</span></span></td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-	      <article class="result-block">
-	        <div class="result-caption">
-	          <h3 class="title is-6">完整 <span class="oat-name">OAT</span> 与 QueST 的八 token 延迟相当，但短前缀快得多。</h3>
-	          <p>
-		            完整解码时，<span class="oat-name">OAT</span> 和 QueST 的自回归深度相近。区别在于，
-                当延迟更重要时，<span class="oat-name">OAT</span> 可以停在 1、2 或 4 个 token。
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table latency-table">
-	            <caption class="result-table-caption">Token 数量和策略推理延迟，单位为毫秒。</caption>
-            <thead>
-              <tr>
-                <th scope="col" rowspan="2">策略</th>
-                <th scope="colgroup" colspan="2">LIBERO</th>
-                <th scope="colgroup" colspan="2">RoboMimic</th>
-                <th scope="colgroup" colspan="2">MetaWorld</th>
-                <th scope="colgroup" colspan="2">RoboCasa</th>
-              </tr>
-              <tr>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-                <th scope="col">#Tok.</th><th scope="col">延迟</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">DP</th><td>&times;</td><td>42.0</td><td>&times;</td><td>38.1</td><td>&times;</td><td>37.7</td><td>&times;</td><td>35.3</td></tr>
-              <tr><th scope="row">Bin</th><td>224</td><td>517.2</td><td>224</td><td>509.5</td><td>128</td><td>306.6</td><td>384</td><td>888.3</td></tr>
-              <tr><th scope="row">FAST</th><td>44.2</td><td>114.4</td><td>53.1</td><td>142.0</td><td>49.8</td><td>129.7</td><td>69.7</td><td>166.1</td></tr>
-              <tr><th scope="row">QueST</th><td>8</td><td>27.1</td><td>8</td><td>29.6</td><td>8</td><td>31.4</td><td>8</td><td>30.2</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td>1</td><td>10.5</td><td>1</td><td>11.3</td><td>1</td><td>15.5</td><td>1</td><td>13.5</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td>2</td><td>13.2</td><td>2</td><td>15.3</td><td>2</td><td>17.9</td><td>2</td><td>15.8</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td>4</td><td>17.4</td><td>4</td><td>18.4</td><td>4</td><td>22.1</td><td>4</td><td>19.8</td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>8</sub></th><td>8</td><td>27.4</td><td>8</td><td>29.9</td><td>8</td><td>31.3</td><td>8</td><td>30.0</td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-	      <article class="result-block">
-	        <div class="result-caption">
-          <h3 class="title is-6">顺序不是装饰，它直接影响策略学习。</h3>
-	          <p>
-	            在四个仿真基准上，移除诱导排序的目标都会导致稳定下降。
-			            <span class="oat-name">OAT</span><sub>&times;</sub> 的性能显著弱于 <span class="oat-name">OAT</span><sub>4</sub> 和
-                <span class="oat-name">OAT</span><sub>8</sub>，部分情况下甚至低于 QueST。
-	          </p>
-	        </div>
-	        <div class="result-table-wrap">
-	          <table class="result-table">
-	            <caption class="result-table-caption">排序消融成功率。</caption>
-            <thead>
-              <tr>
-                <th scope="col">策略</th>
-                <th scope="col">LIBERO</th>
-                <th scope="col">RoboMimic</th>
-                <th scope="col">MetaWorld</th>
-                <th scope="col">RoboCasa</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">QueST</th><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">66</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">9</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>1</sub></th><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">11</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">47</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>2</sub></th><td><span class="aligned-num"><span class="num-int">39</span><span class="num-dot">.</span><span class="num-dec">8</span></span></td><td><span class="aligned-num"><span class="num-int">52</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">16</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">50</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td></tr>
-              <tr class="oat-row"><th scope="row">OAT<sub>4</sub></th><td><span class="aligned-num"><span class="num-int">46</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">65</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">19</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td><td><span class="aligned-num"><span class="num-int">51</span><span class="num-dot">.</span><span class="num-dec">7</span></span></td></tr>
-              <tr class="oat-row best-row"><th scope="row">OAT<sub>8</sub></th><td><span class="aligned-num"><span class="num-int">56</span><span class="num-dot">.</span><span class="num-dec">3</span></span></td><td><span class="aligned-num"><span class="num-int">73</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">24</span><span class="num-dot">.</span><span class="num-dec">4</span></span></td><td><span class="aligned-num"><span class="num-int">54</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td></tr>
-              <tr class="ablation-row"><th scope="row">OAT<sub>&times;</sub></th><td><span class="aligned-num"><span class="num-int">35</span><span class="num-dot">.</span><span class="num-dec">2</span></span></td><td><span class="aligned-num"><span class="num-int">61</span><span class="num-dot">.</span><span class="num-dec">1</span></span></td><td><span class="aligned-num"><span class="num-int">17</span><span class="num-dot">.</span><span class="num-dec">6</span></span></td><td><span class="aligned-num"><span class="num-int">48</span><span class="num-dot">.</span><span class="num-dec">5</span></span></td></tr>
-            </tbody>
-	          </table>
-	        </div>
-	      </article>
-
-          </div>
-        </div>
-
-        <section class="blog-section blog-interactive prefix-meshcat-panel token-meshcat-panel" id="meshcat-vis"
+      <section class="blog-section blog-interactive prefix-meshcat-panel token-meshcat-panel" id="meshcat-vis"
           aria-labelledby="meshcat-title">
           <div class="blog-interactive-header">
-            <h2 id="meshcat-title">前缀越长，同一个动作就越清晰。</h2>
+            <h2 id="meshcat-title">看着动作一步步变精确。</h2>
             <p>
-              这些 MeshCat 重建展示了前缀预算背后的机制：早期 token 恢复粗粒度运动，后续 token 继续细化残差细节。
-              所有轨迹都由同一个 tokenizer 和 decoder 生成。
+              早期 token 恢复主要运动，之后每个 token 再补充一些细节。下面所有轨迹都来自同一个 OAT tokenizer 和 decoder。
             </p>
           </div>
 
@@ -973,28 +2241,24 @@
               <p class="meshcat-card-label">1 个 token</p>
               <iframe data-src="../media/html/idx254425/reconst_k1.html" title="重建 K=1 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.592</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">2 个 token</p>
               <iframe data-src="../media/html/idx254425/reconst_k2.html" title="重建 K=2 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.446</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">4 个 token</p>
               <iframe data-src="../media/html/idx254425/reconst_k4.html" title="重建 K=4 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.038</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">8 个 token</p>
               <iframe data-src="../media/html/idx254425/reconst_k8.html" title="重建 K=8 (idx254425)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.009</p>
             </div>
 
             <div class="embed-card">
@@ -1009,28 +2273,24 @@
               <p class="meshcat-card-label">1 个 token</p>
               <iframe data-src="../media/html/idx5788/reconst_k1.html" title="重建 K=1 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.365</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">2 个 token</p>
               <iframe data-src="../media/html/idx5788/reconst_k2.html" title="重建 K=2 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.082</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">4 个 token</p>
               <iframe data-src="../media/html/idx5788/reconst_k4.html" title="重建 K=4 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.056</p>
             </div>
 
             <div class="embed-card">
               <p class="meshcat-card-label">8 个 token</p>
               <iframe data-src="../media/html/idx5788/reconst_k8.html" title="重建 K=8 (idx5788)"
                 loading="lazy"></iframe>
-              <p class="meshcat-card-metric">MSE = 0.027</p>
             </div>
 
             <div class="embed-card">
@@ -1040,322 +2300,614 @@
             </div>
           </div>
         </section>
-      </section>
+      </div>
 
-      <section class="blog-section project-section project-real-world" id="real-world">
-          <div class="demo-video-box">
-            <h2>真实执行暴露出同样的失败模式。</h2>
-            <p class="section-lead has-text-justified">
-              90 多个真实机器人视频覆盖不同任务、tokenizer 和相机视角下的成功与失败尝试。重新加载会随机化初始配置。
-              FAST 的失败常常暴露出可解码性问题：当采样 token 无法安全解码时，策略只能停下，而不是执行一个未定义动作。
-            </p>
-            <div class="demo-video-controls">
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-task-select">任务</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-task-select" aria-label="选择真实机器人任务">
-                      <option value="pnp_ball">PnP Ball</option>
-                      <option value="stack_cups">Stack Cups</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-method-select">方法</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-method-select" aria-label="选择评测方法" data-initial-method="oat8">
-                      <option value="all">全部比较</option>
-                      <option value="dp">DP</option>
-                      <option value="bin">Bin</option>
-                      <option value="fast">FAST</option>
-                      <option value="quest">QueST</option>
-                      <option value="oat1">OAT1</option>
-                      <option value="oat2">OAT2</option>
-                      <option value="oat4">OAT4</option>
-                      <option value="oat8">OAT8</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" for="demo-camera-select">相机</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="demo-camera-select" aria-label="选择视频相机">
-                      <option value="iphone">iPhone</option>
-                      <option value="logi">Logitech</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label is-size-7 has-text-weight-semibold" aria-hidden="true">&nbsp;</label>
-                <div class="control">
-                  <button id="demo-video-reload" class="button is-fullwidth" type="button">重新加载</button>
-                </div>
-              </div>
+      <section class="blog-section experiments-section" id="token-evidence">
+        <span class="blog-section-kicker">排序真的有用吗</span>
+        <h2>每增加一个 token，都应该让动作更好，而不是把它从错误中救回来。</h2>
+        <p class="vla-section-lead vla-evidence-intro">
+          只看最后的重建结果会漏掉重点。好的顺序应该在只有一两个 token 时就已经能用，之后再随着 token 增加而平稳变好。
+        </p>
+
+        <div class="vla-evidence-split">
+          <figure>
+            <img src="../media/fig/tikz/rate_distortion_curves.png"
+              alt="比较 OAT 前缀预算与 action tokenizer baselines 的 rate-distortion 曲线"
+              width="1933" height="548">
+            <figcaption>
+              不同动作域上的重建结果，越靠左下越好。OAT 提供多个可直接使用的前缀长度，固定长度的 baseline 只有一个点。窄屏上可横向滚动查看。
+            </figcaption>
+          </figure>
+          <div class="vla-evidence-notes" aria-label="Rate-distortion 解读">
+            <div>
+              <strong>序列很短</strong>
+              <p>OAT 保持紧凑，不会随着每个动作坐标一起增长。</p>
             </div>
-
-            <div class="demo-video-matrix" id="demo-video-matrix">
-
-              <div class="demo-method-card box" data-method-card="dp">
-                <h3>DP</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="dp" data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="bin">
-                <h3>Bin</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="bin"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="fast">
-                <h3>FAST</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="fast"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="quest">
-                <h3>QueST</h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="quest"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat1">
-                <h3><span class="oat-name">OAT</span><sub>1</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat1"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat2">
-                <h3><span class="oat-name">OAT</span><sub>2</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat2"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat4">
-                <h3><span class="oat-name">OAT</span><sub>4</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat4"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
-              <div class="demo-method-card box" data-method-card="oat8">
-                <h3><span class="oat-name">OAT</span><sub>8</sub></h3>
-                <div class="method-videos">
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
-                      data-status="success">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>成功执行</figcaption>
-                  </figure>
-                  <figure>
-                    <video autoplay loop muted controls playsinline preload="none" data-method="oat8"
-                      data-status="failure">
-                      <p>你的浏览器不支持该视频。</p>
-                    </video>
-                    <p class="demo-video-placeholder is-size-7 has-text-grey is-hidden">该任务没有可用视频。
-                    </p>
-                    <figcaption>失败执行</figcaption>
-                  </figure>
-                </div>
-              </div>
-
+            <div>
+              <strong>逐步变精确</strong>
+              <p>两种 OAT 都会随着保留 token 增多而平滑降低重建误差。</p>
+            </div>
+            <div>
+              <strong>每个点都能直接使用</strong>
+              <p>每个 OAT 点都能解码成完整动作，而不是一小段坐标或频率系数。</p>
             </div>
           </div>
+        </div>
+
+        <div class="vla-verdict">
+          <strong>真正不同的地方</strong>
+          <p>OAT 的整条曲线都能被策略使用。固定长度的 baseline 没有训练过、可以直接执行的中间状态。</p>
+        </div>
       </section>
 
-      <section class="blog-section" id="open-directions">
-        <h2>9. token 顺序把表示设计变成控制决策。</h2>
+      <section class="blog-section experiments-section" id="bar-experiments">
+        <span class="blog-section-kicker">用法一 · 让模型直接生成动作</span>
+        <h2>有序 token 更容易变成成功的机器人动作。</h2>
         <p>
-          <span class="oat-name">OAT</span> 的核心并不是用离散 token 取代连续控制器。
-          关键在于：一旦机器人策略开始使用动作 token，token 的顺序就会成为控制问题的一部分。
-          紧凑性、全域可解码和前缀可建模性需要一起设计；当这三点同时成立时，token 数量就不再只是预处理阶段固定下来的超参数，
-          而会变成运行时可以分配的动作预算。
+          这是最严格的检验：VLM 预测出的 token 会真正驱动机器人。OAT 让模型先决定主要运动，再一步步补上细节。
         </p>
-        <p>
-          这也改变了自然的下一步问题。本文在部署时固定自回归深度，但未来的策略可以在线决定要生成多少 token：
-          简单动作可以直接用短前缀执行，接触更复杂、精度要求更高的步骤则可以先请求更多 token 再行动。
-          因此，自适应 token 预算是有序、前缀可解码动作表示直接打开的方向。
-        </p>
-        <p>
-          同样的设计压力也会延伸到 block-wise 自回归生成、VLA cotraining 中的有序 token 监督，以及由连续 expert 执行最终动作的混合控制。
-        </p>
-        <div class="blog-opportunity-grid" aria-label="OAT 支持的未来方向">
+
+        <div class="vla-proof-grid" aria-label="VLM 生成动作 token 的结果">
           <div>
-            <span>自适应深度</span>
-            <strong>动作足够好时就停止。</strong>
-            <p>简单运动可以从短前缀执行，接触丰富的步骤可以请求更多 token。</p>
+            <span>PaliGemma2 · 逐个生成</span>
+            <strong>63.7%</strong>
+            <small>OAT[16] 的最佳 benchmark-balanced 平均值</small>
           </div>
           <div>
-            <span>不确定性</span>
-            <strong>用置信度分配计算量。</strong>
-            <p>只有在不确定性仍高或精度很重要时，策略才生成额外 token。</p>
+            <span>Qwen3VL · 逐个生成</span>
+            <strong>56.8%</strong>
+            <small>OAT[16] 的最佳 benchmark-balanced 平均值</small>
           </div>
           <div>
-            <span>VLA 系统</span>
-            <strong>用有序 token 作为监督。</strong>
-            <p>即使最终由连续 expert 执行动作，有序 token 仍可提供带动作结构的监督信号。</p>
+            <span>PaliGemma2 · 分组生成</span>
+            <strong>63.8%</strong>
+            <small>分五组生成，与逐个生成基本持平</small>
           </div>
           <div>
-            <span>混合控制</span>
-            <strong>结合 token 与连续 expert。</strong>
-            <p>离散动作推理和 diffusion 或 flow 解码器不必相互竞争。</p>
+            <span>顺序调用次数</span>
+            <strong>5 vs. 16</strong>
+            <small>16 个 token 下，分组生成与逐个生成的对比</small>
+          </div>
+        </div>
+
+        <div class="vla-plot-cues" aria-label="如何阅读生成动作的结果">
+          <div>
+            <span>应该看到什么</span>
+            <strong>增加 OAT token，通常会提高闭环成功率。</strong>
+            <p>两条曲线沿着前缀长度 \(1,2,4,8,16\) 前进。固定长度的 baseline 只出现在自己的单一序列长度上。</p>
+          </div>
+          <div>
+            <span>为什么重要</span>
+            <strong>分组生成可以减少模型调用。</strong>
+            <p>使用 PaliGemma2 时，分组版 OAT[16] 用五次模型调用就匹配了逐个生成所需的十六次调用。</p>
+          </div>
+        </div>
+
+        <figure class="vla-result-figure is-wide vla-experiment-plot">
+          <img src="../media/fig/tikz/vlm_bar_success_grid.png"
+            alt="VLM 生成 OAT 动作 token 时，在不同 benchmark 上的闭环成功率"
+            width="1947" height="895">
+          <figcaption>
+            <strong>闭环生成结果。</strong>使用 PaliGemma2 时，分组版 OAT[16] 为 63.8，逐个生成的 OAT[16] 为 63.7，模型调用次数从 16 降到 5。使用 Qwen3VL 时，最大 token 数量下逐个生成更强：56.8 对 50.6。
+          </figcaption>
+        </figure>
+        <div class="vla-verdict">
+          <strong>我们从中看到什么</strong>
+          <p>两个不同的 VLM backbone 都能生成 OAT，并把它用于闭环控制。分组可以减少模型调用，但更大的组也更难预测，最佳平衡取决于 backbone。</p>
+        </div>
+      </section>
+
+      <section class="blog-section" id="tc-policies">
+        <span class="blog-section-kicker">用法二 · token 只在训练时出现</span>
+        <h2>动作 token 负责教，连续控制器负责做。</h2>
+        <p>
+          这里机器人不会执行、甚至不会解码 action token。Token 只是 VLM 的训练信号，这条 branch 会在部署前被移除。相关工作有时把这种设置称为 knowledge insulation。
+        </p>
+        <p>
+          OAT 给 VLM 提供从粗到细的动作目标。Stop-gradient 把这份训练信号和最终输出动作的连续控制器隔开。
+        </p>
+        <figure class="blog-figure blog-figure-paper vla-method-figure">
+          <img src="../media/fig/tc.png"
+          alt="带 VLM token loss 和 flow-matching action expert 的 token co-training"
+            width="2400" height="669">
+          <figcaption>
+            Token co-training 时，VLM 从 shifted action tokens 学习，连续控制器同时通过 flow matching 学习。Stop-gradient 不让控制器的 loss 改写 VLM backbone。
+          </figcaption>
+        </figure>
+        <p>
+          只有 token loss 会更新 VLM。部署时不会生成或解码任何 action token；连续控制器直接根据缓存的 VLM context 控制机器人。
+        </p>
+        <h3 class="vla-subheading">TC 目标包含两条路径。</h3>
+        <p>
+          Action-token branch 为 VLM 提供 action-aware 的 cross-entropy 信号。与此同时，action expert 学习一个以图像、语言和机器人状态 prefill 产生的 layer-wise K/V values 为条件的连续 flow-matching controller。Flow loss 把这些 K/V values 当作常量，只更新模型的 expert side。
+        </p>
+        <div class="vla-equation" aria-label="Token co-training VLA loss">
+          \[
+            \mathcal{L}_{\mathrm{TC}}
+            =
+            \mathcal{L}_{\mathrm{tok}}(T_{1:H_l}\mid c)
+            +
+            \lambda\,
+            \mathcal{L}_{\mathrm{flow}}
+            \!\left(
+              a_{1:H_a},
+              \tilde a_{1:H_a}^{\,\tau},
+              \tau;
+              \operatorname{sg}(\mathrm{KV}_{\mathrm{VLM}}(c))
+            \right).
+          \]
+        </div>
+        <p class="vla-math-caption">
+          \(\operatorname{sg}(\cdot)\) 表示 stop-gradient。Token loss 更新 VLM 上下文路径；flow loss 使用 detached context K/V values 更新连续 action expert，而不是使用 teacher-forced action-token positions 产生的 K/V values。
+        </p>
+        <h3 class="vla-subheading">推理时，token branch 被移除。</h3>
+        <p>
+          部署时，VLM 仅以图像、语言和机器人状态作为上下文进行一次 prefill。它的 logits 会被忽略，不再运行 action-token decoding loop；controller 只保留 detached K/V cache。随后，连续 action expert 从这个固定上下文中迭代去噪生成动作块。
+        </p>
+      </section>
+
+      <section class="blog-section experiments-section" id="tc-experiments">
+        <span class="blog-section-kicker">只在训练时使用 token 的检验</span>
+        <h2>保持控制器不变，只换训练 token，机器人的表现就会改变。</h2>
+        <p>
+          这组对比只改变训练时使用的 tokenizer。连续控制器完全不变，但闭环结果会随着训练信号一起变化。
+        </p>
+
+        <div class="vla-proof-grid" aria-label="Token 共训结果">
+          <div>
+            <span>PaliGemma2 · OAT</span>
+            <strong>59.0%</strong>
+            <small>平均成功率；与 QueST、ACodec 的点估计基本持平</small>
+          </div>
+          <div>
+            <span>Qwen3VL · OAT</span>
+            <strong>62.5%</strong>
+            <small>最高 benchmark-balanced 平均值</small>
+          </div>
+          <div>
+            <span>Qwen3VL 优势项</span>
+            <strong>2 项领先</strong>
+            <small>Robomimic 与 RoboCasa365 上优势明显</small>
+          </div>
+          <div>
+            <span>评测范围</span>
+            <strong>4 个 suites</strong>
+            <small>LIBERO、Robomimic、RoboCasa365、SIMPLER</small>
+          </div>
+        </div>
+
+        <div class="vla-plot-cues" aria-label="如何阅读 token co-training 结果">
+          <div>
+            <span>受控变量</span>
+            <strong>唯一改变的是 tokenizer。</strong>
+            <p>部署时始终使用同一个连续控制器，区别只在于哪个 action tokenizer 为 VLM 提供训练目标。</p>
+          </div>
+          <div>
+            <span>实验结果</span>
+            <strong>控制器会记住 VLM 从什么信号中学过。</strong>
+            <p>如果训练 token 不重要，这些柱子应该差不多。实际结果却明显不同。</p>
+          </div>
+        </div>
+
+        <figure class="vla-result-figure is-wide vla-experiment-plot">
+          <img src="../media/fig/tikz/vlm_tc_success_grid.png"
+            alt="VLM 使用不同 action tokenizer 训练后的闭环成功率"
+            width="1947" height="881">
+          <figcaption>
+            <strong>Token co-training 结果。</strong>OAT 在 PaliGemma2 上达到 59.0 平均成功率，与 QueST、ACodec 基本持平；在 Qwen3VL 上则以 62.5 获得最高平均值。最佳 tokenizer 仍取决于 backbone 和 benchmark：QueST 在 PaliGemma2 Robomimic 和 Qwen3VL SIMPLER 上更强。
+          </figcaption>
+        </figure>
+        <div class="vla-verdict">
+          <strong>我们从中看到什么</strong>
+          <p>即使部署时不解码任何 token，tokenizer 仍然会影响结果。OAT 取得最高平均值，或与最高结果基本持平，但并非在每个 benchmark 上都最好。这组对比改变了整个 tokenizer，因此不能单独证明排序是唯一原因。</p>
+        </div>
+      </section>
+
+      <section class="blog-section blog-editorial-panel" id="takeaway">
+        <span class="blog-section-kicker">实际怎么用</span>
+        <h2>选择动作 token 时，应该和选择策略模型一样认真。</h2>
+        <p class="vla-section-lead">
+          好的 tokenizer 会缩短动作序列，保证每次预测都有效，并给模型一个清楚的学习顺序。无论 token 最后会被执行，还是只在训练时出现，这些性质都很重要。
+        </p>
+        <div class="vla-final-case">
+          <div>
+            <strong>生成</strong>
+            <p>当 VLM 直接生成动作时，OAT 先给它完整的粗略运动，再随着 token 增加提供更细的控制。</p>
+          </div>
+          <div>
+            <strong>减少模型调用</strong>
+            <p>如果计划分组生成 token，训练 OAT 时就要使用相同的分组边界。只在部署时临时分组并不等价。</p>
+          </div>
+          <div>
+            <strong>监督</strong>
+            <p>训练时使用的 token 会改变连续控制器收到的 VLM context。它不会因为部署时消失就变得无关紧要。</p>
+          </div>
+          <div>
+            <strong>认识边界</strong>
+            <p>实验覆盖两个 VLM backbone、四类 benchmark、固定的控制器设计，以及部署前选定的 token 数量。Adaptive stopping 和更多机器人类型仍需继续检验。</p>
           </div>
         </div>
       </section>
 
       <section class="blog-section blog-callout" id="appendix">
-        <h2>附录</h2>
+        <h2>论文、代码与引用</h2>
         <div class="appendix-stack">
+          <p>
+            使用 OAT tokenizer 时请引用 OAT；使用受控 VLA 实验平台时请引用 Praxis。Full paper 的 arXiv 版本公开后，这里会再补上对应的 BibTeX。
+          </p>
+          <p>
+            对受控 VLA 实验感兴趣的读者可以使用
+            <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-vla/" target="_blank" rel="noopener">praxis-vla</a>
+            进行训练，并使用
+            <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener">praxis-eval</a>
+            完成评测。
+          </p>
           <div class="bibtex-block appendix-row">
             <div class="bibtex-toolbar">
-              <strong>BibTeX</strong>
-              <button type="button" class="bibtex-copy" data-copy-target="bibtex-code">复制</button>
+              <strong>RSS Version BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="oat-bibtex-code">复制</button>
             </div>
-            <pre><code id="bibtex-code">@misc{liu2026oatorderedactiontokenization,
-      title={OAT: Ordered Action Tokenization},
-      author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
-      year={2026},
-      eprint={2602.04215},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2602.04215},
+            <pre><code id="oat-bibtex-code">@misc{liu2026oat,
+  title={OAT: Ordered Action Tokenization},
+  author={Chaoqi Liu and Xiaoshen Han and Jiawei Gao and Yue Zhao and Haonan Chen and Yilun Du},
+  year={2026},
+  eprint={2602.04215},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2602.04215},
+}</code></pre>
+          </div>
+          <div class="bibtex-block appendix-row">
+            <div class="bibtex-toolbar">
+              <strong>Codebase BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="praxis-bibtex-code">复制</button>
+            </div>
+            <pre><code id="praxis-bibtex-code">@misc{liu2026praxis,
+  title={Praxis: A Controlled Laboratory for Vision-Language-Action Policy Research},
+  author={Liu, Chaoqi},
+  year={2026},
+  url={https://chaoqi-liu.com/praxis/}
 }</code></pre>
           </div>
         </div>
       </section>
     </article>
   </main>
+  <script>
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-vla-tokenizer-target]'));
+      const panel = document.getElementById('vla-tokenizer-panel');
+      const summary = document.querySelector('[data-vla-tokenizer-summary]');
+      const meters = {
+        compact: document.querySelector('[data-vla-tokenizer-meter="compact"]'),
+        decodable: document.querySelector('[data-vla-tokenizer-meter="decodable"]'),
+        ordering: document.querySelector('[data-vla-tokenizer-meter="ordering"]'),
+        block: document.querySelector('[data-vla-tokenizer-meter="block"]'),
+      };
+      const labels = {
+        compact: document.querySelector('[data-vla-tokenizer-label="compact"]'),
+        decodable: document.querySelector('[data-vla-tokenizer-label="decodable"]'),
+        ordering: document.querySelector('[data-vla-tokenizer-label="ordering"]'),
+        block: document.querySelector('[data-vla-tokenizer-label="block"]'),
+      };
+
+      if (!buttons.length || !panel || !summary) {
+        return;
+      }
+
+      const data = {
+        bin: {
+          compact: ['否', 0],
+          decodable: ['是', 100],
+          ordering: ['否', 0],
+          block: ['是', 100],
+          summary: '长坐标序列会增加推理成本，也无法提供有力的 conditioning structure。',
+        },
+        fast: {
+          compact: ['是', 100],
+          decodable: ['否', 0],
+          ordering: ['是', 100],
+          block: ['否', 0],
+          summary: '不受约束的采样可能无法有效解码；约束解码则会改变 policy interface。',
+        },
+        quest: {
+          compact: ['是', 100],
+          decodable: ['是', 100],
+          ordering: ['否', 0],
+          block: ['否', 0],
+          summary: '只优化 reconstruction loss，并不能保证控制相关信息会出现在前面的 token 中。',
+        },
+        acodec: {
+          compact: ['是', 100],
+          decodable: ['是', 100],
+          ordering: ['不适用', 50],
+          block: ['是', 100],
+          summary: '并行解码不需要串行顺序，但完整 latent block 是一个更难的联合预测目标。',
+        },
+        oat: {
+          compact: ['是', 100],
+          decodable: ['是', 100],
+          ordering: ['是', 100],
+          block: ['否', 0],
+          summary: '有序的 token-wise 目标满足三项核心要求，但分组预测需要匹配的训练。',
+        },
+        oatpow2: {
+          compact: ['是', 100],
+          decodable: ['是', 100],
+          ordering: ['是', 100],
+          block: ['是', 100],
+          summary: '匹配的 budget 与 block-causal attention 让分组预测本身成为训练目标。',
+        },
+      };
+
+      const setValue = (metric, value) => {
+        const label = labels[metric];
+        if (!label) {
+          return;
+        }
+        const [text, score] = value;
+        label.textContent = text;
+        const meter = meters[metric];
+        if (meter) {
+          meter.value = score;
+        }
+      };
+
+      const activate = (key) => {
+        const selected = data[key] || data.bin;
+        buttons.forEach((button) => {
+          const isActive = button.dataset.vlaTokenizerTarget === key;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+          button.tabIndex = isActive ? 0 : -1;
+          if (isActive && button.id) {
+            panel.setAttribute('aria-labelledby', button.id);
+          }
+        });
+
+        setValue('compact', selected.compact);
+        setValue('decodable', selected.decodable);
+        setValue('ordering', selected.ordering);
+        setValue('block', selected.block);
+
+        summary.innerHTML = selected.summary;
+        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+          window.MathJax.typesetPromise([summary]).catch(() => {});
+        }
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => activate(button.dataset.vlaTokenizerTarget));
+        button.addEventListener('keydown', (event) => {
+          const currentIndex = buttons.indexOf(button);
+          const lastIndex = buttons.length - 1;
+          let nextIndex = currentIndex;
+
+          if (event.key === 'ArrowRight') {
+            nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+          } else if (event.key === 'ArrowLeft') {
+            nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+          } else if (event.key === 'Home') {
+            nextIndex = 0;
+          } else if (event.key === 'End') {
+            nextIndex = lastIndex;
+          } else {
+            return;
+          }
+
+          event.preventDefault();
+          buttons[nextIndex].focus();
+          activate(buttons[nextIndex].dataset.vlaTokenizerTarget);
+        });
+      });
+
+      activate(buttons.find((button) => button.classList.contains('is-active'))?.dataset.vlaTokenizerTarget || 'bin');
+    })();
+
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-vla-schedule-target]'));
+      const panel = document.getElementById('vla-schedule-panel');
+      const timeline = document.querySelector('[data-vla-schedule-timeline]');
+      const stages = document.querySelector('[data-vla-schedule-stages]');
+      const name = document.querySelector('[data-vla-schedule-name]');
+      const shape = document.querySelector('[data-vla-schedule-shape]');
+      const cost = document.querySelector('[data-vla-schedule-cost]');
+      const costCopy = document.querySelector('[data-vla-schedule-cost-copy]');
+      const summary = document.querySelector('[data-vla-schedule-summary]');
+      const stageTitle = document.querySelector('[data-vla-schedule-stage-title]');
+      const stageCopy = document.querySelector('[data-vla-schedule-stage-copy]');
+
+      if (!buttons.length || !panel || !timeline || !stages) {
+        return;
+      }
+
+      const schedules = {
+        token: {
+          label: 'Token-wise AR',
+          boundaries: Array.from({ length: 16 }, (_, index) => index + 1),
+          shape: '每个阶段生成一个新 token。',
+          costCopy: '上下文最充分，但串行深度也最大。',
+          summary: '每个 token 都能看到所有更早 token 作为上下文，但推理仍然完全串行。',
+        },
+        power: {
+          label: '2^n BAR',
+          boundaries: [1, 2, 4, 8, 16],
+          shape: '前缀长度按 1, 2, 4, 8, 16 增长。',
+          costCopy: '短的早期 block 保留粗粒度决策的上下文；后续残差细节再分组预测。',
+          summary: '在保留渐进前缀的同时，串行深度从 16 次调用降到 5 次调用。',
+        },
+        two: {
+          label: '两块 BAR',
+          boundaries: [8, 16],
+          shape: '先预测 8 个 token，再预测后 8 个 token。',
+          costCopy: '一个更激进的中间点：两次调用，但每次调用都预测一个大 block。',
+          summary: '生成很快，但联合预测压力高于 2^n schedule。',
+        },
+        parallel: {
+          label: '一次并行',
+          boundaries: [16],
+          shape: '一次调用预测全部 16 个 token。',
+          costCopy: '最小串行深度，最大并行预测压力。',
+          summary: '策略在一个联合步骤里预测粗粒度动作和残差细节。',
+        },
+      };
+
+      let activeKey = 'token';
+      let activeStage = 1;
+
+      const maxBlock = (boundaries) => boundaries.reduce((best, boundary, index) => {
+        const prev = index === 0 ? 0 : boundaries[index - 1];
+        return Math.max(best, boundary - prev);
+      }, 0);
+
+      const renderTimeline = (selected) => {
+        const boundaries = selected.boundaries;
+        const current = boundaries[activeStage - 1];
+        const previous = activeStage === 1 ? 0 : boundaries[activeStage - 2];
+        const realizedWidth = `${(previous / 16) * 100}%`;
+        const currentLeft = `${(previous / 16) * 100}%`;
+        const currentWidth = `${((current - previous) / 16) * 100}%`;
+        timeline.innerHTML = '';
+        const realizedFill = document.createElement('span');
+        realizedFill.className = 'vla-schedule-fill is-realized';
+        realizedFill.style.width = realizedWidth;
+        const currentFill = document.createElement('span');
+        currentFill.className = 'vla-schedule-fill is-current';
+        currentFill.style.left = currentLeft;
+        currentFill.style.width = currentWidth;
+        const label = document.createElement('span');
+        label.className = `vla-schedule-progress-label${current >= 9 ? ' is-current' : ''}`;
+        label.textContent = `前缀长度 ${current} / 16`;
+        timeline.append(realizedFill, currentFill, label);
+        stageTitle.textContent = `阶段 ${activeStage} 预测 ${current - previous} 个 token。`;
+        const blockSize = current - previous;
+        const tokenRange = blockSize === 1
+          ? `第 ${current} 个 token`
+          : `第 ${previous + 1}-${current} 个 token`;
+        const prefixCopy = previous === 0
+          ? '已有前缀为空'
+          : `已有前缀长度为 ${previous} 个 token`;
+        stageCopy.textContent = `${prefixCopy}，增长到 ${current} 个 token。本阶段预测${tokenRange}。`;
+      };
+
+      const renderStages = (selected) => {
+        stages.innerHTML = '';
+        const previous = document.createElement('button');
+        previous.type = 'button';
+        previous.textContent = '‹';
+        previous.setAttribute('aria-label', 'Previous BAR stage');
+        previous.disabled = activeStage === 1;
+        previous.addEventListener('click', () => activate(activeKey, activeStage - 1));
+
+        const label = document.createElement('span');
+        label.className = 'vla-stage-count';
+        label.textContent = `阶段 ${activeStage} / ${selected.boundaries.length}`;
+
+        const next = document.createElement('button');
+        next.type = 'button';
+        next.textContent = '›';
+        next.setAttribute('aria-label', 'Next BAR stage');
+        next.disabled = activeStage === selected.boundaries.length;
+        next.addEventListener('click', () => activate(activeKey, activeStage + 1));
+
+        stages.append(previous, label, next);
+      };
+
+      const typeset = (...nodes) => {
+        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+          window.MathJax.typesetPromise(nodes.filter(Boolean)).catch(() => {});
+        }
+      };
+
+      const activate = (key, stage = 1) => {
+        activeKey = schedules[key] ? key : 'token';
+        const selected = schedules[activeKey];
+        activeStage = Math.min(Math.max(stage, 1), selected.boundaries.length);
+        buttons.forEach((button) => {
+          const isActive = button.dataset.vlaScheduleTarget === activeKey;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+          button.tabIndex = isActive ? 0 : -1;
+          if (isActive && button.id) {
+            panel.setAttribute('aria-labelledby', button.id);
+          }
+        });
+        renderStages(selected);
+        renderTimeline(selected);
+        name.textContent = selected.label;
+        shape.textContent = selected.shape;
+        cost.textContent = `${selected.boundaries.length} 次调用 · 最大块 ${maxBlock(selected.boundaries)}`;
+        costCopy.textContent = selected.costCopy;
+        summary.textContent = selected.summary;
+        typeset();
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => activate(button.dataset.vlaScheduleTarget));
+        button.addEventListener('keydown', (event) => {
+          const currentIndex = buttons.indexOf(button);
+          const lastIndex = buttons.length - 1;
+          let nextIndex = currentIndex;
+          if (event.key === 'ArrowRight') nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+          else if (event.key === 'ArrowLeft') nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+          else if (event.key === 'Home') nextIndex = 0;
+          else if (event.key === 'End') nextIndex = lastIndex;
+          else return;
+          event.preventDefault();
+          buttons[nextIndex].focus();
+          activate(buttons[nextIndex].dataset.vlaScheduleTarget);
+        });
+      });
+
+      activate(activeKey);
+    })();
+
+    (() => {
+      const grids = Array.from(document.querySelectorAll('[data-vla-static-mask]'));
+
+      if (!grids.length) {
+        return;
+      }
+
+      const blockOf = (index) => {
+        if (index <= 1) return 1;
+        if (index <= 2) return 2;
+        if (index <= 4) return 3;
+        return 4;
+      };
+
+      const data = {
+        oat: {
+          allowed: (row, col) => col <= row,
+        },
+        oatpow2: {
+          allowed: (row, col) => col === row || blockOf(col) < blockOf(row),
+        },
+      };
+
+      const renderMask = (grid, selected) => {
+        grid.innerHTML = '';
+        for (let row = 1; row <= 8; row += 1) {
+          for (let col = 1; col <= 8; col += 1) {
+            const cell = document.createElement('span');
+            cell.className = 'vla-mask-cell';
+            if (row === col) {
+              cell.classList.add('is-self');
+            } else if (selected.allowed(row, col)) {
+              cell.classList.add('is-on');
+            } else {
+              cell.classList.add('is-blocked');
+            }
+            grid.append(cell);
+          }
+        }
+      };
+
+      grids.forEach((grid) => {
+        renderMask(grid, data[grid.dataset.vlaStaticMask] || data.oat);
+      });
+    })();
+  </script>
 </body>
 
 </html>
