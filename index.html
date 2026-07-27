@@ -62,6 +62,10 @@
       background: transparent;
     }
 
+    .blog-topbar {
+      justify-content: flex-end;
+    }
+
     .blog-mobile-toc {
       display: none;
     }
@@ -154,6 +158,79 @@
 
     .vla-title-line {
       display: block;
+    }
+
+    .blog-paper-credits {
+      display: grid;
+      width: min(100%, 960px);
+      gap: 1.3rem;
+      margin: 1.25rem auto 0;
+    }
+
+    .blog-paper-credit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .blog-paper-credit-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .blog-paper-version {
+      display: block;
+      margin-bottom: 0.3rem;
+      color: var(--oat-ink);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 1.4;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .blog-paper-credit .blog-authors {
+      width: min(100%, 900px);
+      max-width: 900px;
+      margin: 0;
+      font-size: 0.96rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .blog-paper-credit .blog-project-links {
+      justify-content: center;
+      width: auto;
+      gap: 0.5rem;
+      margin: 0.55rem 0 0;
+    }
+
+    .blog-paper-credit .blog-project-links a {
+      min-width: 5.5rem;
+      min-height: 1.95rem;
+      font-size: 0.82rem;
+      padding: 0.42rem 0.8rem;
+    }
+
+    .blog-paper-credit .blog-project-links .x-article-link {
+      min-width: 6.5rem;
+      gap: 0.35rem;
+    }
+
+    .x-logo-icon {
+      display: block;
+      width: 0.78rem;
+      height: 0.78rem;
+      fill: currentColor;
+    }
+
+    .blog-paper-credits + .blog-affiliations {
+      margin-top: 0.75rem;
     }
 
     .vla-mobile-break {
@@ -1399,16 +1476,28 @@
 
     @media (max-width: 640px) {
       body.blog-page {
-        padding-top: 108px;
+        padding-top: 82px;
       }
 
       .blog-topbar {
         position: fixed;
+        min-height: 44px;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 1rem;
+      }
+
+      .blog-topbar nav {
+        width: auto;
+        justify-content: flex-end;
+        gap: 0.85rem;
+        overflow: visible;
+        padding-bottom: 0;
       }
 
       .blog-mobile-toc {
         position: fixed;
-        top: 70px;
+        top: 44px;
       }
 
       .blog-section[id],
@@ -1449,6 +1538,7 @@
       .blog-section,
       .blog-editorial-panel,
       .blog-dek,
+      .blog-paper-credits,
       .blog-authors,
       .blog-affiliations,
       .blog-project-links,
@@ -1486,6 +1576,54 @@
         overflow-wrap: anywhere;
         white-space: normal !important;
         text-align: center;
+      }
+
+      .blog-paper-credits {
+        width: min(100%, 21rem) !important;
+        gap: 1.15rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .blog-paper-credit {
+        text-align: center;
+      }
+
+      .blog-paper-version {
+        margin-bottom: 0.25rem;
+        text-align: center;
+      }
+
+      .blog-paper-credit .blog-authors {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0;
+        text-align: center;
+      }
+
+      .blog-paper-credit .blog-project-links {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 0.45rem;
+      }
+
+      .blog-paper-credit .blog-project-links a {
+        width: auto;
+        min-width: 7rem;
+      }
+
+      .blog-paper-credit .blog-project-links .x-article-link {
+        width: auto;
+        min-width: 7rem;
+      }
+
+      .blog-paper-credit-rss .blog-project-links a {
+        min-width: 5.5rem;
+      }
+
+      .blog-paper-credit-rss .blog-project-links .x-article-link {
+        min-width: 6.5rem;
       }
 
       .blog-authors a,
@@ -1654,13 +1792,7 @@
 
 <body class="blog-page" id="top">
   <header class="blog-topbar">
-    <a href="./" class="blog-home">Ordered Action Tokenization</a>
-    <nav aria-label="Project links and language">
-      <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">RSS arXiv</a>
-      <a href="./media/oat-visuomotor-policy-learning.pdf?v=20260721" target="_blank" rel="noopener">Full Paper PDF</a>
-      <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">OAT Code</a>
-      <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">VLA Code</a>
-      <a href="https://x.com/i/article/2020239195059433472" target="_blank" rel="noopener" aria-label="X"><span class="x-symbol" aria-hidden="true">𝕏</span></a>
+    <nav aria-label="Language">
       <a href="./" hreflang="en" lang="en" aria-current="page">English</a>
       <a href="./zh/" hreflang="zh-Hans" lang="zh-Hans">中文</a>
     </nav>
@@ -1698,24 +1830,58 @@
         <p class="blog-dek">
           OAT turns continuous robot actions into compact tokens whose trained prefixes progress from coarse motion to finer detail.
         </p>
-        <p class="blog-authors">
-          <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1,2</sup>,
-          <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
-          <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1,2</sup>,
-          <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
-          <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
-          <a href="https://stanford.edu/~eadeli/" target="_blank" rel="noopener">Ehsan Adeli</a><sup>2</sup>, and
-          <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
-        </p>
+        <div class="blog-paper-credits" aria-label="Paper authors">
+          <div class="blog-paper-credit blog-paper-credit-rss">
+            <span class="blog-paper-version">RSS paper</span>
+            <div class="blog-paper-credit-body">
+              <p class="blog-authors">
+                <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1</sup>,
+                <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
+                <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
+                <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
+                <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1</sup>, and
+                <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
+              </p>
+              <div class="blog-project-links" aria-label="RSS project links">
+                <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener"
+                  aria-label="RSS paper">Paper</a>
+                <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener"
+                  aria-label="RSS code">Code</a>
+                <a class="x-article-link" href="https://x.com/i/article/2020239195059433472" target="_blank"
+                  rel="noopener" aria-label="X article" title="X article">
+                  <svg class="x-logo-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+                  </svg>
+                  <span>article</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="blog-paper-credit">
+            <span class="blog-paper-version">Full paper</span>
+            <div class="blog-paper-credit-body">
+              <p class="blog-authors">
+                <a href="https://chaoqi-liu.github.io" target="_blank" rel="noopener">Chaoqi Liu</a><sup>1,2</sup>,
+                <a href="https://zhaoyue-zephyrus.github.io/" target="_blank" rel="noopener">Yue Zhao</a><sup>2</sup>,
+                <a href="https://haonan16.github.io/" target="_blank" rel="noopener">Haonan Chen</a><sup>1,2</sup>,
+                <a href="https://xshenhan.github.io/" target="_blank" rel="noopener">Xiaoshen Han</a><sup>1</sup>,
+                <a href="https://gao-jiawei.com/" target="_blank" rel="noopener">Jiawei Gao</a><sup>1</sup>,
+                <a href="https://stanford.edu/~eadeli/" target="_blank" rel="noopener">Ehsan Adeli</a><sup>2</sup>, and
+                <a href="https://yilundu.github.io/" target="_blank" rel="noopener">Yilun Du</a><sup>1</sup>
+              </p>
+              <div class="blog-project-links" aria-label="Full paper project links">
+                <a href="https://arxiv.org/abs/2607.21670" target="_blank" rel="noopener"
+                  aria-label="Full paper">Paper</a>
+                <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener"
+                  aria-label="Full paper code">Code</a>
+              </div>
+            </div>
+          </div>
+        </div>
         <p class="blog-affiliations">
           <sup>1</sup>Harvard University · <sup>2</sup>Stanford University
         </p>
-        <div class="blog-project-links" aria-label="Project links">
-          <a href="https://arxiv.org/abs/2602.04215" target="_blank" rel="noopener">RSS arXiv</a>
-          <a href="./media/oat-visuomotor-policy-learning.pdf?v=20260721" target="_blank" rel="noopener">Full Paper PDF</a>
-          <a href="https://github.com/Chaoqi-LIU/oat" target="_blank" rel="noopener">OAT Code</a>
-          <a href="https://github.com/Chaoqi-LIU/praxis-vla" target="_blank" rel="noopener">VLA Code</a>
-        </div>
       </header>
 
       <figure class="blog-figure blog-figure-paper blog-figure-teaser">
@@ -2516,7 +2682,7 @@
         <h2>Papers, code, and citations</h2>
         <div class="appendix-stack">
           <p>
-            Please cite OAT when using the tokenizer, and Praxis when using the controlled VLA research platform. A citation for the full paper will be added once its arXiv version is public.
+            Please cite the full paper for OAT in visuomotor policy learning, the RSS version for the original tokenizer, and Praxis when using the controlled VLA research platform.
           </p>
           <p>
             Readers interested in controlled VLA experiments can use
@@ -2525,6 +2691,21 @@
             <a class="appendix-link-button" href="https://chaoqi-liu.com/praxis-eval/" target="_blank" rel="noopener">praxis-eval</a>
             for evaluation.
           </p>
+          <div class="bibtex-block appendix-row">
+            <div class="bibtex-toolbar">
+              <strong>Full Paper BibTeX</strong>
+              <button type="button" class="bibtex-copy" data-copy-target="oat-policy-bibtex-code">Copy</button>
+            </div>
+            <pre><code id="oat-policy-bibtex-code">@misc{liu2026oatpolicy,
+  title={Ordered Action Tokens for Visuomotor Policy Learning},
+  author={Chaoqi Liu and Yue Zhao and Haonan Chen and Xiaoshen Han and Jiawei Gao and Ehsan Adeli and Yilun Du},
+  year={2026},
+  eprint={2607.21670},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2607.21670},
+}</code></pre>
+          </div>
           <div class="bibtex-block appendix-row">
             <div class="bibtex-toolbar">
               <strong>RSS Version BibTeX</strong>
